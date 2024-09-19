@@ -15,3 +15,8 @@ model User {
   email String  @unique
   name  String?
 }
+
+model Book {
+  id    Int     @id @default(autoincrement())
+  bookName String @unique
+}
