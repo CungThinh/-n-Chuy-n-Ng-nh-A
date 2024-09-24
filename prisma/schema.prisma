@@ -13,10 +13,22 @@ datasource db {
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
-  name  String?
+  password String 
+  fullName String
+  birthday  DateTime
+  phoneNumber String @unique
+  role String @default("USER")
+
+  bookings Booking[]
 }
 
-model Book {
-  id    Int     @id @default(autoincrement())
-  bookName String @unique
+model Booking {
+  id                 Int       @id @default(autoincrement()) // ID tự tăng
+  userId             Int                                      // Liên kết tới bảng User
+  flightId           Int                                      // Liên kết tới bảng Flight
+  bookingDate        DateTime  @default(now())                // Ngày đặt vé
+  paymentStatus      String @default("PENDING")          // Trạng thái thanh toán
+  status             String @default("BOOKED")           // Trạng thái đặt vé (BOOKED, CANCELLED)
+
+  user               User      @relation(fields: [userId], references: [id])
 }
