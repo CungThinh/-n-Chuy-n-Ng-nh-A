@@ -1,7 +1,9 @@
-import SessionProviderWrapper from '@/app/SessionProviderWrapper';
+
 import '../app/globals.css'
-import Navbar from '@/components/navbar/navbar';
-import Footer from '@/components/footer/footer';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import SessionProviderWrapper from '@/context/SessionProviderWrapper';
+import PageTransition from '@/lib/PageTransition';
 
 export default function RootLayout({ children }) {
   return (
@@ -9,7 +11,9 @@ export default function RootLayout({ children }) {
       <body>
         <Navbar />
         <SessionProviderWrapper>
+          <PageTransition>
           {children}
+          </PageTransition>
         </SessionProviderWrapper>
         <Footer />
       </body>

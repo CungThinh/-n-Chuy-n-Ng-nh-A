@@ -1,0 +1,94 @@
+ul.ftl-step {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 40px;
+    flex: 1;
+    display: flex;
+    font-size: 13px;
+    margin-bottom: 10px !important;
+  }
+  
+  ul.ftl-step li:first-child {
+    text-align: center;
+    width: 33.33%;
+    cursor: pointer;
+    color: #333;
+    background-image: none;
+    padding-left: 8px !important;
+    border-radius: 3px 0 0 3px;
+  }
+  
+  ul.ftl-step li:last-child {
+    border-radius: 0 3px 3px 0;
+  }
+  
+  ul.ftl-step li {
+    text-align: center;
+    width: 33.33%;
+    cursor: pointer;
+    color: #333;
+    background: #ddd url(https://ibe.vemaybay.vn/Resources/Images/Icon/right-arrow.png) no-repeat left center;
+    background-position: -8px;
+    background-size: 40px;
+    line-height: 40px;
+    align-items: center;
+    display: flex;
+    margin: 0;
+    padding: 0 !important;
+  }
+  
+  ul.ftl-step li.ftl-active {
+    color: #fff;
+    background-color: #ffa300;
+  }
+  
+  ul.ftl-step li span {
+    padding-left: 10px;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  ul.ftl-step .ftl-arrow {
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid #ddd;
+  }
+  
+  ul.ftl-step .ftl-arrow-active {
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid #ffa300;
+  }
+  
+  ul.ftl-step .ftl-circle-first {
+    width: 22px;
+    height: 22px;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 14px;
+    border: 2px solid #fff;
+    color: #fff;
+  }
+  
+  ul.ftl-step .ftl-circle {
+    width: 22px;
+    height: 22px;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 14px;
+    border: 2px solid #fff;
+    color: #fff;
+    margin-left: 15px;
+  }
+  
+  .ftl-container {
+    width: 350px;
+    margin-right: 20px;
+  }

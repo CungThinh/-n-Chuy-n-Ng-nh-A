@@ -17,7 +17,7 @@ export default NextAuth( {
                 })
 
                 if(user && bcrypt.compareSync(credentials.password, user.password)) {
-                    return { id: user.id, fullName: user.fullName, email: user.email };
+                    return { id: user.id, role: user.role, email: user.email };
                 }
 
                 return null;
@@ -33,16 +33,14 @@ export default NextAuth( {
         async jwt({token, user}) {
             if(user) {
                 token.id = user.id;
-                console.log("User ID added to token:", user.id);
+                token.role = user.role
             }
             return token
         },
         async session({ session, token }) {
         if (token?.id) {
             session.user.id = token.id;
-            console.log("User ID added to session:", token.id);
-        } else {
-            console.log("Token does not contain ID");
+            session.user.role = token.role
         }
         return session;
     }
