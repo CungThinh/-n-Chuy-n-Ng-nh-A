@@ -1,17 +1,13 @@
 import React from 'react';
-import SortOptions from './components/SortOptions';
-import ProgressSteps from './components/ProgressStep';
-import FlightResult from './components/FlightResult';
+import FlightList from './components/FlightResult';
+import FlightFilter from './components/FlightFilter';
+import LoadingComponent from './components/LoadingSpinner';
 
 const FlightSearchResult = () => {
   return (
     <div>
-        <ProgressSteps>
-        </ProgressSteps>
-        <SortOptions>
-        </SortOptions>
-        <FlightResult>
-        </FlightResult>
+        <LoadingComponent>
+        </LoadingComponent>
     </div>
   )
 };

@@ -1,0 +1,26 @@
+[
+    {
+      "iata": "AAT",
+      "name": "Sân bay Aletai Xuedu",
+      "city": "Aletai",
+      "country": "China"
+    },
+    {
+      "iata": "ACF",
+      "name": "Sân bay Alaer Talimu",
+      "city": "Alaer",
+      "country": "China"
+    },
+    {
+      "iata": "AHJ",
+      "name": "Sân bay Aba Hongyuan",
+      "city": "Aba",
+      "country": "China"
+    },
+    {
+      "iata": "HZA",
+      "name": "Sân bay Heze Mudan",
+      "city": "Heze",
+      "country": "China"
+    }
+]

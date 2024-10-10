@@ -1,28 +1,46 @@
-// src/app/navbar/navbar.jsx
-'use client'
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPhoneAlt, FaUserCircle } from 'react-icons/fa';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const router = useRouter(); // Khởi tạo useRouter
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Hàm điều hướng đến trang login
   const handleLoginClick = () => {
-    router.push('/login'); // Điều hướng đến trang login
+    router.push('/login');
   };
 
+  // Event listener để thay đổi màu navbar khi scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <nav className="bg-blue-900 text-white py-4 px-6">
+    <nav
+      className={`fixed w-full z-50 transition-all duration-500 ${
+        isScrolled ? 'bg-[#00264e]' : 'bg-transparent'
+      } text-white py-4 px-6`}
+    >
       <div className="container mx-auto flex items-center justify-between">
-       {/* Logo */}
         <div className="flex items-center">
           <img src="/images/Logo.png" alt="vemaybay.vn logo" className="h-10 w-auto" />
         </div>
 
-        {/* Hotline */}
         <div className="hidden lg:flex space-x-6">
           <div className="flex items-center space-x-2">
             <FaPhoneAlt />
@@ -34,14 +52,12 @@ const Navbar = () => {
           </div>
         </div>
 
-       {/* User Options */}
         <div className="flex items-center space-x-4">
           <button className="flex items-center space-x-2" onClick={handleLoginClick}>
             <FaUserCircle className="text-2xl" />
             <span className="text-sm">Đăng nhập / Đăng ký</span>
           </button>
 
-          {/* Hamburger Menu for Mobile */}
           <button
             className="lg:hidden text-2xl focus:outline-none"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -51,7 +67,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="lg:hidden mt-4">
           <ul className="space-y-4">
