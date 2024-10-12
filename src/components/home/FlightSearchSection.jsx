@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import airportsData from '../../../public/airports.json';
 import { removeVietnameseTones } from '@/utils';
+import { useRouter } from 'next/navigation';
 
 export default function FlightSearchSection() {
     const [tripOption, setTripOption] = useState('Một chiều'); // Đổi tên biến để tránh xung đột
@@ -28,6 +29,7 @@ export default function FlightSearchSection() {
     const passengersDropdownRef = useRef(null); // ref cho dropdown hành khách
     const fromDropdownRef = useRef(null); // ref cho dropdown "Điểm đi"
     const toDropdownRef = useRef(null); // ref cho dropdown "Điểm đến"
+    const router = useRouter();
 
     // Hàm tính tổng số lượng hành khách
     const getTotalPassengers = () => {
@@ -62,11 +64,11 @@ export default function FlightSearchSection() {
         await new Promise((resolve) => setTimeout(resolve, 300));
 
         // Lọc danh sách sân bay
-        const filteredAirports = airportsData.filter((airport) => {
-            const airportNameNormalized = removeVietnameseTones(airport.name.toLowerCase());
-            const cityNormalized = removeVietnameseTones(airport.city.toLowerCase());
-            const countryNormalized = removeVietnameseTones(airport.country.toLowerCase());
-            const iataNormalized = airport.iata.toLowerCase();
+        const filteredAirports = airportsData.flatMap(region => region.airports).filter((airport) => {
+            const airportNameNormalized = removeVietnameseTones(airport.name?.toLowerCase() || '');
+            const cityNormalized = removeVietnameseTones(airport.city?.toLowerCase() || '');
+            const countryNormalized = removeVietnameseTones(airport.country?.toLowerCase() || '');
+            const iataNormalized = airport.iata?.toLowerCase() || '';
 
             return (
                 airportNameNormalized.includes(normalizedQuery) ||
@@ -191,17 +193,20 @@ export default function FlightSearchSection() {
     };
 
     const handleSearch = () => {
-        console.log('Tìm kiếm chuyến bay với các thông tin:', {
-            tripOption,
-            from,
-            to,
-            departureDate,
-            returnDate,
-            passengers,
-            multiLegFlights,
-        });
+        if (from && to && departureDate) {
+          // Lấy chỉ mã sân bay (3 ký tự IATA)
+          const fromCode = from.split(',')[0].trim();
+          const toCode = to.split(',')[0].trim();
+    
+          router.push(
+            `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split('T')[0]}&return_date=${returnDate ? returnDate.toISOString().split('T')[0] : ''}&currency=VND&hl=vi&api_key=26289d3ee9afd987a59a23afc9585046f5368336fb181a8ee500c474ed6ec7b4`
+          );
+        } else {
+          alert('Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.');
+        }
     };
-
+    
+    
     // Thêm state để quản lý nhiều chặng
     const [multiLegFlights, setMultiLegFlights] = useState([{ from: '', to: '', departureDate: null }]);
 
@@ -517,7 +522,7 @@ export default function FlightSearchSection() {
                                 )}
 
                                 {/* Nút Tìm kiếm */}
-                                <button onClick={handleSearch} className="bg-orange-500 text-white px-6 py-3 rounded-lg flex items-center justify-center">
+                                <button onClick={handleSearch} className="bg-orange-500 text-white px-6 py-3 rounded-lg flex items-center justify-center h-[50px]">
                                     <FaSearch className="mr-2" /> Tìm kiếm
                                 </button>
                             </div>
