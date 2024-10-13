@@ -1,12 +1,10 @@
 'use client'
 
-'use client';
-
 // src/app/(auth)/footer/footer.jsx
 
 const Footer = () => {
   return (
-    <footer className="bg-blue-900 text-white py-10">
+    <footer className="bg-[#00264e] text-white py-10"> {/* Đổi màu nền sang #00264e */}
       <div className="container mx-auto px-4">
         {/* Hotline and Information Sections */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-10">
