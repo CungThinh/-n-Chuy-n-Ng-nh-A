@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaPhoneAlt, FaUserCircle } from 'react-icons/fa';
+import { FaPhoneAlt, FaUserCircle, FaSearch } from 'react-icons/fa';
 import { useRouter, usePathname } from 'next/navigation';
 
 const Navbar = () => {
@@ -17,6 +18,14 @@ const Navbar = () => {
   const handleLogoClick = () => {
     router.push('/'); // Điều hướng về trang chủ khi logo được click
   };
+
+  const handleBookingSearchClick = () => {
+    router.push('booking-search')
+  }
+
+  const handleFlightTicketSearch = () => {
+    console.log("")
+  }
 
   // Event listener để thay đổi màu navbar khi scroll
   useEffect(() => {
@@ -71,7 +80,11 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-10">
+          <button className="flex items-center space-x-2" onClick={handleBookingSearchClick}>
+            <FaSearch className="text-xl" />
+            <span className="text-sm">Tra cứu vé</span>
+          </button>
           <button className="flex items-center space-x-2" onClick={handleLoginClick}>
             <FaUserCircle className="text-2xl" />
             <span className="text-sm">Đăng nhập / Đăng ký</span>

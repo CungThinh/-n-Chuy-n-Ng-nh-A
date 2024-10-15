@@ -20,7 +20,7 @@ model Customer {
   dateOfBirth      DateTime  // Ngày tháng năm sinh
   gender           String    // Giới tính
   nationality      String    // Quốc tịch
-  passportNumber   String    @unique  // Số hộ chiếu (dùng để tra cứu)
+  passportNumber   String    @unique
   passportExpiry   DateTime  // Ngày hết hạn hộ chiếu
   passportIssuedAt String    // Nơi cấp hộ chiếu
   tickets          Ticket[]
@@ -62,7 +62,7 @@ model Ticket {
   departureTime      DateTime  // Thời gian khởi hành
   arrivalTime        DateTime  // Thời gian đến
   travelClass        String    // Hạng ghế (Economy, Business, etc.)
-  total_duration           Int
+  total_duration     Int
   price              Float     // Giá vé
   legroom            String    // Khoảng cách ghế ngồi
   
