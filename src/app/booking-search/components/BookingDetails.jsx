@@ -7,48 +7,85 @@ const BookingDetails = () => {
     const handleToggleFlightDetail = () => {
         setIsFlightDetailVisible(!isFlightDetailVisible);
     };
+    const booking = {
+        "id": 2,
+        "contactCustomerId": 1,
+        "isRoundTrip": true,
+        "createdAt": "2024-10-09T16:00:57.713Z",
+        "updatedAt": "2024-10-09T16:00:57.713Z",
+        "contactCustomer": {
+            "id": 1,
+            "firstName": "Mạc",
+            "lastName": "Cung",
+            "phone": "Thịnh",
+            "email": "macthinh22@gmail.com"
+        },
+        "tickets": [
+            {
+                "id": 1,
+                "bookingId": 2,
+                "flightNumber": "A",
+                "airline": "A",
+                "departureAirport": "A",
+                "arrivalAirport": "A",
+                "departureTime": "2024-10-13T16:13:00.000Z",
+                "arrivalTime": "2024-10-27T16:13:00.000Z",
+                "travelClass": "Economy",
+                "total_duration": 123,
+                "price": 123,
+                "legroom": "no",
+                "customerId": 4,
+                "passportNumber": "2222222222",
+                "customer": {
+                    "id": 4,
+                    "firstName": "Mạc",
+                    "middleName": "Cung",
+                    "lastName": "Thịnh",
+                    "dateOfBirth": "2024-10-19T00:00:00.000Z",
+                    "gender": "Nam",
+                    "nationality": "Việt Nam",
+                    "passportNumber": "2222222222",
+                    "passportExpiry": "2024-10-03T00:00:00.000Z",
+                    "passportIssuedAt": "Việt Nam"
+                }
+            },
+            {
+                "id": 2,
+                "bookingId": 2,
+                "flightNumber": "AAA",
+                "airline": "A",
+                "departureAirport": "AAA",
+                "arrivalAirport": "AAA",
+                "departureTime": "2024-10-17T03:14:00.000Z",
+                "arrivalTime": "2024-10-20T03:14:00.000Z",
+                "travelClass": "Business",
+                "total_duration": 111,
+                "price": 111,
+                "legroom": "no",
+                "customerId": 4,
+                "passportNumber": "2222222222",
+                "customer": {
+                    "id": 4,
+                    "firstName": "Mạc",
+                    "middleName": "Cung",
+                    "lastName": "Thịnh",
+                    "dateOfBirth": "2024-10-19T00:00:00.000Z",
+                    "gender": "Nam",
+                    "nationality": "Việt Nam",
+                    "passportNumber": "2222222222",
+                    "passportExpiry": "2024-10-03T00:00:00.000Z",
+                    "passportIssuedAt": "Việt Nam"
+                }
+            }
+        ],
+        "payment": null
+    }
     return (
         <div className="max-w-4xl bg-white p-6">
             <div className="flex justify-between">
-                <div className="font-medium"> Mã đặt chỗ: 4M65PJ</div>
+                <div className="font-medium"> Mã đặt chỗ: {booking.id}</div>
                 <div className="font-medium"> Trạng thái: Chưa thanh toán</div>
-                <div className="font-medium"> Ngày đặt: 22/10/2024</div>
-            </div>
-            <div className="border-b-3 mt-2"></div>
-            <div className="mb-8 mt-2">
-                <h3 className="text-xl font-bold text-black">Thông tin hành khách</h3>
-                <div className="gap-5 flex">
-                <div className="max-w-sm bg-white rounded-lg shadow-md overflow-hidden">
-                    {/* Header của card */}
-                    <div className="flex items-center bg-gray-200 p-3 justify-start"> {/* Thêm justify-start để căn trái */}
-                        <FaMale className="text-xl m-0 mr-2" />
-                        <span className="text-gray-800 font-medium">Hành khách 1</span>
-                    </div>
-
-                    {/* Nội dung của card */}
-                    <div className="p-4">
-                        <p className="text-gray-600">Họ và tên: Mạc Cung Thịnh</p>
-                        <p className="text-gray-600 mt-2">Quốc tịch: Việt Nam</p>
-                        <p className="text-gray-600 mt-2">Ngày sinh: 24/02/2003</p>
-                        <p className="text-gray-600 mt-2">Dịch vụ miễn phí: Hành lý xách tay 7Kg</p>
-                    </div>
-                </div>
-                <div className="max-w-sm bg-white rounded-lg shadow-md overflow-hidden">
-                    {/* Header của card */}
-                    <div className="flex items-center bg-gray-200 p-3 justify-start"> {/* Thêm justify-start để căn trái */}
-                        <FaMale className="text-xl m-0 mr-2" />
-                        <span className="text-gray-800 font-medium">Hành khách 2</span>
-                    </div>
-
-                    {/* Nội dung của card */}
-                    <div className="p-4">
-                        <p className="text-gray-600">Họ và tên: Mạc Cung Thịnh</p>
-                        <p className="text-gray-600 mt-2">Quốc tịch: Việt Nam</p>
-                        <p className="text-gray-600 mt-2">Ngày sinh: 24/02/2003</p>
-                        <p className="text-gray-600 mt-2">Dịch vụ miễn phí: Hành lý xách tay 7Kg</p>
-                    </div>
-                </div>
-                </div>
+                <div className="font-medium"> Ngày đặt: {new Date(booking.createdAt).toLocaleDateString('vi-VN')}</div>
             </div>
             <div className="border-b-3 mt-2"></div>
             <h3 className="text-xl font-bold text-black mt-2">Thông tin chuyến bay</h3>
@@ -93,6 +130,20 @@ const BookingDetails = () => {
                                     <p className="text-sm text-gray-500">Sân bay Nội Bài (HAN)</p>
                                 </div>
                             </div>
+                            <div className="max-w-sm bg-white rounded-lg shadow-md overflow-hidden">
+                                {/* Header của card */}
+                                <div className="flex items-center bg-gray-200 p-3 justify-start"> {/* Thêm justify-start để căn trái */}
+                                    <FaMale className="text-xl m-0 mr-2" />
+                                    <span className="text-gray-800 font-medium">Hành khách 1</span>
+                                </div>
+
+                                {/* Nội dung của card */}
+                                <div className="p-4">
+                                    <p className="text-gray-600">Họ và tên: Mạc Cung Thịnh</p>
+                                    <p className="text-gray-600 mt-2">Quốc tịch: Việt Nam</p>
+                                    <p className="text-gray-600 mt-2">Ngày sinh: 24/02/2003</p>
+                                </div>
+                            </div>
                         </div>
                         <div className="flex justify-between items-center">
                             <div>
@@ -109,31 +160,31 @@ const BookingDetails = () => {
             <div className="border-b-3 mt-2"></div>
             <h3 className="text-xl font-bold text-black mt-2">Thông tin Vé</h3>
             <div className="space-y-4 mt-2">
-                    <div className="flex items-center">
-                        <p className="font-medium w-40">Tên người liên hệ:</p>
-                        <p>Nguyễn Văn A</p>
-                    </div>
-                    <div className="flex items-center">
-                        <p className="font-medium w-40">Email:</p>
-                        <p>macthinh22@gmail.com</p>
-                    </div>
-                    <div className="flex items-center">
-                        <p className="font-medium w-40">Số hành khách:</p>
-                        <p>1</p>
-                    </div>
-                    <div className="flex items-center">
-                        <p className="font-medium w-40">Loại vé:</p>
-                        <p>Khứ hồi</p>
-                    </div>
-                    <div className="flex items-center">
-                        <p className="font-medium w-40">Hạng vé:</p>
-                        <p>Economy</p>
-                    </div>
-                    <div className="flex items-center text-rose-700">
-                        <p className="font-medium w-40">Tổng tiền:</p>
-                        <p className="font-medium">12.000.000 VND</p>
-                    </div>
+                <div className="flex items-center">
+                    <p className="font-medium w-40">Tên người liên hệ:</p>
+                    <p>Nguyễn Văn A</p>
                 </div>
+                <div className="flex items-center">
+                    <p className="font-medium w-40">Email:</p>
+                    <p>macthinh22@gmail.com</p>
+                </div>
+                <div className="flex items-center">
+                    <p className="font-medium w-40">Số hành khách:</p>
+                    <p>1</p>
+                </div>
+                <div className="flex items-center">
+                    <p className="font-medium w-40">Loại vé:</p>
+                    <p>Khứ hồi</p>
+                </div>
+                <div className="flex items-center">
+                    <p className="font-medium w-40">Hạng vé:</p>
+                    <p>Economy</p>
+                </div>
+                <div className="flex items-center text-rose-700">
+                    <p className="font-medium w-40">Tổng tiền:</p>
+                    <p className="font-medium">12.000.000 VND</p>
+                </div>
+            </div>
         </div>
     );
 };

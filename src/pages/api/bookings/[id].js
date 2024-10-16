@@ -12,8 +12,12 @@ export default async function handler(req, res) {
                 },
                 include: {
                     contactCustomer: true, // Bao gồm liên kết với ContactCustomer
-                    tickets: true,         // Bao gồm các vé liên quan
-                    payment: true          // Bao gồm thông tin Payment nếu có
+                    tickets: {
+                        include: {
+                          customer: true
+                        }
+                    },
+                    payment: true,
                 }
             });
 

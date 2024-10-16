@@ -34,11 +34,10 @@ export default async function handler(req, res) {
         arrivalTime,
         travelClass,
         price,
-        legroom,
-        customerId,
         bookingId,
-        passportNumber,
         total_duration,
+        seatNumber,
+        tripType
       } = req.body;
 
       // Tạo mới vé (ticket)
@@ -52,11 +51,10 @@ export default async function handler(req, res) {
           arrivalTime: new Date(arrivalTime),
           travelClass,
           price,
-          legroom,
-          customerId,
           bookingId,
-          passportNumber,
           total_duration,
+          seatNumber,
+          tripType
         },
       });
 

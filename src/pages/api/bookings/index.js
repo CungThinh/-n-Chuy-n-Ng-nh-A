@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { generatePNRCode } from "@/utils";
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -11,9 +12,9 @@ export default async function handler(req, res) {
         skip,
         take,
         include: {
-          contactCustomer: true, // Bao gồm liên kết với ContactCustomer
-          tickets: true,         // Bao gồm các vé liên quan
-          payment: true          // Bao gồm thông tin Payment nếu có
+          contactCustomer: true,
+          tickets: true,
+          payment: true 
         }
       });
 
@@ -28,15 +29,16 @@ export default async function handler(req, res) {
   } else if (req.method === 'POST') {
     try {
       const { contactCustomerId, isRoundTrip, tickets, payment } = req.body;
-
+      const pnr_id = generatePNRCode()
       const booking = await prisma.booking.create({
         data: {
           contactCustomerId,
           isRoundTrip,
+          pnr_id,
           tickets: {
             create: tickets // Tạo danh sách vé mới
           },
-          payment: payment ? { create: payment } : undefined // Tạo payment nếu có
+          payment: payment ? { create: payment } : undefined, // Tạo payment nếu có
         }
       });
       return res.status(201).json({

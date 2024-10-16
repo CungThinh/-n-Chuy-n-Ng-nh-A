@@ -9,7 +9,7 @@ export const ContactCustomerList = (props) => (
             <TextField source="firstName" label="First Name" />
             <TextField source="lastName" label="Last Name" />
             <TextField source="phone" label="Phone" />
-            <TextInput source="email" label="Email" />
+            <TextField source="email" label="Email" />
             <EditButton />
             <DeleteButton />
         </Datagrid>

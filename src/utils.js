@@ -49,3 +49,18 @@ export const removeVietnameseTones = (str) => {
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
   };
+
+export const generatePNRCode = (str) =>  {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789'
+    let pnr = ''
+    for(let i = 0; i < 3; i++) {
+        pnr += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    for(let i = 0; i < 8; i++) {
+        pnr += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+
+    return pnr;
+}

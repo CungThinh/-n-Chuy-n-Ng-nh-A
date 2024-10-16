@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     // Xử lý khi phương thức là PUT (Cập nhật thông tin Ticket theo ID)
     else if (req.method === 'PUT') {
         try {
-            const { flightNumber, airline, departureAirport, arrivalAirport, departureTime, arrivalTime, travelClass, price, legroom } = req.body;
+            const { flightNumber, airline, departureAirport, arrivalAirport, departureTime, arrivalTime, travelClass, price, seatNumber, tripType } = req.body;
 
             // Cập nhật Ticket dựa trên ID
             const updatedTicket = await prisma.ticket.update({
@@ -70,7 +70,8 @@ export default async function handler(req, res) {
                     total_duration, 
                     travelClass,
                     price,
-                    legroom,
+                    seatNumber,
+                    tripType,
                 },
             });
 

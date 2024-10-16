@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, NumberField, DateField, EditButton, DeleteButton, ReferenceField, Create, SimpleForm, TextInput, DateTimeInput, SelectInput, NumberInput, ReferenceInput } from 'react-admin';
+import { List, Datagrid, TextField, NumberField, DateField, EditButton, DeleteButton, ReferenceField, Create, SimpleForm, TextInput, DateTimeInput, SelectInput, NumberInput, ReferenceInput, Edit } from 'react-admin';
 
 // TicketList - Hiển thị danh sách các vé (tickets)
 export const TicketList = (props) => (
@@ -12,15 +12,13 @@ export const TicketList = (props) => (
             <DateField source="departureTime" label="Departure Time" />
             <DateField source="arrivalTime" label="Arrival Time" />
             <TextField source="travelClass" label="Class" />
+            <TextField source="tripType" label="Trip type" />
+            <TextField source="seatNumber" label="Seat Number" />
             <NumberField source="total_duration" label="Total Duration (mins)" />
             <NumberField source="price" label="Price" />
-            <TextField source="legroom" label="Legroom" />
             {/* Liên kết với bảng Booking */}
             <ReferenceField source="bookingId" reference="bookings" label="Booking">
                 <TextField source="id" />
-            </ReferenceField>
-            <ReferenceField source="customerId" reference="customers" label="Customer">
-                <TextField source="firstName" />
             </ReferenceField>
             <EditButton />
             <DeleteButton />
@@ -45,15 +43,12 @@ export const TicketCreate = (props) => (
             ]} />
             <NumberInput source="total_duration" label="Total Duration (mins)" />
             <NumberInput source="price" label="Price" />
-            <TextInput source="legroom" label="Legroom" />
             {/* Thêm lựa chọn Booking */}
             <ReferenceInput source="bookingId" reference="bookings" label="Booking">
                 <SelectInput optionText="id" />
             </ReferenceInput>
-            <ReferenceInput source="customerId" reference="customers" label="Customer">
-                <SelectInput optionText="firstName" />
-            </ReferenceInput>
-            <TextInput source="passportNumber" label="Passport Number" />
+            <TextInput source="seatNumber" label="Seat Number" />
+            <TextInput source="tripType" label="Trip type" />
         </SimpleForm>
     </Create>
 );

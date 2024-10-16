@@ -23,7 +23,6 @@ model Customer {
   passportNumber   String    @unique
   passportExpiry   DateTime  // Ngày hết hạn hộ chiếu
   passportIssuedAt String    // Nơi cấp hộ chiếu
-  tickets          Ticket[]
 }
 
 // Bảng ContactCustomer (Người liên hệ thanh toán)
@@ -42,11 +41,12 @@ model Booking {
   contactCustomerId  Int              // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
   contactCustomer    ContactCustomer  @relation(fields: [contactCustomerId], references: [id])
   
-  isRoundTrip        Boolean          // True nếu là vé khứ hồi, False nếu là vé một chiều
-  tickets            Ticket[]         // Một Booking có thể chứa nhiều vé (ví dụ, khứ hồi sẽ có 2 vé)
-  payment            Payment?         // Một Booking chỉ có thể có một Payment
+  isRoundTrip        Boolean          
+  tickets            Ticket[]         
+  payment            Payment?         
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
+  pnr_id             String           // Mã giả được tạo ra, mã hồ sơ
 }
 
 // Bảng Ticket (Vé máy bay)
@@ -55,21 +55,18 @@ model Ticket {
   bookingId          Int       // Liên kết với Booking
   booking            Booking   @relation(fields: [bookingId], references: [id])
   
-  flightNumber       String    // Số chuyến bay
-  airline            String    // Hãng hàng không
-  departureAirport   String    // Sân bay khởi hành
-  arrivalAirport     String    // Sân bay đến
-  departureTime      DateTime  // Thời gian khởi hành
-  arrivalTime        DateTime  // Thời gian đến
-  travelClass        String    // Hạng ghế (Economy, Business, etc.)
+  flightNumber       String
+  airline            String 
+  departureAirport   String
+  arrivalAirport     String
+  departureTime      DateTime
+  arrivalTime        DateTime 
+  travelClass        String   
   total_duration     Int
-  price              Float     // Giá vé
-  legroom            String    // Khoảng cách ghế ngồi
-  
-  customerId         Int       // Liên kết với Customer (hành khách)
-  customer           Customer  @relation(fields: [customerId], references: [id])
-  
-  passportNumber     String    // Số hộ chiếu của hành khách (bổ sung ngoài customer để tham chiếu nhanh)
+  price              Float   
+   
+  tripType           String   // Outbound hoặc Return
+  seatNumber         String    // Hard code
 }
 
 // Bảng Payment (Thanh toán) 

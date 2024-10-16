@@ -7,22 +7,22 @@ import axios from "axios";
 import BookingDetails from "./components/BookingDetails";
 
 const TicketSearchResult = () => {
-    const [passportId, setPassportId] = useState("")
+    const [bookingID, setBookingID] = useState("")
     const [loading, setLoading] = useState(false)
-    const [tickets, setTickets] = useState([])
+    const [booking, setBooking] = useState([])
     const [error, setError] = useState(null); // State để lưu lỗi
 
-    const handleTicketSearch = async () => {
+    const handleBookingSearch = async () => {
         if (!passportId) {
             alert("Vui lòng nhập số passport");
             return;
         }
         setLoading(true)
         try {
-            const response = await axios.get(`api/tickets/passportNumber/${passportId}`)
+            const response = await axios.get(`api/bookings/${bookingID}`)
             console.log(response)
             if (response.status === 200) {
-                setTickets(response.data)
+                setBooking(response.data)
             }
             else {
                 setError("Không tìm thấy vé với số passport này"); // Nếu không tìm thấy, hiển thị thông báo lỗi

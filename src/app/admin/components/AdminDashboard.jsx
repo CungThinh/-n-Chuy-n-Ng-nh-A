@@ -2,11 +2,12 @@
 import React from 'react';
 import { Admin, Resource, EditGuesse } from 'react-admin';
 import dataProvider from '@/context/dataProvider';
-import { CustomerCreate, CustomerEdit, CustomerList } from './customer';
-import { AdminCreate, AdminEdit, AdminList } from './admin';
-import { TicketCreate, TicketEdit, TicketList } from './ticket';
-import { BookingList, BookingEdit, BookingCreate } from './bookings';
-import { ContactCustomerCreate, ContactCustomerList, ContactCustomerEdit } from './contactCustomer';
+import { CustomerCreate, CustomerEdit, CustomerList } from './CustomerResource';
+import { AdminCreate, AdminEdit, AdminList } from './AdminResource';
+import { TicketCreate, TicketEdit, TicketList } from './TicketResource';
+import { BookingList, BookingEdit, BookingCreate } from './BookingResource';
+import { ContactCustomerCreate, ContactCustomerList, ContactCustomerEdit } from './ContactCustomerResource';
+import { PaymentCreate, PaymentEdit, PaymentList } from './PaymentResource';
 
 const AdminDashboard = () => (
   <Admin dataProvider={dataProvider}>
@@ -15,6 +16,7 @@ const AdminDashboard = () => (
     <Resource name="bookings" list = {BookingList} create= {BookingCreate} edit = {BookingEdit}/>
     <Resource name="contact-customer" list = {ContactCustomerList} create= {ContactCustomerCreate} edit = {ContactCustomerEdit}/>
     <Resource name="tickets" list = {TicketList} create= {TicketCreate} edit = {TicketEdit}/>
+    <Resource name="payments" list = {PaymentList} create= {PaymentCreate} edit = {PaymentEdit}/>
   </Admin>
 );
 
