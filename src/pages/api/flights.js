@@ -1,4 +1,3 @@
-// pages/api/flights.js
 import axios from "axios";
 
 export default async function handler(req, res) {
@@ -9,14 +8,16 @@ export default async function handler(req, res) {
     outbound_date,
     return_date,
     currency = "VND",
-    hl = "vi",
+    hl = "vi",  // Tham số ngôn ngữ
+    gl = "vn",  // Tham số vùng
     api_key,
+    type = "1",  // Mặc định là chuyến bay khứ hồi
+    departure_token, // Sử dụng departure_token nếu có
   } = req.query;
 
   if (!engine || !departure_id || !arrival_id || !outbound_date || !api_key) {
     return res.status(400).json({
-      error:
-        "Missing required parameters: engine, departure_id, arrival_id, outbound_date, api_key.",
+      error: "Thiếu tham số yêu cầu: engine, departure_id, arrival_id, outbound_date, api_key.",
     });
   }
 
@@ -28,11 +29,18 @@ export default async function handler(req, res) {
     outbound_date,
     currency,
     hl,
+    gl,
     api_key,
+    type,
   };
 
-  // Include return_date if it's not empty
-  if (return_date) {
+  // Nếu có `departure_token`, thêm nó vào params
+  if (departure_token) {
+    params.departure_token = departure_token;
+  }
+
+  // Nếu type là khứ hồi, thêm `return_date`
+  if (return_date && type !== "2") {
     params.return_date = return_date;
   }
 
@@ -42,7 +50,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error("Error fetching flights:", error.message);
     res.status(500).json({
-      error: "An error occurred while fetching flight data",
+      error: "Đã xảy ra lỗi khi lấy dữ liệu chuyến bay",
       details: error.message,
     });
   }

@@ -194,17 +194,23 @@ export default function FlightSearchSection() {
 
     const handleSearch = () => {
         if (from && to && departureDate) {
-          // Lấy chỉ mã sân bay (3 ký tự IATA)
           const fromCode = from.split(',')[0].trim();
           const toCode = to.split(',')[0].trim();
-    
+          
+          const flightType = returnDate ? '1' : '2'; // 1: Khứ hồi, 2: Một chiều
+      
+          // Lưu loại vé vào localStorage để sử dụng trên trang booking details
+          localStorage.setItem('flightType', flightType);
+          
           router.push(
-            `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split('T')[0]}&return_date=${returnDate ? returnDate.toISOString().split('T')[0] : ''}&currency=VND&hl=vi&api_key=26289d3ee9afd987a59a23afc9585046f5368336fb181a8ee500c474ed6ec7b4`
+            `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split('T')[0]}&return_date=${returnDate ? returnDate.toISOString().split('T')[0] : ''}&currency=VND&hl=vi&gl=vn&api_key=01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae&type=${flightType}`
           );
         } else {
           alert('Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.');
         }
-    };
+      };
+      
+    
     
     
     // Thêm state để quản lý nhiều chặng

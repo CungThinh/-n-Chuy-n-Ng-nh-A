@@ -1,21 +1,45 @@
-// FlightSearchResult.jsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import FlightList from "./components/FlightResult";
 import LoadingComponent from "./components/LoadingSpinner";
 
 const FlightSearchResult = () => {
   const searchParams = useSearchParams();
-  const [step, setStep] = useState("outbound");
+  const router = useRouter();
+  const [step, setStep] = useState("outbound");  // Bước hiện tại: outbound hoặc return
   const [outboundFlights, setOutboundFlights] = useState([]);
-  const [returnFlights, setReturnFlights] = useState([]);
+  const [returnFlights, setReturnFlights] = useState([]);  // Dữ liệu cho chuyến bay về
+  const [multiLegFlights, setMultiLegFlights] = useState([]);  // Chuyến bay nhiều chặng
   const [selectedOutboundFlight, setSelectedOutboundFlight] = useState(null);
-  const [selectedReturnFlight, setSelectedReturnFlight] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [selectedReturnFlight, setSelectedReturnFlight] = useState(null);  // Khai báo state cho chuyến bay về
+  const [loading, setLoading] = useState(true);  // Trạng thái loading
 
+  // Hàm fetch chuyến bay
+  const fetchFlights = async (params, isReturn = false) => {
+    setLoading(true);  // Hiển thị trạng thái loading khi gọi API
+    console.log("Fetching flights with params:", params);  // Log params để kiểm tra
+    try {
+      const response = await axios.get("/api/flights", { params });
+      const { other_flights, multi_leg_flights } = response.data;
+
+      // Kiểm tra bước hiện tại (outbound hoặc return)
+      if (!isReturn) {
+        setOutboundFlights(other_flights || []);  // Dữ liệu chiều đi
+      } else {
+        setReturnFlights(other_flights || []);  // Dữ liệu chiều về
+      }
+      setMultiLegFlights(multi_leg_flights || []);
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+    } finally {
+      setLoading(false);  // Tắt trạng thái loading
+    }
+  };
+
+  // Khi ứng dụng khởi tạo, gọi API lần đầu tiên để tìm chuyến bay
   useEffect(() => {
     const engine = searchParams.get("engine");
     const departure_id = searchParams.get("departure_id");
@@ -24,81 +48,81 @@ const FlightSearchResult = () => {
     const return_date = searchParams.get("return_date");
     const currency = searchParams.get("currency");
     const hl = searchParams.get("hl");
+    const gl = searchParams.get("gl") || "vn";
     const api_key = searchParams.get("api_key");
+    const type = searchParams.get("type") || "1";  // Mặc định là 1: khứ hồi (round trip)
 
     if (engine && departure_id && arrival_id && outbound_date && api_key) {
-      fetchOutboundFlights({
+      // Gọi API chuyến bay đi lần đầu tiên
+      fetchFlights({
         engine,
         departure_id,
         arrival_id,
         outbound_date,
-        return_date, // Hide return_date when fetching outbound flights
+        return_date,  // Giữ nguyên return_date nếu có
         currency,
         hl,
+        gl,
         api_key,
+        type,
       });
     }
   }, [searchParams]);
 
-  // Trong hàm fetchOutboundFlights và fetchReturnFlights
-  const fetchOutboundFlights = async (params) => {
-    setLoading(true);
-    try {
-      const response = await axios.get("/api/flights", { params });
-      console.log("Outbound Flights Data:", response.data); // Thêm dòng này
-      setOutboundFlights(response.data.best_flights || []);
-    } catch (error) {
-      console.error("Error fetching outbound flights:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchReturnFlights = async (params) => {
-    setLoading(true);
-    try {
-      const response = await axios.get("/api/flights", { params });
-      setReturnFlights(response.data.best_flights || []);
-    } catch (error) {
-      console.error("Error fetching return flights:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Hàm xử lý khi chọn chuyến bay đi
   const handleSelectOutboundFlight = (flight) => {
-    setSelectedOutboundFlight(flight);
-    setStep("return");
+    console.log("Selected outbound flight:", flight);
+    const departureToken = flight.departure_token;
+  
+    setSelectedOutboundFlight(flight); 
+  
     const engine = searchParams.get("engine");
     const departure_id = searchParams.get("departure_id");
     const arrival_id = searchParams.get("arrival_id");
+    const outbound_date = searchParams.get("outbound_date");
     const return_date = searchParams.get("return_date");
     const currency = searchParams.get("currency");
     const hl = searchParams.get("hl");
+    const gl = searchParams.get("gl") || "vn";
     const api_key = searchParams.get("api_key");
-
-    if (engine && departure_id && arrival_id && return_date && api_key) {
-      fetchReturnFlights({
+    const type = searchParams.get("type") || "1";  // Kiểm tra loại vé (1: khứ hồi, 2: một chiều)
+  
+    if (type === "2") {
+      // Vé một chiều (one-way), lưu thông tin và chuyển trực tiếp đến trang booking details
+      localStorage.setItem("selectedOutboundFlight", JSON.stringify(flight));
+      router.push("/booking-details");
+    } else if (type === "1") {
+      // Vé khứ hồi (round-trip), chuyển sang bước chọn chuyến về
+      setStep("return");
+  
+      // Gọi lại API chuyến bay chiều về với `departure_token`
+      fetchFlights({
         engine,
-        departure_id: arrival_id, // Swap departure and arrival
-        arrival_id: departure_id,
-        outbound_date: return_date, // Use return_date as outbound_date
-        return_date, // Hide return_date when fetching return flights
+        departure_id,
+        arrival_id,
+        outbound_date,
+        return_date,
         currency,
         hl,
+        gl,
         api_key,
-      });
+        type: "1", 
+        departure_token: departureToken,
+      }, true);
     }
   };
+  
 
+  // Xử lý khi chọn chuyến bay về
   const handleSelectReturnFlight = (flight) => {
-    setSelectedReturnFlight(flight);
-    // Proceed to the next step or display a summary
-    // For example, redirect to a booking confirmation page
+    setSelectedReturnFlight(flight);  // Lưu chuyến bay chiều về đã chọn
+    localStorage.setItem("selectedOutboundFlight", JSON.stringify(selectedOutboundFlight));
+    localStorage.setItem("selectedReturnFlight", JSON.stringify(flight));
+    router.push("/booking-details");
   };
 
   if (loading) {
-    return <LoadingComponent />;
+    return <LoadingComponent />;  // Hiển thị trạng thái loading
   }
 
   return (
@@ -111,7 +135,7 @@ const FlightSearchResult = () => {
         />
       ) : (
         <FlightList
-          flights={returnFlights}
+          flights={returnFlights}  // Hiển thị danh sách chuyến bay về
           onSelectFlight={handleSelectReturnFlight}
           leg="return"
         />
