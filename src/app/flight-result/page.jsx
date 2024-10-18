@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import FlightList from "./components/FlightResult";
 import LoadingComponent from "./components/LoadingSpinner";
+import FlightCard from "./components/FlightCard";  // Thêm dòng import này vào đầu file FlightSearchResult.jsx
 
 const FlightSearchResult = () => {
   const searchParams = useSearchParams();
@@ -73,9 +74,9 @@ const FlightSearchResult = () => {
   const handleSelectOutboundFlight = (flight) => {
     console.log("Selected outbound flight:", flight);
     const departureToken = flight.departure_token;
-  
+
     setSelectedOutboundFlight(flight); 
-  
+
     const engine = searchParams.get("engine");
     const departure_id = searchParams.get("departure_id");
     const arrival_id = searchParams.get("arrival_id");
@@ -86,15 +87,16 @@ const FlightSearchResult = () => {
     const gl = searchParams.get("gl") || "vn";
     const api_key = searchParams.get("api_key");
     const type = searchParams.get("type") || "1";  // Kiểm tra loại vé (1: khứ hồi, 2: một chiều)
-  
+
     if (type === "2") {
       // Vé một chiều (one-way), lưu thông tin và chuyển trực tiếp đến trang booking details
       localStorage.setItem("selectedOutboundFlight", JSON.stringify(flight));
+      localStorage.setItem("totalPrice", JSON.stringify(flight.price)); // Lưu giá cho chuyến bay đi
       router.push("/booking-details");
     } else if (type === "1") {
       // Vé khứ hồi (round-trip), chuyển sang bước chọn chuyến về
       setStep("return");
-  
+
       // Gọi lại API chuyến bay chiều về với `departure_token`
       fetchFlights({
         engine,
@@ -110,15 +112,27 @@ const FlightSearchResult = () => {
         departure_token: departureToken,
       }, true);
     }
-  };
-  
+};
 
-  // Xử lý khi chọn chuyến bay về
-  const handleSelectReturnFlight = (flight) => {
+const handleSelectReturnFlight = (flight) => {
     setSelectedReturnFlight(flight);  // Lưu chuyến bay chiều về đã chọn
     localStorage.setItem("selectedOutboundFlight", JSON.stringify(selectedOutboundFlight));
     localStorage.setItem("selectedReturnFlight", JSON.stringify(flight));
+
+    const outboundPrice = selectedOutboundFlight ? selectedOutboundFlight.price : 0;
+    const returnPrice = flight.price;
+
+    const totalPrice = outboundPrice + returnPrice; // Tổng giá vé chiều đi và chiều về
+    localStorage.setItem("totalPrice", JSON.stringify(totalPrice)); // Lưu tổng giá
+
     router.push("/booking-details");
+};
+
+
+  // Hàm xử lý khi người dùng muốn chọn lại chuyến bay đi
+  const handleReSelectOutboundFlight = () => {
+    setSelectedOutboundFlight(null);  // Xóa chuyến bay đi đã chọn
+    setStep("outbound");  // Quay lại bước chọn chuyến bay đi
   };
 
   if (loading) {
@@ -126,7 +140,19 @@ const FlightSearchResult = () => {
   }
 
   return (
-    <div style={{ paddingTop: "80px" }}>
+    <div style={{ paddingTop: "80px" }} className="container mx-auto max-w-[1440px] px-4">
+      {/* Hiển thị chuyến bay đi đã chọn nếu người dùng đã chọn */}
+      {selectedOutboundFlight && step === "return" && (
+        <div className="mb-4 border rounded-lg p-4 bg-gray-100">
+          <h3 className="text-lg font-bold mb-2">Chuyến bay bạn đã lựa chọn</h3>
+          <FlightCard
+            flight={selectedOutboundFlight}
+            onSelect={handleReSelectOutboundFlight}  // Nút "Chọn lại"
+            leg="outbound"
+            isSelectedFlight={true}  // Đánh dấu là chuyến bay đã chọn
+          />
+        </div>
+      )}
       {step === "outbound" ? (
         <FlightList
           flights={outboundFlights}

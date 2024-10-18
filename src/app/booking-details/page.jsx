@@ -48,23 +48,28 @@ export default function BookingDetailsPage() {
     console.log("Thông tin đặt vé:", passengerInfo);
   };
 
-
   const [flightDetails, setFlightDetails] = useState({ outbound: null, return: null });
   const [isOutboundDetailVisible, setIsOutboundDetailVisible] = useState(false);
   const [isReturnDetailVisible, setIsReturnDetailVisible] = useState(false);
   const [flightType, setFlightType] = useState("1");  // Mặc định là khứ hồi (1: khứ hồi, 2: một chiều)
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     // Lấy thông tin chuyến bay từ localStorage
     const outboundFlight = localStorage.getItem('selectedOutboundFlight');
     const returnFlight = localStorage.getItem('selectedReturnFlight');
     const storedFlightType = localStorage.getItem('flightType');  // Lấy loại vé từ localStorage
+    const storedTotalPrice = localStorage.getItem('totalPrice');
 
     if (outboundFlight) {
       setFlightDetails({
         outbound: JSON.parse(outboundFlight),
         return: returnFlight ? JSON.parse(returnFlight) : null,
       });
+    }
+
+    if (storedTotalPrice) {
+      setTotalPrice(JSON.parse(storedTotalPrice));
     }
 
     setFlightType(storedFlightType || "1");  // Cập nhật loại vé (1: khứ hồi, 2: một chiều)
@@ -91,12 +96,12 @@ export default function BookingDetailsPage() {
         {/* Bạn có thể thêm logo hoặc thông tin khác ở đây */}
       </div>
 
-      {/* Nội dung chính của trang */}
       <div className="flex justify-center items-start -mt-20" style={{ backgroundColor: '#f0f0f0' }}>
-        <div className="w-full max-w-7xl p-4 grid grid-cols-1 lg:grid-cols-3 gap-2 relative">
-          {/* Phần hiển thị chi tiết chuyến bay */}
+        <div className="w-full max-w-7xl p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 relative">
+          {/* Phần nội dung chính, thông tin hành khách, thông tin liên hệ */}
           <div className="lg:col-span-2">
-            <div className="w-full bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md mb-4">
+              {/* Nội dung chính của trang */}
               <div className="bg-orange-100 p-3 rounded-md mb-4">
                 <span className="text-orange-700 font-semibold">VEMAYBAY sẽ bảo vệ chuyến đi của bạn và giữ an toàn cho thông tin của bạn</span>
               </div>
@@ -119,14 +124,11 @@ export default function BookingDetailsPage() {
                     </button>
                   </div>
 
-                  {/* Thông tin chuyến bay */}
                   <p className="text-sm text-gray-500 mb-4">
                     {flightDetails.outbound.flights[0].departure_airport.name} → {flightDetails.outbound.flights[flightDetails.outbound.flights.length - 1].arrival_airport.name}
                   </p>
 
-                  {/* Giờ khởi hành, bay thẳng và giờ hạ cánh */}
                   <div className="flex justify-between items-center space-x-4">
-                    {/* Logo hãng bay và số hiệu chuyến bay */}
                     <div className="flex items-center space-x-2">
                       <img
                         className="h-10 w-10 object-contain"
@@ -139,7 +141,6 @@ export default function BookingDetailsPage() {
                       </div>
                     </div>
 
-                    {/* Thời gian khởi hành */}
                     <div className="flex flex-col items-center text-center">
                       <p className="text-xl font-bold">
                         {flightDetails.outbound.flights[0].departure_airport.time.substring(11, 16)}
@@ -147,7 +148,6 @@ export default function BookingDetailsPage() {
                       <p className="text-sm text-gray-500">{flightDetails.outbound.flights[0].departure_airport.id}</p>
                     </div>
 
-                    {/* Tuyến bay */}
                     <Tooltip
                       content={<span>{flightDetails.outbound.flights[flightDetails.outbound.flights.length - 1].arrival_airport.name}</span>}
                       placement="bottom"
@@ -172,7 +172,6 @@ export default function BookingDetailsPage() {
                       </div>
                     </Tooltip>
 
-                    {/* Thời gian hạ cánh */}
                     <div className="flex flex-col items-center text-center">
                       <p className="text-xl font-bold">
                         {flightDetails.outbound.flights[flightDetails.outbound.flights.length - 1].arrival_airport.time.substring(11, 16)}
@@ -181,12 +180,10 @@ export default function BookingDetailsPage() {
                     </div>
                   </div>
 
-                  {/* Hiển thị chi tiết chiều đi */}
                   {isOutboundDetailVisible && (
                     <div className="mt-4">
                       {flightDetails.outbound.flights.map((flight, index) => (
                         <div key={index} className="flex justify-between items-center mt-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-                          {/* Cột bên trái */}
                           <div className="flex flex-col items-center space-y-2 w-1/3">
                             <div className="text-lg font-bold text-gray-800">{flight.departure_airport.time}</div>
                             <div className="text-xs text-gray-500">{flight.departure_airport.date}</div>
@@ -199,7 +196,6 @@ export default function BookingDetailsPage() {
                             <div className="text-xs text-gray-500">{flight.arrival_airport.date}</div>
                           </div>
 
-                          {/* Cột giữa */}
                           <div className="flex flex-col justify-between space-y-2 w-2/4">
                             <div>
                               <p className="font-semibold text-gray-800">
@@ -213,7 +209,6 @@ export default function BookingDetailsPage() {
                             </div>
                           </div>
 
-                          {/* Cột bên phải */}
                           <div className="flex flex-col items-end text-right space-y-2 w-1/4">
                             <img
                               src={flight.airline_logo}
@@ -250,13 +245,11 @@ export default function BookingDetailsPage() {
                     </button>
                   </div>
 
-                  {/* Thông tin chuyến bay */}
                   <p className="text-sm text-gray-500 mb-4">
                     {flightDetails.return.flights[0].departure_airport.name} → {flightDetails.return.flights[flightDetails.return.flights.length - 1].arrival_airport.name}
                   </p>
-                  {/* Giờ khởi hành, bay thẳng và giờ hạ cánh */}
+
                   <div className="flex justify-between items-center space-x-4">
-                    {/* Logo hãng bay và số hiệu chuyến bay */}
                     <div className="flex items-center space-x-2">
                       <img
                         className="h-10 w-10 object-contain"
@@ -269,7 +262,6 @@ export default function BookingDetailsPage() {
                       </div>
                     </div>
 
-                    {/* Thời gian khởi hành */}
                     <div className="flex flex-col items-center text-center">
                       <p className="text-xl font-bold">
                         {flightDetails.return.flights[0].departure_airport.time.substring(11, 16)}
@@ -277,7 +269,6 @@ export default function BookingDetailsPage() {
                       <p className="text-sm text-gray-500">{flightDetails.return.flights[0].departure_airport.id}</p>
                     </div>
 
-                    {/* Tuyến bay */}
                     <Tooltip
                       content={<span>{flightDetails.return.flights[flightDetails.return.flights.length - 1].arrival_airport.name}</span>}
                       placement="bottom"
@@ -302,7 +293,6 @@ export default function BookingDetailsPage() {
                       </div>
                     </Tooltip>
 
-                    {/* Thời gian hạ cánh */}
                     <div className="flex flex-col items-center text-center">
                       <p className="text-xl font-bold">
                         {flightDetails.return.flights[flightDetails.return.flights.length - 1].arrival_airport.time.substring(11, 16)}
@@ -311,12 +301,10 @@ export default function BookingDetailsPage() {
                     </div>
                   </div>
 
-                  {/* Hiển thị chi tiết chiều về */}
                   {isReturnDetailVisible && (
                     <div className="mt-4">
                       {flightDetails.return.flights.map((flight, index) => (
                         <div key={index} className="flex justify-between items-center mt-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-                          {/* Cột bên trái */}
                           <div className="flex flex-col items-center space-y-2 w-1/3">
                             <div className="text-lg font-bold text-gray-800">{flight.departure_airport.time}</div>
                             <div className="text-xs text-gray-500">{flight.departure_airport.date}</div>
@@ -329,7 +317,6 @@ export default function BookingDetailsPage() {
                             <div className="text-xs text-gray-500">{flight.arrival_airport.date}</div>
                           </div>
 
-                          {/* Cột giữa */}
                           <div className="flex flex-col justify-between space-y-2 w-2/4">
                             <div>
                               <p className="font-semibold text-gray-800">
@@ -343,7 +330,6 @@ export default function BookingDetailsPage() {
                             </div>
                           </div>
 
-                          {/* Cột bên phải */}
                           <div className="flex flex-col items-end text-right space-y-2 w-1/4">
                             <img
                               src={flight.airline_logo}
@@ -362,50 +348,9 @@ export default function BookingDetailsPage() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Thông tin hành lý */}
-          <div className="lg:col-span-1 ml-4">
-            <div className="bg-white p-4 shadow-md" style={{ borderRadius: '20px' }}>
-              <h2 className="text-lg font-bold mb-4" style={{ color: '#000000' }}>Thông tin hành lý</h2>
-              <div className="mb-2">
-                <h3 className="font-bold" style={{ color: '#000000' }}>Người lớn (Hành khách 1)</h3>
-                <ul className="list-disc pl-5">
-                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý ký gửi: 1 kiện</li>
-                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý xách tay: 1 kiện</li>
-                </ul>
-              </div>
-              <div className="mb-2">
-                <h3 className="font-bold" style={{ color: '#000000' }}>Trẻ em (Hành khách 2, Hành khách 3)</h3>
-                <p className="text-sm" style={{ color: '#000000' }}>Hạn mức hành lý cho mỗi trẻ em:</p>
-                <ul className="list-disc pl-5">
-                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý ký gửi: 1 kiện</li>
-                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý xách tay: 1 kiện</li>
-                </ul>
-              </div>
-              <h2 className="text-lg font-bold mb-4" style={{ color: '#000000' }}>Chi tiết giá</h2>
-              <div className="text-sm" style={{ color: '#000000' }}>
-                <p>Vé máy bay (1 người lớn, 2 trẻ em): 4,912,000 đ</p>
-                <p>Giá vé: 2,090,000 đ</p>
-                <p>Thuế và phí: 2,822,000 đ</p>
-              </div>
-              <div className="flex items-center justify-between mt-4 pt-4 relative">
-                <div className="absolute -left-9 top-4 transform -translate-y-1/2 w-10 h-10 rounded-full" style={{ backgroundColor: '#f0f0f0' }}></div>
-                <div className="absolute -right-9 top-4 transform -translate-y-1/2 w-10 h-10 rounded-full" style={{ backgroundColor: '#f0f0f0' }}></div>
-                <div className="w-full border-t border-dashed border-gray-500 mx-4"></div>
-              </div>
-              <div className="flex items-center justify-between mt-2" style={{ marginTop: '30px' }}>
-                <h2 className="text-xl font-bold" style={{ color: '#000000' }}>Tổng</h2>
-                <h2 className="text-xl font-bold" style={{ color: '#000000' }}>4,912,000 đ</h2>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-center items-start pt-0" style={{ backgroundColor: '#f0f0f0', marginTop: '-50px' }}>
-        <div className="w-full max-w-7xl p-4 grid grid-cols-1 lg:grid-cols-3 gap-2">
-          <div className="lg:col-span-2">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            {/* thông tin hành khách */}
+            <div className="bg-white p-6 rounded-lg shadow-md mb-4">
               <h2 className="text-xl font-bold mb-6 text-gray-800 border-b pb-4">Hành khách 1 (Người lớn)</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <input
@@ -425,7 +370,6 @@ export default function BookingDetailsPage() {
                   style={{ color: '#000000' }}
                 />
                 <div className="relative">
-                  <img alt="Calendar Icon" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                   <DatePicker
                     selected={passengerInfo.dob}
                     onChange={(date) => handleInputChange('dob', date)}
@@ -467,72 +411,6 @@ export default function BookingDetailsPage() {
                     ))}
                   </datalist>
                 </div>
-              </div>
-
-              {/* Thông tin liên hệ */}
-              <h2 className="text-lg font-bold mt-8 mb-4" style={{ color: '#000000' }}>Thông tin liên hệ</h2>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="relative md:col-span-1">
-                  <select
-                    value={passengerInfo.contactTitle}
-                    onChange={(e) => handleInputChange('contactTitle', e.target.value)}
-                    className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none"
-                    style={{ color: '#000000' }}
-                  >
-                    <option value="">Danh xưng *</option>
-                    <option value="mr">Ông</option>
-                    <option value="mrs">Bà</option>
-                    <option value="ms">Cô</option>
-                  </select>
-                  <FaAngleDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Họ *"
-                  value={passengerInfo.contactLastName}
-                  onChange={(e) => handleInputChange('contactLastName', e.target.value)}
-                  className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent md:col-span-1"
-                  style={{ color: '#000000' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Tên đệm và tên *"
-                  value={passengerInfo.contactFirstName}
-                  onChange={(e) => handleInputChange('contactFirstName', e.target.value)}
-                  className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent md:col-span-2"
-                  style={{ color: '#000000' }}
-                />
-                <div className="flex items-center gap-2 md:col-span-4">
-                  <select
-                    value={passengerInfo.countryCode}
-                    onChange={(e) => handleInputChange('countryCode', e.target.value)}
-                    className="p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none"
-                    style={{ color: '#000000' }}
-                  >
-                    <option value="+84">Việt Nam (+84)</option>
-                    <option value="+1">United States (+1)</option>
-                    <option value="+66">Thailand (+66)</option>
-                    <option value="+93">Afghanistan (+93)</option>
-                    <option value="+355">Albania (+355)</option>
-                    {/* Thêm các quốc gia khác ở đây */}
-                  </select>
-                  <input
-                    type="text"
-                    placeholder="Nhập số điện thoại *"
-                    value={passengerInfo.contactPhoneNumber}
-                    onChange={(e) => handleInputChange('contactPhoneNumber', e.target.value)}
-                    className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    style={{ color: '#000000' }}
-                  />
-                </div>
-                <input
-                  type="email"
-                  placeholder="Email *"
-                  value={passengerInfo.contactEmailAddress}
-                  onChange={(e) => handleInputChange('contactEmailAddress', e.target.value)}
-                  className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent md:col-span-4"
-                  style={{ color: '#000000' }}
-                />
               </div>
 
               {/* Thông tin liên hệ */}
@@ -681,7 +559,6 @@ export default function BookingDetailsPage() {
                 </div>
               )}
 
-              {/* Nút tiếp tục */}
               <div className="flex justify-end mt-8">
                 <button
                   onClick={handleBookingSubmit}
@@ -689,6 +566,60 @@ export default function BookingDetailsPage() {
                 >
                   Tiếp tục
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Thông tin hành lý */}
+          <div className="lg:col-span-1">
+            <div className="bg-white p-4 shadow-md" style={{ borderRadius: '20px' }}>
+              <h2 className="text-lg font-bold mb-4" style={{ color: '#000000' }}>Thông tin hành lý</h2>
+              <div className="mb-2">
+                <h3 className="font-bold" style={{ color: '#000000' }}>Người lớn (Hành khách 1)</h3>
+                <ul className="list-disc pl-5">
+                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý ký gửi: 1 kiện</li>
+                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý xách tay: 1 kiện</li>
+                </ul>
+              </div>
+              <div className="mb-2">
+                <h3 className="font-bold" style={{ color: '#000000' }}>Trẻ em (Hành khách 2, Hành khách 3)</h3>
+                <p className="text-sm" style={{ color: '#000000' }}>Hạn mức hành lý cho mỗi trẻ em:</p>
+                <ul className="list-disc pl-5">
+                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý ký gửi: 1 kiện</li>
+                  <li className="text-sm" style={{ color: '#000000' }}>Hành lý xách tay: 1 kiện</li>
+                </ul>
+              </div>
+              <h2 className="text-lg font-bold mb-4" style={{ color: '#000000' }}>Chi tiết giá</h2>
+              <div className="text-sm" style={{ color: '#000000' }}>
+                {flightType === "1" ? (
+                  <>
+                    {flightDetails.outbound && (
+                      <p>Giá vé chiều đi: {flightDetails.outbound.price?.toLocaleString() || 'Không có'} .đ</p>
+                    )}
+                    {flightDetails.return && (
+                      <p>Giá vé chiều về: {flightDetails.return.price?.toLocaleString() || 'Không có'} .đ</p>
+                    )}
+                    {flightDetails.outbound && flightDetails.return && (
+                      <p>Thuế và phí: Không có</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {flightDetails.outbound && (
+                      <p>Giá vé chiều đi: {flightDetails.outbound.price?.toLocaleString() || 'Không có'} .đ</p>
+                    )}
+                    <p>Thuế và phí: Không có</p>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center justify-between mt-4 pt-4 relative">
+                <div className="absolute -left-9 top-4 transform -translate-y-1/2 w-10 h-10 rounded-full" style={{ backgroundColor: '#f0f0f0' }}></div>
+                <div className="absolute -right-9 top-4 transform -translate-y-1/2 w-10 h-10 rounded-full" style={{ backgroundColor: '#f0f0f0' }}></div>
+                <div className="w-full border-t border-dashed border-gray-500 mx-4"></div>
+              </div>
+              <div className="flex items-center justify-between mt-2" style={{ marginTop: '30px' }}>
+                <h2 className="text-xl font-bold" style={{ color: '#000000' }}>Tổng Giá:</h2>
+                <h2 className="text-xl font-bold" style={{ color: '#000000' }}> <span className='text-red-500'>{totalPrice.toLocaleString()} .đ</span></h2>
               </div>
             </div>
           </div>
