@@ -17,7 +17,7 @@ const BookingDetails = ({ booking }) => {
     return (
         <div className="max-w-4xl bg-white p-6">
             <div className="flex justify-between">
-                <div className="font-medium">Mã đặt chỗ: {booking.pnr_id}</div>
+                <div className="font-medium">Mã đặt chỗ: {booking.pnrId}</div>
                 <div className="font-medium">Trạng thái: {paymentStatus}</div>
                 <div className="font-medium">Ngày đặt: {new Date(booking.createdAt).toLocaleDateString('vi-VN')}</div>
             </div>
