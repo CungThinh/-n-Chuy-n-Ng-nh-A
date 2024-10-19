@@ -36,7 +36,6 @@ export default function FlightSearchSection() {
         return passengers.adults + passengers.children + passengers.infants;
     };
 
-    // Hàm hoán đổi "Khởi hành từ" và "Nơi đến"
     const handleSwap = () => {
         const temp = from;
         setFrom(to);

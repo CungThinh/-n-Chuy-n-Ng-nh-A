@@ -12,10 +12,10 @@ export const BookingList = (props) => (
             <BooleanField source="isRoundTrip" label="Round Trip" />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
-            <TextField source="pnr_id" label="PNR ID" />
+            <TextField source="pnrId" label="PNR ID" />
             {/* Số lượng vé liên kết với Booking */}
             <TextField source="tickets.length" label="Number of Tickets" />
-            
+            <TextField source="totalAmount" label="Total Amount" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
@@ -28,6 +28,7 @@ export const BookingCreate = () => (
         <SimpleForm>
             <ReferenceInput source="contactCustomerId" reference="contact-customer" label="Contact Customer"/>
             <BooleanInput source="isRoundTrip" label="Round Trip" />
+            <NumberInput source="totalAmount" label="Total Amount" />
             <DateInput source="createdAt" label="Created At" defaultValue={new Date()} />
         </SimpleForm>
     </Create>
@@ -37,9 +38,10 @@ export const BookingCreate = () => (
 export const BookingEdit = (props) => (
     <Edit {...props}>
         <SimpleForm>
-            <ReferenceInput source="contactCustomerId" reference="contactCustomers" label="Contact Customer">
+            <ReferenceInput source="contactCustomerId" reference="contact-customer" label="Contact Customer">
                 <SelectInput optionText="firstName" />
             </ReferenceInput>
+            <TextInput source='pnrId' InputProps={{disabled: true}}/>
             <BooleanInput source="isRoundTrip" label="Round Trip" />
             <DateInput source="createdAt" label="Created At" />
             <DateInput source="updatedAt" label="Updated At" defaultValue={new Date()} />

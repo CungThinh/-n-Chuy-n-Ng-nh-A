@@ -12,11 +12,7 @@ export default async function handler(req, res) {
                 },
                 include: {
                     contactCustomer: true, // Bao gồm liên kết với ContactCustomer
-                    tickets: {
-                        include: {
-                          customer: true
-                        }
-                    },
+                    tickets: true,
                     payment: true,
                 }
             });
@@ -62,22 +58,18 @@ export default async function handler(req, res) {
     // Xử lý khi phương thức là PUT (Cập nhật thông tin Booking theo ID)
     else if (req.method === 'PUT') {
         try {
-            const { contactCustomerId, isRoundTrip, tickets, payment } = req.body;
+            const { contactCustomerId, isRoundTrip, tickets, payment, totalAmount, pnrId } = req.body;
 
             // Cập nhật Booking dựa trên ID
             const updatedBooking = await prisma.booking.update({
                 where: {
-                    id: parseInt(id), // Chuyển đổi id thành số nguyên
+                    id: parseInt(id),
                 },
                 data: {
+                    pnrId,
+                    totalAmount,
                     contactCustomerId,
                     isRoundTrip,
-                    tickets: {
-                        set: tickets // Cập nhật các vé (nếu cần)
-                    },
-                    payment: {
-                        update: payment // Cập nhật payment nếu có thay đổi
-                    },
                 },
             });
 
@@ -93,7 +85,6 @@ export default async function handler(req, res) {
             });
         }
     }
-
     // Trả về lỗi nếu không phải là GET, DELETE, hoặc PUT
     else {
         return res.status(405).json({

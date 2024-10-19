@@ -64,3 +64,27 @@ export const generatePNRCode = (str) =>  {
 
     return pnr;
 }
+
+const crypto = require('crypto');
+
+// Khóa và vector khởi tạo (IV) cho mã hóa
+const key = crypto.createHash('sha256').update(String('secret-key')).digest('base64').substr(0, 32); // Tạo khóa 32 byte từ 'secret-key'
+
+// Hàm mã hóa
+export const encryptPNR = (pnrId) => {
+    const iv = crypto.randomBytes(16); // Tạo một IV ngẫu nhiên
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(pnrId, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return `${iv.toString('hex')}:${encrypted}`; // Lưu IV kèm với dữ liệu mã hóa
+};
+
+// Hàm giải mã
+export const decryptPNR = (encryptedPNR) => {
+    const [ivHex, encrypted] = encryptedPNR.split(':'); // Tách IV và dữ liệu mã hóa
+    const iv = Buffer.from(ivHex, 'hex'); // Chuyển IV từ hex về buffer
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+};

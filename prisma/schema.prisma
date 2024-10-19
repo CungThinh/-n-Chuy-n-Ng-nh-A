@@ -40,13 +40,13 @@ model Booking {
   id                 Int              @id @default(autoincrement())
   contactCustomerId  Int              // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
   contactCustomer    ContactCustomer  @relation(fields: [contactCustomerId], references: [id])
-  
   isRoundTrip        Boolean          
   tickets            Ticket[]         
   payment            Payment?         
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
-  pnr_id             String           // Mã giả được tạo ra, mã hồ sơ
+  pnrId              String           @unique
+  totalAmount        Float
 }
 
 // Bảng Ticket (Vé máy bay)
@@ -62,9 +62,7 @@ model Ticket {
   departureTime      DateTime
   arrivalTime        DateTime 
   travelClass        String   
-  total_duration     Int
-  price              Float   
-   
+  total_duration     Int   
   tripType           String   // Outbound hoặc Return
   seatNumber         String    // Hard code
 }
