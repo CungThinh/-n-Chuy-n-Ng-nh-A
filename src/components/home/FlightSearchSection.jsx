@@ -194,24 +194,21 @@ export default function FlightSearchSection() {
 
     const handleSearch = () => {
         if (from && to && departureDate) {
-          const fromCode = from.split(',')[0].trim();
-          const toCode = to.split(',')[0].trim();
-          
-          const flightType = returnDate ? '1' : '2'; // 1: Khứ hồi, 2: Một chiều
-      
-          // Lưu loại vé vào localStorage để sử dụng trên trang booking details
-          localStorage.setItem('flightType', flightType);
-          
-          router.push(
-            `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split('T')[0]}&return_date=${returnDate ? returnDate.toISOString().split('T')[0] : ''}&currency=VND&hl=vi&gl=vn&api_key=01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae&type=${flightType}`
-          );
+            const fromCode = from.split(',')[0].trim();
+            const toCode = to.split(',')[0].trim();
+
+            const flightType = returnDate ? '1' : '2'; // 1: Khứ hồi, 2: Một chiều
+
+            // Lưu loại vé vào localStorage để sử dụng trên trang booking details
+            localStorage.setItem('flightType', flightType);
+
+            router.push(
+                `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split('T')[0]}&return_date=${returnDate ? returnDate.toISOString().split('T')[0] : ''}&currency=VND&hl=vi&gl=vn&api_key=01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae&type=${flightType}`
+            );
         } else {
-          alert('Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.');
+            alert('Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.');
         }
-      };
-      
-    
-    
+    };
     
     // Thêm state để quản lý nhiều chặng
     const [multiLegFlights, setMultiLegFlights] = useState([{ from: '', to: '', departureDate: null }]);
@@ -243,16 +240,30 @@ export default function FlightSearchSection() {
         updateLeg(index, field, value);
     };
 
+
+    const videoSrc = './videos/video-bg.mp4';
+
+
+
     // Add pagination logic for the flight routes section
     return (
-        <div className="relative pt-24" style={{ backgroundImage: `url('/images/bg1.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', height: '600px' }}>
-            <div className="absolute top-[160px] left-[310px] text-left">
+        <div className="relative h-screen" style={{ height: '800px' }}>
+            {/* Video background */}
+            <video
+                autoPlay
+                loop
+                muted
+                className="absolute top-0 left-0 w-full h-full object-cover z-0"
+                src={videoSrc} // Sử dụng video hiện tại từ state
+            />
+            <div className="absolute top-[190px] left-[310px] text-left">
                 <h1 className="text-white text-4xl font-bold">Săn vé máy bay giá rẻ cùng VEMAYBAY</h1>
                 <p className="text-white text-lg mt-2">Khám phá ngay những ưu đãi tốt nhất dành cho bạn!</p>
             </div>
 
-            <div className="flex justify-center items-center h-full">
-                <div className="bg-[#fff] p-6 rounded-lg shadow-lg" style={{ width: '1300px', borderRadius: '20px' }}>
+            <div className="relative z-10 flex justify-center items-center h-full">
+                <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg w-full max-w-7xl mx-auto">
+                    {/* Form search */}
                     <div className="flex space-x-4 mb-4">
                         {/* Cột "Một chiều" */}
                         <div
@@ -367,7 +378,9 @@ export default function FlightSearchSection() {
                         <div className="flex items-center space-x-4 mb-4">
                             {/* Cột "Khởi hành từ" */}
                             <div className="relative w-[22%]" ref={fromDropdownRef}>
-                                <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5">
+                                    <path d="M381 114.9L186.1 41.8c-16.7-6.2-35.2-5.3-51.1 2.7L89.1 67.4C78 73 77.2 88.5 87.6 95.2l146.9 94.5L136 240 77.8 214.1c-8.7-3.9-18.8-3.7-27.3 .6L18.3 230.8c-9.3 4.7-11.8 16.8-5 24.7l73.1 85.3c6.1 7.1 15 11.2 24.3 11.2l137.7 0c5 0 9.9-1.2 14.3-3.4L535.6 212.2c46.5-23.3 82.5-63.3 100.8-112C645.9 75 627.2 48 600.2 48l-57.4 0c-20.2 0-40.2 4.8-58.2 14L381 114.9zM0 480c0 17.7 14.3 32 32 32l576 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 448c-17.7 0-32 14.3-32 32z" fill="currentColor" />
+                                </svg>
                                 <input
                                     type="text"
                                     placeholder="Khởi hành từ"
@@ -407,7 +420,9 @@ export default function FlightSearchSection() {
 
                             {/* Cột "Điểm đến" */}
                             <div className="relative w-[21%]" ref={toDropdownRef}>
-                                <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5">
+                                    <path d="M.3 166.9L0 68C0 57.7 9.5 50.1 19.5 52.3l35.6 7.9c10.6 2.3 19.2 9.9 23 20L96 128l127.3 37.6L181.8 20.4C178.9 10.2 186.6 0 197.2 0l40.1 0c11.6 0 22.2 6.2 27.9 16.3l109 193.8 107.2 31.7c15.9 4.7 30.8 12.5 43.7 22.8l34.4 27.6c24 19.2 18.1 57.3-10.7 68.2c-41.2 15.6-86.2 18.1-128.8 7L121.7 289.8c-11.1-2.9-21.2-8.7-29.3-16.9L9.5 189.4c-5.9-6-9.3-14.1-9.3-22.5zM32 448l576 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32zm96-80a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm128-16a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" fill="currentColor" />
+                                </svg>
                                 <input
                                     type="text"
                                     placeholder="Nơi đến"
@@ -471,7 +486,9 @@ export default function FlightSearchSection() {
                                 <div key={index} className="multi-leg-row flex items-center space-x-4 mb-4 ">
                                     {/* Input Khởi hành từ */}
                                     <div className="relative w-[25%] ">
-                                        <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 " />
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5">
+                                            <path d="M381 114.9L186.1 41.8c-16.7-6.2-35.2-5.3-51.1 2.7L89.1 67.4C78 73 77.2 88.5 87.6 95.2l146.9 94.5L136 240 77.8 214.1c-8.7-3.9-18.8-3.7-27.3 .6L18.3 230.8c-9.3 4.7-11.8 16.8-5 24.7l73.1 85.3c6.1 7.1 15 11.2 24.3 11.2l137.7 0c5 0 9.9-1.2 14.3-3.4L535.6 212.2c46.5-23.3 82.5-63.3 100.8-112C645.9 75 627.2 48 600.2 48l-57.4 0c-20.2 0-40.2 4.8-58.2 14L381 114.9zM0 480c0 17.7 14.3 32 32 32l576 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 448c-17.7 0-32 14.3-32 32z" fill="currentColor" />
+                                        </svg>
                                         <input
                                             type="text"
                                             placeholder="Khởi hành từ"
@@ -488,7 +505,9 @@ export default function FlightSearchSection() {
 
                                     {/* Input Điểm đến */}
                                     <div className="relative w-[25%]">
-                                        <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5">
+                                            <path d="M.3 166.9L0 68C0 57.7 9.5 50.1 19.5 52.3l35.6 7.9c10.6 2.3 19.2 9.9 23 20L96 128l127.3 37.6L181.8 20.4C178.9 10.2 186.6 0 197.2 0l40.1 0c11.6 0 22.2 6.2 27.9 16.3l109 193.8 107.2 31.7c15.9 4.7 30.8 12.5 43.7 22.8l34.4 27.6c24 19.2 18.1 57.3-10.7 68.2c-41.2 15.6-86.2 18.1-128.8 7L121.7 289.8c-11.1-2.9-21.2-8.7-29.3-16.9L9.5 189.4c-5.9-6-9.3-14.1-9.3-22.5zM32 448l576 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32zm96-80a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm128-16a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" fill="currentColor" />
+                                        </svg>
                                         <input
                                             type="text"
                                             placeholder="Nơi đến"

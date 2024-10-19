@@ -5,11 +5,22 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import FlightList from "./components/FlightResult";
 import LoadingComponent from "./components/LoadingSpinner";
-import FlightCard from "./components/FlightCard";  // Thêm dòng import này vào đầu file FlightSearchResult.jsx
+import FlightCard from "./components/FlightCard";  
+import ChangeSearchBar from "./components/FlightChangeSearchBar";  // Thêm import này
 
 const FlightSearchResult = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Khai báo các state để quản lý tìm kiếm
+  const [from, setFrom] = useState("DXB, Dubai - UAE");
+  const [to, setTo] = useState("RUH, Riyadh - Saudi Arab");
+  const [departureDate, setDepartureDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(null);
+  const [tripOption, setTripOption] = useState("One way");  // Mặc định là One way
+  const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
+  const [classType, setClassType] = useState("Economy");
+
   const [step, setStep] = useState("outbound");  // Bước hiện tại: outbound hoặc return
   const [outboundFlights, setOutboundFlights] = useState([]);
   const [returnFlights, setReturnFlights] = useState([]);  // Dữ liệu cho chuyến bay về
@@ -21,7 +32,6 @@ const FlightSearchResult = () => {
   // Hàm fetch chuyến bay
   const fetchFlights = async (params, isReturn = false) => {
     setLoading(true);  // Hiển thị trạng thái loading khi gọi API
-    console.log("Fetching flights with params:", params);  // Log params để kiểm tra
     try {
       const response = await axios.get("/api/flights", { params });
       const { other_flights, multi_leg_flights } = response.data;
@@ -72,9 +82,7 @@ const FlightSearchResult = () => {
 
   // Hàm xử lý khi chọn chuyến bay đi
   const handleSelectOutboundFlight = (flight) => {
-    console.log("Selected outbound flight:", flight);
     const departureToken = flight.departure_token;
-
     setSelectedOutboundFlight(flight); 
 
     const engine = searchParams.get("engine");
@@ -112,9 +120,9 @@ const FlightSearchResult = () => {
         departure_token: departureToken,
       }, true);
     }
-};
+  };
 
-const handleSelectReturnFlight = (flight) => {
+  const handleSelectReturnFlight = (flight) => {
     setSelectedReturnFlight(flight);  // Lưu chuyến bay chiều về đã chọn
     localStorage.setItem("selectedOutboundFlight", JSON.stringify(selectedOutboundFlight));
     localStorage.setItem("selectedReturnFlight", JSON.stringify(flight));
@@ -126,13 +134,39 @@ const handleSelectReturnFlight = (flight) => {
     localStorage.setItem("totalPrice", JSON.stringify(totalPrice)); // Lưu tổng giá
 
     router.push("/booking-details");
-};
-
+  };
 
   // Hàm xử lý khi người dùng muốn chọn lại chuyến bay đi
   const handleReSelectOutboundFlight = () => {
     setSelectedOutboundFlight(null);  // Xóa chuyến bay đi đã chọn
     setStep("outbound");  // Quay lại bước chọn chuyến bay đi
+  };
+
+  // Hàm xử lý khi người dùng tìm kiếm chuyến bay mới từ ChangeSearchBar
+  const handleSearch = (searchData) => {
+    const { from, to, departureDate, returnDate, passengers, tripOption, classType } = searchData;
+
+    setFrom(from);
+    setTo(to);
+    setDepartureDate(departureDate);
+    setReturnDate(returnDate);
+    setPassengers(passengers);
+    setTripOption(tripOption);
+    setClassType(classType);
+
+    // Gọi API với các tham số mới
+    fetchFlights({
+      engine: "google_flights",
+      departure_id: encodeURIComponent(from),
+      arrival_id: encodeURIComponent(to),
+      outbound_date: departureDate,
+      return_date: returnDate,
+      currency: "VND",
+      hl: "vi",
+      gl: "vn",
+      api_key: "your_api_key",
+      type: tripOption === "One way" ? "2" : "1",
+    });
   };
 
   if (loading) {
@@ -141,6 +175,18 @@ const handleSelectReturnFlight = (flight) => {
 
   return (
     <div style={{ paddingTop: "80px" }} className="container mx-auto max-w-[1440px] px-4">
+      {/* Thanh Change Search */}
+      <ChangeSearchBar
+        from={from}
+        to={to}
+        departureDate={departureDate}
+        returnDate={returnDate}
+        passengers={passengers}
+        tripOption={tripOption}
+        classType={classType}
+        onSearch={handleSearch}
+      />
+
       {/* Hiển thị chuyến bay đi đã chọn nếu người dùng đã chọn */}
       {selectedOutboundFlight && step === "return" && (
         <div className="mb-4 border rounded-lg p-4 bg-gray-100">
@@ -153,6 +199,7 @@ const handleSelectReturnFlight = (flight) => {
           />
         </div>
       )}
+
       {step === "outbound" ? (
         <FlightList
           flights={outboundFlights}
