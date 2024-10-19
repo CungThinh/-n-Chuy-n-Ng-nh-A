@@ -15,7 +15,6 @@ export const TicketList = (props) => (
             <TextField source="tripType" label="Trip type" />
             <TextField source="seatNumber" label="Seat Number" />
             <NumberField source="total_duration" label="Total Duration (mins)" />
-            <NumberField source="price" label="Price" />
             {/* Liên kết với bảng Booking */}
             <ReferenceField source="bookingId" reference="bookings" label="Booking">
                 <TextField source="id" />
@@ -42,7 +41,6 @@ export const TicketCreate = (props) => (
                 { id: 'First', name: 'First' }
             ]} />
             <NumberInput source="total_duration" label="Total Duration (mins)" />
-            <NumberInput source="price" label="Price" />
             {/* Thêm lựa chọn Booking */}
             <ReferenceInput source="bookingId" reference="bookings" label="Booking">
                 <SelectInput optionText="id" />
@@ -69,8 +67,6 @@ export const TicketEdit = (props) => (
                 { id: 'First', name: 'First' }
             ]} />
             <NumberInput source="total_duration" label="Total Duration (mins)" />
-            <NumberInput source="price" label="Price" />
-            <TextInput source="legroom" label="Legroom" />
             {/* Thêm lựa chọn Booking */}
             <ReferenceInput source="bookingId" reference="booking" label="Booking">
                 <SelectInput optionText="id" />

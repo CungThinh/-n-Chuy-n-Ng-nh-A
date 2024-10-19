@@ -28,13 +28,14 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { contactCustomerId, isRoundTrip, tickets, payment } = req.body;
-      const pnr_id = generatePNRCode()
+      const { contactCustomerId, isRoundTrip, tickets, payment, totalAmount } = req.body;
+      const pnrId = generatePNRCode()
       const booking = await prisma.booking.create({
         data: {
           contactCustomerId,
           isRoundTrip,
-          pnr_id,
+          pnrId,
+          totalAmount,
           tickets: {
             create: tickets // Tạo danh sách vé mới
           },

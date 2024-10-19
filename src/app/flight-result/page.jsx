@@ -10,7 +10,7 @@ import FlightCard from "./components/FlightCard";  // Thêm dòng import này v�
 const FlightSearchResult = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [step, setStep] = useState("outbound");  // Bước hiện tại: outbound hoặc return
+  const [step, setStep] = useState("outbound");
   const [outboundFlights, setOutboundFlights] = useState([]);
   const [returnFlights, setReturnFlights] = useState([]);  // Dữ liệu cho chuyến bay về
   const [multiLegFlights, setMultiLegFlights] = useState([]);  // Chuyến bay nhiều chặng
@@ -122,8 +122,8 @@ const handleSelectReturnFlight = (flight) => {
     const outboundPrice = selectedOutboundFlight ? selectedOutboundFlight.price : 0;
     const returnPrice = flight.price;
 
-    const totalPrice = outboundPrice + returnPrice; // Tổng giá vé chiều đi và chiều về
-    localStorage.setItem("totalPrice", JSON.stringify(totalPrice)); // Lưu tổng giá
+    const totalPrice = outboundPrice + returnPrice;
+    localStorage.setItem("totalPrice", JSON.stringify(totalPrice)); 
 
     router.push("/booking-details");
 };

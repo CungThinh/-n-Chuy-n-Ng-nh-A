@@ -2,75 +2,52 @@
 
 import React, { useState } from "react";
 import { FaPlane, FaSearch } from "react-icons/fa";
-import LoadingComponent from "../flight-result/components/LoadingSpinner";
-import axios from "axios";
-import BookingDetails from "./components/BookingDetails";
+import { useRouter } from "next/navigation";
+import { encryptPNR } from "@/utils";
 
-const TicketSearchResult = () => {
-    const [bookingID, setBookingID] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [booking, setBooking] = useState([])
-    const [error, setError] = useState(null); // State để lưu lỗi
+const BookingSearchPage = () => {
+    const [pnrId, setPnrId] = useState("")
+    const router = useRouter();
+    const [error, setError] = useState(null)
 
-    const handleBookingSearch = async () => {
-        if (!passportId) {
-            alert("Vui lòng nhập số passport");
+    const handleSearch = async () => {
+        if (!pnrId) {
+            setError("Vui lòng nhập số mã hồ sơ đặt chỗ");
             return;
         }
-        setLoading(true)
-        try {
-            const response = await axios.get(`api/bookings/${bookingID}`)
-            console.log(response)
-            if (response.status === 200) {
-                setBooking(response.data)
-            }
-            else {
-                setError("Không tìm thấy vé với số passport này"); // Nếu không tìm thấy, hiển thị thông báo lỗi
-            }
-        }
-        catch {
-            setError("Đã xảy ra lỗi khi tìm kiếm vé. Vui lòng thử lại sau.");
-        }
-        finally {
-            setLoading(false)
-        }
+        router.push(`/booking-search/result?pnr_id=${encryptPNR(pnrId)}`)
 
     }
-    if (loading) {
-        return <LoadingComponent />
-    }
+
     return (
-        <>
-            <BookingDetails/>
-        </>
-        // <div className="relative flex justify-center items-center h-[800px]" style={{ backgroundImage: `url('/images/bg1.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        //     {/* <div>
-        //         <div className="mb-2 text-center">
-        //             <h1 className="text-white text-4xl font-bold">Tra cứu vé máy bay</h1>
-        //         </div>
-        //         <div className="bg-[#fff] p-10 shadow-lg" style={{ borderRadius: '20px' }}>
-        //             <div className="flex-col">
-        //                 {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-        //                 <div className="flex justify-between gap-3">
-        //                     <div className="relative">
-        //                         <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-        //                         <input
-        //                             type="text"
-        //                             value={passportId}
-        //                             onChange={(e) => setPassportId(e.target.value)}
-        //                             placeholder="Số passport"
-        //                             className="pl-10 p-3 w-full rounded-lg bg-[#fff] focus:outline-none focus:ring-2 focus:ring-orange-400 text-black text-xl border"
-        //                         />
-        //                     </div>
-        //                     <button className="bg-orange-500 text-white text-xl px-6 py-3 rounded-lg flex items-center justify-center h-[55px]" onClick={handleTicketSearch}>
-        //                         <FaSearch className="mr-2" /> Tìm kiếm
-        //                     </button>
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     </div> */}
-        // </div>
+        <div className="relative flex justify-center items-center h-[800px]" style={{ backgroundImage: `url('/images/bg1.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div>
+                <div className="mb-2 text-center">
+                    <h1 className="text-white text-4xl font-bold">Tra cứu vé máy bay</h1>
+                </div>
+                <div className="bg-[#fff] p-10 shadow-lg" style={{ borderRadius: '20px' }}>
+                    <div className="flex-col">
+                        {error && <p className="text-red-500 mb-2">{error}</p>}
+                        <div className="flex justify-between gap-3">
+                            <div className="relative">
+                                <FaPlane className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                <input
+                                    type="text"
+                                    value={pnrId}
+                                    onChange={(e) => setPnrId(e.target.value)}
+                                    placeholder="Mã hồ sơ đặt chỗ"
+                                    className="pl-10 p-3 w-full rounded-lg bg-[#fff] focus:outline-none focus:ring-2 focus:ring-orange-400 text-black text-xl border"
+                                />
+                            </div>
+                            <button className="bg-orange-500 text-white text-xl px-6 py-3 rounded-lg flex items-center justify-center h-[55px]" onClick={handleSearch}>
+                                <FaSearch className="mr-2" /> Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
-export default TicketSearchResult;
+export default BookingSearchPage; 
