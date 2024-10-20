@@ -11,7 +11,7 @@ const FlightCard = ({ flight, onSelect, leg, isSelectedFlight }) => {
               {/* Logo và số hiệu chuyến bay */}
               <div className="flex w-full shrink-0 items-center space-x-2 default:shrink-0 sm:w-1/2">
                 <img
-                  className="h-6 w-6 max-w-full object-contain object-center"
+                  className="size-6 max-w-full object-contain object-center"
                   src={legData.airline_logo}
                   alt="logo"
                 />
@@ -55,9 +55,9 @@ const FlightCard = ({ flight, onSelect, leg, isSelectedFlight }) => {
                       </span>
                     </div>
                     <div className="relative flex justify-between">
-                      <div className="h-1.5 w-1.5 rounded-full bg-black"></div>
-                      <div className="h-1.5 w-1.5 rounded-full bg-black"></div>
-                      <div className="h-1.5 w-1.5 rounded-full bg-black"></div>
+                      <div className="size-1.5 rounded-full bg-black"></div>
+                      <div className="size-1.5 rounded-full bg-black"></div>
+                      <div className="size-1.5 rounded-full bg-black"></div>
                       <div className="absolute top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-black"></div>
                     </div>
                     <div className="text-center text-sm text-slate-400">

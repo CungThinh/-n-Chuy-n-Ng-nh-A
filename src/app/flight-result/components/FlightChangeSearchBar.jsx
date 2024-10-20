@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   FaPlane,
   FaExchangeAlt,
@@ -31,8 +31,6 @@ export default function ChangeSearchBar() {
   const [isFromFocused, setIsFromFocused] = useState(false);
   const [isToFocused, setIsToFocused] = useState(false);
 
-  const optionDropdownRef = useRef(null);
-  const passengersDropdownRef = useRef(null);
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
   const router = useRouter();
@@ -193,7 +191,7 @@ export default function ChangeSearchBar() {
       {/* Điểm đi và điểm đến */}
       <div className="flex items-center space-x-2">
         <div className="relative w-[200px]" ref={fromDropdownRef}>
-          <FaPlane className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" />
+          <FaPlane className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Điểm đi"
@@ -232,7 +230,7 @@ export default function ChangeSearchBar() {
         />
 
         <div className="relative w-[200px]" ref={toDropdownRef}>
-          <FaPlane className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" />
+          <FaPlane className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Nơi đến"
