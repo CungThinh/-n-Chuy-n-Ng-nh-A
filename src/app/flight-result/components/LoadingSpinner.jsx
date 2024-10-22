@@ -1,5 +1,5 @@
-import React from 'react';
-import './styles.css'; // Tạo file CSS này để chứa phần keyframes
+import React from "react";
+import "./styles.css"; // Tạo file CSS này để chứa phần keyframes
 
 const LoadingComponent = () => {
   return (
@@ -11,7 +11,7 @@ const LoadingComponent = () => {
           width="210"
           height="48"
           preserveAspectRatio="xMidYMid meet"
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
           <defs>
             <clipPath id="__lottie_element_2">
