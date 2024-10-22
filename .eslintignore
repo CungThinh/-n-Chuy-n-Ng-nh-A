@@ -1,3 +1,15 @@
 .eslintrc.json
 package.json
 package-lock.json
+.next/*
+*.css
+dist
+esm/*
+public/*
+tests/*
+scripts/*
+*.config.js
+node_modules
+coverage
+.next
+build

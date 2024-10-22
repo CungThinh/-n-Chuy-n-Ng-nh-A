@@ -15,8 +15,8 @@ export default function PaymentSuccess() {
           Cảm ơn bạn đã thanh toán. Bạn có thể quay về trang chủ.
         </p>
         <button
-          onClick={() => router.push("/")}
           className="rounded-lg bg-blue-500 px-6 py-3 text-white transition duration-300 hover:bg-blue-700"
+          onClick={() => router.push("/")}
         >
           Quay về trang chủ
         </button>
