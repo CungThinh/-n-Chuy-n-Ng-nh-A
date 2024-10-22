@@ -10,7 +10,6 @@
     "tailwindcss/no-custom-classname": "off",
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": "warn",
-    "react/prop-types": "off",
     "import/order": [
       "warn",
       {
@@ -32,16 +31,6 @@
           }
         ],
         "newlines-between": "always"
-      }
-    ],
-    "react/self-closing-comp": "warn",
-    "react/jsx-sort-props": [
-      "warn",
-      {
-        "callbacksLast": true,
-        "shorthandFirst": true,
-        "noSortAlphabetically": false,
-        "reservedFirst": true
       }
     ],
     "padding-line-between-statements": [
