@@ -126,7 +126,7 @@ export default function FlightSearchSection() {
                     }
                 } else {
                     setErrorMessage('Số lượng hành khách không vượt quá 9 người trong một lần đặt chỗ');
-                }
+                } 
             }
 
             // Kiểm tra nút giảm
@@ -208,7 +208,7 @@ export default function FlightSearchSection() {
             alert('Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.');
         }
     };
-    
+
     // Thêm state để quản lý nhiều chặng
     const [multiLegFlights, setMultiLegFlights] = useState([{ from: '', to: '', departureDate: null }]);
 
@@ -246,7 +246,7 @@ export default function FlightSearchSection() {
 
     // Add pagination logic for the flight routes section
     return (
-        <div className="relative h-screen" style={{ height: '800px' }}>
+        <div className="relative h-screen" style={{ height: '950px' }}>
             {/* Video background */}
             <video
                 autoPlay
@@ -259,7 +259,6 @@ export default function FlightSearchSection() {
                 <h1 className="text-white text-4xl font-bold">Săn vé máy bay giá rẻ cùng VEMAYBAY</h1>
                 <p className="text-white text-lg mt-2">Khám phá ngay những ưu đãi tốt nhất dành cho bạn!</p>
             </div>
-
             <div className="relative z-10 flex justify-center items-center h-full">
                 <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg w-full max-w-7xl mx-auto">
                     {/* Form search */}

@@ -14,6 +14,9 @@
     "@nextui-org/tooltip": "^2.0.41",
     "@prisma/client": "^5.20.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@stripe/react-stripe-js": "^2.8.1",
+    "@stripe/stripe-js": "^4.8.0",
+    "and": "^0.0.3",
     "antd": "^5.21.1",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
@@ -22,6 +25,7 @@
     "next": "14.2.12",
     "next-auth": "^4.24.7",
     "ra-data-simple-rest": "^5.2.2",
+    "raw-body": "^3.0.0",
     "rc-slider": "^11.1.6",
     "react": "^18",
     "react-admin": "^5.2.2",
@@ -33,7 +37,8 @@
     "react-spinners": "^0.14.1",
     "react-tooltip": "^5.28.0",
     "redux": "^5.0.1",
-    "serpapi": "^2.1.0"
+    "serpapi": "^2.1.0",
+    "stripe": "^17.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",

@@ -5,8 +5,10 @@ import Tooltip from '@mui/material/Tooltip';
 import DatePicker from 'react-datepicker';
 import { FaAngleDown } from 'react-icons/fa';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useRouter } from 'next/navigation';
 
 export default function BookingDetailsPage() {
+  const router = useRouter();
   const [passengerInfo, setPassengerInfo] = useState({
     lastName: '',
     firstName: '',
@@ -25,8 +27,10 @@ export default function BookingDetailsPage() {
     contactEmailAddress: '',
     countryCode: '+84'
   });
+
   const [isInvoiceInfoVisible, setIsInvoiceInfoVisible] = useState(false);
   const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // Thêm biến để lưu trữ thông báo lỗi
 
   const handleInputChange = (field, value) => {
     setPassengerInfo({
@@ -43,22 +47,73 @@ export default function BookingDetailsPage() {
     setIsFlightDetailVisible(!isFlightDetailVisible);
   };
 
-  const handleBookingSubmit = () => {
-    // Xử lý thông tin đặt vé (sẽ thêm code xử lý backend hoặc gửi thông tin lên server)
-    console.log("Thông tin đặt vé:", passengerInfo);
+  const validateForm = () => {
+    // Kiểm tra các trường bắt buộc
+    if (!passengerInfo.lastName || !passengerInfo.firstName || !passengerInfo.gender || !passengerInfo.dob || !passengerInfo.contactPhoneNumber || !passengerInfo.contactEmailAddress) {
+      return false;
+    }
+    return true;
   };
+
+  const handleBookingSubmit = async () => {
+    try {
+      // Xác định loại vé và hãng bay
+      const flightTypeLabel = flightType === '1' ? 'Khứ hồi' : 'Một chiều';
+      const airlineName = flightDetails.outbound?.flights[0].airline || "Không xác định";
+      const airlineLogo = flightDetails.outbound?.flights[0].airline_logo || "https://via.placeholder.com/150";
+  
+      // Gửi thông tin tổng giá, chi tiết vé và thông tin hành khách đến API
+      console.log('Total Price:', totalPrice, 'Flight Type:', flightTypeLabel, 'Airline:', airlineName);
+  
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          totalPrice,
+          flightType: flightTypeLabel,
+          airlineName,
+          airlineLogo,
+          passengerInfo: { // Gửi thêm thông tin hành khách
+            firstName: passengerInfo.firstName,
+            lastName: passengerInfo.lastName,
+            email: passengerInfo.contactEmailAddress,
+            phone: passengerInfo.contactPhoneNumber,
+            gender: passengerInfo.gender,
+            dob: passengerInfo.dob,
+            nationality: passengerInfo.nationality,
+          },
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        window.location.href = result.url;
+      } else {
+        setErrorMessage(result.error || 'Có lỗi xảy ra trong quá trình xử lý thanh toán');
+      }
+    } catch (error) {
+      setErrorMessage('Đã xảy ra lỗi khi kết nối đến hệ thống thanh toán');
+      console.error(error);
+    }
+  };
+  
+  
+
 
   const [flightDetails, setFlightDetails] = useState({ outbound: null, return: null });
   const [isOutboundDetailVisible, setIsOutboundDetailVisible] = useState(false);
   const [isReturnDetailVisible, setIsReturnDetailVisible] = useState(false);
-  const [flightType, setFlightType] = useState("1");  // Mặc định là khứ hồi (1: khứ hồi, 2: một chiều)
+  const [flightType, setFlightType] = useState('1'); // Mặc định là khứ hồi (1: khứ hồi, 2: một chiều)
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     // Lấy thông tin chuyến bay từ localStorage
     const outboundFlight = localStorage.getItem('selectedOutboundFlight');
     const returnFlight = localStorage.getItem('selectedReturnFlight');
-    const storedFlightType = localStorage.getItem('flightType');  // Lấy loại vé từ localStorage
+    const storedFlightType = localStorage.getItem('flightType'); // Lấy loại vé từ localStorage
     const storedTotalPrice = localStorage.getItem('totalPrice');
 
     if (outboundFlight) {
@@ -72,7 +127,7 @@ export default function BookingDetailsPage() {
       setTotalPrice(JSON.parse(storedTotalPrice));
     }
 
-    setFlightType(storedFlightType || "1");  // Cập nhật loại vé (1: khứ hồi, 2: một chiều)
+    setFlightType(storedFlightType || '1'); // Cập nhật loại vé (1: khứ hồi, 2: một chiều)
   }, []);
 
   const handleToggleOutboundDetail = () => {
@@ -350,7 +405,12 @@ export default function BookingDetailsPage() {
                 </div>
               )}
             </div>
-
+            {/* Thông báo lỗi */}
+            {errorMessage && (
+              <div className="bg-red-100 p-3 rounded-md mb-4 text-red-700">
+                {errorMessage}
+              </div>
+            )}
             {/* thông tin hành khách */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-4">
               <h2 className="text-xl font-bold mb-6 text-gray-800 border-b pb-4">Hành khách 1 (Người lớn)</h2>
@@ -563,7 +623,7 @@ export default function BookingDetailsPage() {
 
               <div className="flex justify-end mt-8">
                 <button
-                  onClick={handleBookingSubmit}
+                  onClick={handleBookingSubmit} // Thực hiện điều hướng khi nhấn "Tiếp tục"
                   className="bg-orange-500 text-white px-6 py-3 rounded-lg"
                 >
                   Tiếp tục
