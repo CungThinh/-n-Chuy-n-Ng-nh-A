@@ -1,43 +1,51 @@
-'use client'
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
 // Load your publishable key from environment variables
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+);
 
 function BookingPaymentComponent() {
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [email, setEmail] = useState('');
-  const [cardholderName, setCardholderName] = useState('');
-  const [country, setCountry] = useState('United States');
-  const [zip, setZip] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [cardholderName, setCardholderName] = useState("");
+  const [country, setCountry] = useState("United States");
+  const [zip, setZip] = useState("");
 
   // Fetch booking details from localStorage or other storage mechanisms
-  const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {};
+  const bookingDetails =
+    JSON.parse(localStorage.getItem("bookingDetails")) || {};
   const totalPrice = 1000000; // Example total price (You can dynamically calculate it based on your data)
 
   const handlePayment = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setErrorMessage('');
+    setErrorMessage("");
 
     if (!stripe || !elements) {
-      setErrorMessage('Stripe has not loaded yet.');
+      setErrorMessage("Stripe has not loaded yet.");
       return;
     }
 
     try {
       // Call the backend API to create a Stripe session (or create a PaymentIntent if using Payment Intents API)
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
+      const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           bookingDetails,
@@ -69,18 +77,18 @@ function BookingPaymentComponent() {
       if (result.error) {
         setErrorMessage(result.error.message);
         setLoading(false);
-      } else if (result.paymentIntent.status === 'succeeded') {
+      } else if (result.paymentIntent.status === "succeeded") {
         // Redirect to success page
-        router.push('/success');
+        router.push("/success");
       }
     } catch (error) {
       setLoading(false);
-      setErrorMessage('Error processing payment. Please try again.');
+      setErrorMessage("Error processing payment. Please try again.");
     }
   };
 
   return (
-    <div className="payment-page" style={{padding:'80px'}}>
+    <div className="payment-page" style={{ padding: "80px" }}>
       <h1>Pay with Card</h1>
 
       <form onSubmit={handlePayment} className="payment-form">
@@ -101,14 +109,14 @@ function BookingPaymentComponent() {
           options={{
             style: {
               base: {
-                fontSize: '16px',
-                color: '#424770',
-                '::placeholder': {
-                  color: '#aab7c4',
+                fontSize: "16px",
+                color: "#424770",
+                "::placeholder": {
+                  color: "#aab7c4",
                 },
               },
               invalid: {
-                color: '#9e2146',
+                color: "#9e2146",
               },
             },
           }}
@@ -151,15 +159,15 @@ function BookingPaymentComponent() {
         />
 
         {/* Error Message */}
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
         {/* Submit Button */}
         <button
           type="submit"
           disabled={!stripe || loading}
-          className="bg-blue-500 text-white px-6 py-3 rounded-md mt-4"
+          className="mt-4 rounded-md bg-blue-500 px-6 py-3 text-white"
         >
-          {loading ? 'Processing...' : 'Pay'}
+          {loading ? "Processing..." : "Pay"}
         </button>
       </form>
     </div>

@@ -10,82 +10,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // Bảng Customer (Khách hàng)
 model Customer {
-  id               Int       @id @default(autoincrement())
-  firstName        String    // Họ
-  middleName       String?   // Tên đệm (optional)
-  lastName         String    // Tên
-  dateOfBirth      DateTime  // Ngày tháng năm sinh
-  gender           String    // Giới tính
-  nationality      String    // Quốc tịch
-  passportNumber   String    @unique
-  passportExpiry   DateTime  // Ngày hết hạn hộ chiếu
-  passportIssuedAt String    // Nơi cấp hộ chiếu
+  id               Int      @id @default(autoincrement())
+  firstName        String // Họ
+  middleName       String? // Tên đệm (optional)
+  lastName         String // Tên
+  dateOfBirth      DateTime // Ngày tháng năm sinh
+  gender           String // Giới tính
+  nationality      String // Quốc tịch
+  passportNumber   String   @unique
+  passportExpiry   DateTime // Ngày hết hạn hộ chiếu
+  passportIssuedAt String // Nơi cấp hộ chiếu
 }
 
 // Bảng ContactCustomer (Người liên hệ thanh toán)
-model ContactCustomer {
-  id        Int      @id @default(autoincrement())
-  firstName String   // Họ
-  lastName  String   // Tên
-  phone     String   // Số điện thoại
-  email     String   @unique // Email duy nhất (dùng để liên hệ)
-  bookings   Booking[] // Một ContactCustomer chỉ có một Booking
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique // Email dùng chung cho cả loại người dùng
+  name              String?
+  phoneNumber       String?
+  password          String? // Dùng cho người dùng đăng nhập bằng username/passwordz
+  provider          String? // Lưu tên provider (vd: 'google', 'credentials')
+  providerAccountId String? // Lưu ID tài khoản provider (vd: Google ID)
+  image             String? // Ảnh profile (chỉ cho người dùng Google hoặc OAuth)
+  bookings          Booking[] // Một ContactCustomer chỉ có một Booking
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  role              String    @default("USER")
 }
 
 // Bảng Booking (Đặt vé)
 model Booking {
-  id                 Int              @id @default(autoincrement())
-  contactCustomerId  Int              // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
-  contactCustomer    ContactCustomer  @relation(fields: [contactCustomerId], references: [id])
-  isRoundTrip        Boolean          
-  tickets            Ticket[]         
-  payment            Payment?         
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  pnrId              String           @unique
-  totalAmount        Float
+  id          Int      @id @default(autoincrement())
+  userId      Int // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
+  user        User     @relation(fields: [userId], references: [id])
+  isRoundTrip Boolean
+  tickets     Ticket[]
+  payment     Payment?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pnrId       String   @unique
+  totalAmount Float
 }
 
 // Bảng Ticket (Vé máy bay)
 model Ticket {
-  id                 Int       @id @default(autoincrement())
-  bookingId          Int       // Liên kết với Booking
-  booking            Booking   @relation(fields: [bookingId], references: [id])
-  
-  flightNumber       String
-  airline            String 
-  departureAirport   String
-  arrivalAirport     String
-  departureTime      DateTime
-  arrivalTime        DateTime 
-  travelClass        String   
-  total_duration     Int   
-  tripType           String   // Outbound hoặc Return
-  seatNumber         String    // Hard code
+  id        Int     @id @default(autoincrement())
+  bookingId Int // Liên kết với Booking
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  flightNumber     String
+  airline          String
+  departureAirport String
+  arrivalAirport   String
+  departureTime    DateTime
+  arrivalTime      DateTime
+  travelClass      String
+  total_duration   Int
+  tripType         String // Outbound hoặc Return
+  seatNumber       String // Hard code
 }
 
 // Bảng Payment (Thanh toán) 
 model Payment {
   id            Int      @id @default(autoincrement())
-  bookingId     Int      @unique// Liên kết với Booking
+  bookingId     Int      @unique // Liên kết với Booking
   booking       Booking  @relation(fields: [bookingId], references: [id])
-  amount        Float    // Số tiền thanh toán
-  paymentMethod String   // Phương thức thanh toán (thẻ tín dụng, ví điện tử, etc.)
-  status        String   // Trạng thái thanh toán (đã thanh toán, chờ xử lý, etc.)
+  amount        Float // Số tiền thanh toán
+  paymentMethod String // Phương thức thanh toán (thẻ tín dụng, ví điện tử, etc.)
+  status        String // Trạng thái thanh toán (đã thanh toán, chờ xử lý, etc.)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-}
-
-model Admin {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String    
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt   
 }
 
 // Tạo booking trước, sau đó tạo Ticket
