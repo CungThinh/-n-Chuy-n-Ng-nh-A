@@ -1,21 +1,16 @@
 {
-  "plugins": ["tailwindcss", "unused-imports", "prettier", "react"],
+  "plugins": ["tailwindcss", "unused-imports"],
   "root": true,
   "extends": [
     "next/core-web-vitals",
     "plugin:prettier/recommended",
-    "plugin:tailwindcss/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:tailwindcss/recommended"
   ],
   "rules": {
     "tailwindcss/no-custom-classname": "off",
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": "warn",
     "react/prop-types": "off",
-    "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off",
-    "react-hooks/exhaustive-deps": "off",
     "import/order": [
       "warn",
       {
