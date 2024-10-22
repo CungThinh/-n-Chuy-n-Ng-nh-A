@@ -1,108 +1,145 @@
-'use client';
-import React from 'react';
-import './Ticket.css'; // Import file CSS
+"use client";
+import "./Ticket.css"; // Import file CSS
 
 export default function Ticket() {
   return (
     <>
       {/* Container chính */}
-      <div className="max-w-7xl mx-auto p-6 bg-gray-50 shadow-md rounded-lg flex space-x-20 mt-16"> {/* Sử dụng flex và space-x-8 để tạo khoảng trống giữa các cột */}
-
+      <div className="mx-auto mt-16 flex max-w-7xl space-x-20 rounded-lg bg-gray-50 p-6 shadow-md">
+        {" "}
+        {/* Sử dụng flex và space-x-8 để tạo khoảng trống giữa các cột */}
         {/* Cột bên trái: Bố cục 1 đến 4 */}
-        <div className="w-1/2 space-y-6"> {/* Sử dụng w-1/2 để chiếm 50% chiều rộng */}
-
+        <div className="w-1/2 space-y-6">
+          {" "}
+          {/* Sử dụng w-1/2 để chiếm 50% chiều rộng */}
           {/* Bố cục I: Tiêu đề vé điện tử */}
           <div className="text-center">
-            <h2 className=" font-bold text-gray-800" style={{ fontSize: '28px' }}>VÉ ĐIỆN TỬ VÀ XÁC NHẬN HÀNH TRÌNH</h2>
+            <h2
+              className="font-bold text-gray-800"
+              style={{ fontSize: "28px" }}
+            >
+              VÉ ĐIỆN TỬ VÀ XÁC NHẬN HÀNH TRÌNH
+            </h2>
           </div>
-
           {/* Bố cục II: Thông tin đặt chỗ */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">1. Thông tin đặt chỗ</h3>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="mb-4 text-lg font-bold text-gray-800">
+              1. Thông tin đặt chỗ
+            </h3>
             <hr />
-            <table className="min-w-full table-auto my-3">
+            <table className="my-3 min-w-full table-auto">
               <tbody>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Mã đặt chỗ (số vé):</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Mã đặt chỗ (số vé):
+                  </td>
                   <td className="px-4 py-2 text-gray-700">6820798</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Trạng thái đặt chỗ:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Trạng thái đặt chỗ:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">Đã xác nhận</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Ngày đặt:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Ngày đặt:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">14/10/2024</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Tên:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Tên:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">NGUYEN VAN A</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Liên lạc:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Liên lạc:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">0123 456 789</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Email:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Email:
+                  </td>
                   <td className="px-4 py-2 text-blue-700">admin@example.com</td>
                 </tr>
               </tbody>
             </table>
           </div>
-
-
           {/* Bố cục III: Thông tin hành khách */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">2. Thông tin hành khách</h3>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="mb-4 text-lg font-bold text-gray-800">
+              2. Thông tin hành khách
+            </h3>
             <hr />
-            <table className="min-w-full table-auto my-3">
+            <table className="my-3 min-w-full table-auto">
               <tbody>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Tên hành khách:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Tên hành khách:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">VAN A, NGUYEN</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Số ghế:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Số ghế:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">VD8661 - 11B</td>
                 </tr>
               </tbody>
             </table>
           </div>
-
           {/* Bố cục IV: Thông tin chuyến bay */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">3. Thông tin chuyến bay</h3>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="mb-4 text-lg font-bold text-gray-800">
+              3. Thông tin chuyến bay
+            </h3>
             <hr />
-            <table className="min-w-full table-auto my-3">
+            <table className="my-3 min-w-full table-auto">
               <tbody>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Chuyến bay:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Chuyến bay:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">VD8661</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Ngày:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Ngày:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">20/Jan/2012</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Loại vé:</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Loại vé:
+                  </td>
                   <td className="px-4 py-2 text-gray-700">Promo</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-2 font-semibold text-gray-800">Khởi hành:</td>
-                  <td className="px-4 py-2 text-gray-700">08:45 - Hà Nội (HAN)</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Khởi hành:
+                  </td>
+                  <td className="px-4 py-2 text-gray-700">
+                    08:45 - Hà Nội (HAN)
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2 font-semibold text-gray-800">Đến:</td>
-                  <td className="px-4 py-2 text-gray-700">10:45 - Hồ Chí Minh (SGN)</td>
+                  <td className="px-4 py-2 font-semibold text-gray-800">
+                    Đến:
+                  </td>
+                  <td className="px-4 py-2 text-gray-700">
+                    10:45 - Hồ Chí Minh (SGN)
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
         {/* Cột bên phải: Ticket */}
         {/* Ticket hiện tại */}
-        <div className="w-1/2 flex justify-center items-start">
+        <div className="flex w-1/2 items-start justify-center">
           <div className="box">
             <div className="clip" />
             <ul className="left">
@@ -148,11 +185,11 @@ export default function Ticket() {
                     clipRule="evenodd"
                     fillRule="evenodd"
                     height={60}
-                    width={60}
                     imageRendering="optimizeQuality"
                     shapeRendering="geometricPrecision"
                     textRendering="geometricPrecision"
                     viewBox="0 0 500 500"
+                    width={60}
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <g stroke="#222">
@@ -181,11 +218,11 @@ export default function Ticket() {
                     clipRule="evenodd"
                     fillRule="evenodd"
                     height={50}
-                    width={50}
                     imageRendering="optimizeQuality"
                     shapeRendering="geometricPrecision"
                     textRendering="geometricPrecision"
                     viewBox="0 0 500 500"
+                    width={50}
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <g stroke="#222">
@@ -255,8 +292,6 @@ export default function Ticket() {
             </div>
           </div>
         </div>
-
-
       </div>
     </>
   );

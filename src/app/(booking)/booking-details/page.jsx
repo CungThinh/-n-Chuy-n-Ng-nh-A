@@ -59,6 +59,7 @@ export default function BookingDetailsPage() {
     ) {
       return false;
     }
+
     return true;
   };
 
@@ -161,6 +162,7 @@ export default function BookingDetailsPage() {
   function formatDuration(durationInMinutes) {
     const hours = Math.floor(durationInMinutes / 60);
     const minutes = durationInMinutes % 60;
+
     return `${hours}g ${minutes}p`;
   }
 
@@ -185,9 +187,9 @@ export default function BookingDetailsPage() {
               {/* Nội dung chính của trang */}
               <div className="mb-4 flex items-center rounded-md bg-orange-100 p-3">
                 <img
-                  src="./images/icons8-protect-96.png"
                   alt=""
                   className="mr-3 size-12"
+                  src="./images/icons8-protect-96.png"
                 />
                 <span className="font-semibold text-orange-700">
                   VEMAYBAY sẽ bảo vệ chuyến đi của bạn và giữ an toàn cho thông
@@ -214,8 +216,8 @@ export default function BookingDetailsPage() {
                       </h2>
                     </div>
                     <button
-                      onClick={handleToggleOutboundDetail}
                       className="font-semibold text-orange-500 underline"
+                      onClick={handleToggleOutboundDetail}
                     >
                       Chi tiết
                     </button>
@@ -233,9 +235,9 @@ export default function BookingDetailsPage() {
                   <div className="flex items-center justify-between space-x-4">
                     <div className="flex items-center space-x-2">
                       <img
+                        alt="logo"
                         className="size-10 object-contain"
                         src={flightDetails.outbound.flights[0].airline_logo}
-                        alt="logo"
                       />
                       <div className="flex flex-col text-start text-xs lg:text-sm">
                         <div>{flightDetails.outbound.flights[0].airline}</div>
@@ -268,8 +270,8 @@ export default function BookingDetailsPage() {
                         </span>
                       }
                       placement="bottom"
-                      showArrow={true}
                       radius="none"
+                      showArrow={true}
                     >
                       <div className="flex w-1/2 flex-col justify-between space-y-1 overflow-hidden">
                         <div className="overflow-hidden text-center text-xs text-black">
@@ -280,10 +282,10 @@ export default function BookingDetailsPage() {
                           </span>
                         </div>
                         <div className="relative flex justify-between">
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="absolute top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-black"></div>
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="absolute top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-black" />
                         </div>
                         <div className="text-center text-sm text-slate-400">
                           <span>
@@ -326,9 +328,9 @@ export default function BookingDetailsPage() {
                               {flight.departure_airport.date}
                             </div>
                             <div className="flex flex-col items-center">
-                              <div className="m-1 size-2 rounded-full border-2 border-blue-500"></div>
-                              <div className="h-14 w-0.5 bg-black"></div>
-                              <div className="m-1 size-2 rounded-full bg-blue-500"></div>
+                              <div className="m-1 size-2 rounded-full border-2 border-blue-500" />
+                              <div className="h-14 w-0.5 bg-black" />
+                              <div className="m-1 size-2 rounded-full bg-blue-500" />
                             </div>
                             <div className="text-lg font-bold text-gray-800">
                               {flight.arrival_airport.time}
@@ -362,9 +364,9 @@ export default function BookingDetailsPage() {
 
                           <div className="flex w-1/4 flex-col items-end space-y-2 text-right">
                             <img
-                              src={flight.airline_logo}
                               alt="logo"
                               className="size-8 object-contain"
+                              src={flight.airline_logo}
                             />
                             <p className="text-sm font-semibold text-gray-800">
                               Hãng bay: {flight.airline}
@@ -404,8 +406,8 @@ export default function BookingDetailsPage() {
                       </h2>
                     </div>
                     <button
-                      onClick={handleToggleReturnDetail}
                       className="font-semibold text-orange-500 underline"
+                      onClick={handleToggleReturnDetail}
                     >
                       Chi tiết
                     </button>
@@ -423,9 +425,9 @@ export default function BookingDetailsPage() {
                   <div className="flex items-center justify-between space-x-4">
                     <div className="flex items-center space-x-2">
                       <img
+                        alt="logo"
                         className="size-10 object-contain"
                         src={flightDetails.return.flights[0].airline_logo}
-                        alt="logo"
                       />
                       <div className="flex flex-col text-start text-xs lg:text-sm">
                         <div>{flightDetails.return.flights[0].airline}</div>
@@ -458,8 +460,8 @@ export default function BookingDetailsPage() {
                         </span>
                       }
                       placement="bottom"
-                      showArrow={true}
                       radius="none"
+                      showArrow={true}
                     >
                       <div className="flex w-1/2 flex-col justify-between space-y-1 overflow-hidden">
                         <div className="overflow-hidden text-center text-xs text-black">
@@ -470,10 +472,10 @@ export default function BookingDetailsPage() {
                           </span>
                         </div>
                         <div className="relative flex justify-between">
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="size-1.5 rounded-full bg-black"></div>
-                          <div className="absolute top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-black"></div>
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="size-1.5 rounded-full bg-black" />
+                          <div className="absolute top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-black" />
                         </div>
                         <div className="text-center text-sm text-slate-400">
                           <span>
@@ -516,9 +518,9 @@ export default function BookingDetailsPage() {
                               {flight.departure_airport.date}
                             </div>
                             <div className="flex flex-col items-center">
-                              <div className="m-1 size-2 rounded-full border-2 border-blue-500"></div>
-                              <div className="h-14 w-0.5 bg-black"></div>
-                              <div className="m-1 size-2 rounded-full bg-blue-500"></div>
+                              <div className="m-1 size-2 rounded-full border-2 border-blue-500" />
+                              <div className="h-14 w-0.5 bg-black" />
+                              <div className="m-1 size-2 rounded-full bg-blue-500" />
                             </div>
                             <div className="text-lg font-bold text-gray-800">
                               {flight.arrival_airport.time}
@@ -552,9 +554,9 @@ export default function BookingDetailsPage() {
 
                           <div className="flex w-1/4 flex-col items-end space-y-2 text-right">
                             <img
-                              src={flight.airline_logo}
                               alt="logo"
                               className="size-8 object-contain"
+                              src={flight.airline_logo}
                             />
                             <p className="text-sm font-semibold text-gray-800">
                               Hãng bay: {flight.airline}
@@ -589,43 +591,43 @@ export default function BookingDetailsPage() {
               </h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <input
-                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Họ *"
+                  style={{ color: "#000000" }}
+                  type="text"
                   value={passengerInfo.lastName}
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  style={{ color: "#000000" }}
                 />
                 <input
-                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Tên đệm và tên *"
+                  style={{ color: "#000000" }}
+                  type="text"
                   value={passengerInfo.firstName}
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  style={{ color: "#000000" }}
                 />
                 <div className="relative">
                   <DatePicker
-                    selected={passengerInfo.dob}
-                    onChange={(date) => handleInputChange("dob", date)}
-                    placeholderText="dd/mm/yyyy"
-                    dateFormat="dd/MM/yyyy"
                     className="w-full rounded-lg border border-gray-300 p-4 pl-10 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="dd/mm/yyyy"
+                    selected={passengerInfo.dob}
                     style={{ color: "#000000" }}
+                    onChange={(date) => handleInputChange("dob", date)}
                   />
                 </div>
                 <div className="relative">
                   <select
+                    className="w-full appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    style={{ color: "#000000" }}
                     value={passengerInfo.gender}
                     onChange={(e) =>
                       handleInputChange("gender", e.target.value)
                     }
-                    className="w-full appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    style={{ color: "#000000" }}
                   >
                     <option value="">Giới tính *</option>
                     <option value="male">Nam</option>
@@ -635,15 +637,15 @@ export default function BookingDetailsPage() {
                 </div>
                 <div className="relative">
                   <input
+                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                     list="nationality-list"
-                    type="text"
                     placeholder="Quốc tịch *"
+                    style={{ color: "#000000" }}
+                    type="text"
                     value={passengerInfo.nationality}
                     onChange={(e) =>
                       handleInputChange("nationality", e.target.value)
                     }
-                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    style={{ color: "#000000" }}
                   />
                   {/* <FaAngleDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" /> */}
                   <datalist id="nationality-list">
@@ -860,12 +862,12 @@ export default function BookingDetailsPage() {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                 <div className="relative md:col-span-1">
                   <select
+                    className="w-full appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    style={{ color: "#000000" }}
                     value={passengerInfo.contactTitle}
                     onChange={(e) =>
                       handleInputChange("contactTitle", e.target.value)
                     }
-                    className="w-full appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    style={{ color: "#000000" }}
                   >
                     <option value="">Danh xưng *</option>
                     <option value="mr">Ông</option>
@@ -875,33 +877,33 @@ export default function BookingDetailsPage() {
                   <FaAngleDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 </div>
                 <input
-                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-1"
                   placeholder="Họ *"
+                  style={{ color: "#000000" }}
+                  type="text"
                   value={passengerInfo.contactLastName}
                   onChange={(e) =>
                     handleInputChange("contactLastName", e.target.value)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-1"
-                  style={{ color: "#000000" }}
                 />
                 <input
-                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-2"
                   placeholder="Tên đệm và tên *"
+                  style={{ color: "#000000" }}
+                  type="text"
                   value={passengerInfo.contactFirstName}
                   onChange={(e) =>
                     handleInputChange("contactFirstName", e.target.value)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-2"
-                  style={{ color: "#000000" }}
                 />
                 <div className="flex items-center gap-2 md:col-span-4">
                   <select
+                    className="appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    style={{ color: "#000000" }}
                     value={passengerInfo.countryCode}
                     onChange={(e) =>
                       handleInputChange("countryCode", e.target.value)
                     }
-                    className="appearance-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    style={{ color: "#000000" }}
                   >
                     <option value="+84">Việt Nam (+84)</option>
                     <option value="+1">United States (+1)</option>
@@ -911,25 +913,25 @@ export default function BookingDetailsPage() {
                     {/* Thêm các quốc gia khác ở đây */}
                   </select>
                   <input
-                    type="text"
+                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="Nhập số điện thoại *"
+                    style={{ color: "#000000" }}
+                    type="text"
                     value={passengerInfo.contactPhoneNumber}
                     onChange={(e) =>
                       handleInputChange("contactPhoneNumber", e.target.value)
                     }
-                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    style={{ color: "#000000" }}
                   />
                 </div>
                 <input
-                  type="email"
+                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-4"
                   placeholder="Email *"
+                  style={{ color: "#000000" }}
+                  type="email"
                   value={passengerInfo.contactEmailAddress}
                   onChange={(e) =>
                     handleInputChange("contactEmailAddress", e.target.value)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-4"
-                  style={{ color: "#000000" }}
                 />
               </div>
 
@@ -939,46 +941,46 @@ export default function BookingDetailsPage() {
                   Thông tin xuất hóa đơn
                 </h2>
                 <button
-                  onClick={handleToggleInvoiceInfo}
                   className={`relative h-8 w-16 rounded-full transition-colors duration-300 focus:outline-none ${isInvoiceInfoVisible ? "bg-orange-500" : "bg-gray-300"}`}
+                  onClick={handleToggleInvoiceInfo}
                 >
                   <div
                     className={`absolute left-1 top-1/2 size-6 -translate-y-1/2 rounded-full bg-white shadow-md transition-all duration-500${isInvoiceInfoVisible ? "translate-x-8 bg-orange-500" : ""}`}
-                  ></div>
+                  />
                 </button>
               </div>
               {isInvoiceInfoVisible && (
                 <div>
                   <div className="mt-4 grid grid-cols-1 gap-2">
                     <input
-                      type="text"
+                      className="w-full rounded-lg border p-3"
                       placeholder="Tên công ty"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.companyName}
                       onChange={(e) =>
                         handleInputChange("companyName", e.target.value)
                       }
-                      className="w-full rounded-lg border p-3"
-                      style={{ color: "#000000" }}
                     />
                     <input
-                      type="text"
+                      className="w-full rounded-lg border p-3"
                       placeholder="Mã số thuế"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.taxCode}
                       onChange={(e) =>
                         handleInputChange("taxCode", e.target.value)
                       }
-                      className="w-full rounded-lg border p-3"
-                      style={{ color: "#000000" }}
                     />
                     <input
-                      type="text"
+                      className="w-full rounded-lg border p-3"
                       placeholder="Địa chỉ"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.companyAddress}
                       onChange={(e) =>
                         handleInputChange("companyAddress", e.target.value)
                       }
-                      className="w-full rounded-lg border p-3"
-                      style={{ color: "#000000" }}
                     />
                   </div>
                   <h2
@@ -989,53 +991,53 @@ export default function BookingDetailsPage() {
                   </h2>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <input
-                      type="text"
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Họ và tên *"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.recipientName}
                       onChange={(e) =>
                         handleInputChange("recipientName", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      style={{ color: "#000000" }}
                     />
                     <input
-                      type="text"
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Số điện thoại *"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.recipientPhone}
                       onChange={(e) =>
                         handleInputChange("recipientPhone", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      style={{ color: "#000000" }}
                     />
                     <input
-                      type="email"
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Email *"
+                      style={{ color: "#000000" }}
+                      type="email"
                       value={passengerInfo.recipientEmail}
                       onChange={(e) =>
                         handleInputChange("recipientEmail", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      style={{ color: "#000000" }}
                     />
                     <input
-                      type="text"
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-3"
                       placeholder="Địa chỉ *"
+                      style={{ color: "#000000" }}
+                      type="text"
                       value={passengerInfo.recipientAddress}
                       onChange={(e) =>
                         handleInputChange("recipientAddress", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-3"
-                      style={{ color: "#000000" }}
                     />
                     <textarea
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-3"
                       placeholder="Ghi chú"
+                      style={{ color: "#000000" }}
                       value={passengerInfo.recipientNote}
                       onChange={(e) =>
                         handleInputChange("recipientNote", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 md:col-span-3"
-                      style={{ color: "#000000" }}
                     />
                   </div>
                 </div>
@@ -1043,8 +1045,8 @@ export default function BookingDetailsPage() {
 
               <div className="mt-8 flex justify-end">
                 <button
-                  onClick={handleBookingSubmit} // Thực hiện điều hướng khi nhấn "Tiếp tục"
                   className="rounded-lg bg-orange-500 px-6 py-3 text-white"
+                  onClick={handleBookingSubmit} // Thực hiện điều hướng khi nhấn "Tiếp tục"
                 >
                   Tiếp tục
                 </button>
@@ -1075,15 +1077,15 @@ export default function BookingDetailsPage() {
                   >
                     <div className="flex items-center">
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="16"
-                        width="16"
-                        viewBox="0 0 640 512"
                         className="mr-2"
+                        height="16"
+                        viewBox="0 0 640 512"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          fill="#ffa300"
                           d="M0 32C0 14.3 14.3 0 32 0L48 0c44.2 0 80 35.8 80 80l0 288c0 8.8 7.2 16 16 16l464 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-66.7 0c1.8 5 2.7 10.4 2.7 16c0 26.5-21.5 48-48 48s-48-21.5-48-48c0-5.6 1-11 2.7-16l-197.5 0c1.8 5 2.7 10.4 2.7 16c0 26.5-21.5 48-48 48s-48-21.5-48-48c0-5.6 1-11 2.7-16L144 448c-44.2 0-80-35.8-80-80L64 80c0-8.8-7.2-16-16-16L32 64C14.3 64 0 49.7 0 32zM432 96l0-40c0-4.4-3.6-8-8-8l-80 0c-4.4 0-8 3.6-8 8l0 40 96 0zM288 96l0-40c0-30.9 25.1-56 56-56l80 0c30.9 0 56 25.1 56 56l0 40 0 224-192 0 0-224zM512 320l0-224 16 0c26.5 0 48 21.5 48 48l0 128c0 26.5-21.5 48-48 48l-16 0zM240 96l16 0 0 224-16 0c-26.5 0-48-21.5-48-48l0-128c0-26.5 21.5-48 48-48z"
+                          fill="#ffa300"
                         />
                       </svg>
                       <span>Hành lý ký gửi</span>
@@ -1091,15 +1093,15 @@ export default function BookingDetailsPage() {
                     <div className="flex items-center">
                       <span>1 kiện</span>
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="16"
-                        width="16"
-                        viewBox="0 0 512 512"
                         className="ml-2"
+                        height="16"
+                        viewBox="0 0 512 512"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          fill="#999999"
                           d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                          fill="#999999"
                         />
                       </svg>
                     </div>
@@ -1111,15 +1113,15 @@ export default function BookingDetailsPage() {
                   >
                     <div className="flex items-center">
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                        height="16"
                         viewBox="0 0 576 512"
                         width="16"
-                        height="16"
-                        className="mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          fill="#ffa300"
                           d="M432 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zM347.7 200.5c1-.4 1.9-.8 2.9-1.2l-16.9 63.5c-5.6 21.1-.1 43.6 14.7 59.7l70.7 77.1 22 88.1c4.3 17.1 21.7 27.6 38.8 23.3s27.6-21.7 23.3-38.8l-23-92.1c-1.9-7.8-5.8-14.9-11.2-20.8l-49.5-54 19.3-65.5 9.6 23c4.4 10.6 12.5 19.3 22.8 24.5l26.7 13.3c15.8 7.9 35 1.5 42.9-14.3s1.5-35-14.3-42.9L505 232.7l-15.3-36.8C472.5 154.8 432.3 128 387.7 128c-22.8 0-45.3 4.8-66.1 14l-8 3.5c-32.9 14.6-58.1 42.4-69.4 76.5l-2.6 7.8c-5.6 16.8 3.5 34.9 20.2 40.5s34.9-3.5 40.5-20.2l2.6-7.8c5.7-17.1 18.3-30.9 34.7-38.2l8-3.5zm-30 135.1l-25 62.4-59.4 59.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L340.3 441c4.6-4.6 8.2-10.1 10.6-16.1l14.5-36.2-40.7-44.4c-2.5-2.7-4.8-5.6-7-8.6zM256 274.1c-7.7-4.4-17.4-1.8-21.9 5.9l-32 55.4L147.7 304c-15.3-8.8-34.9-3.6-43.7 11.7L40 426.6c-8.8 15.3-3.6 34.9 11.7 43.7l55.4 32c15.3 8.8 34.9 3.6 43.7-11.7l64-110.9c1.5-2.6 2.6-5.2 3.3-8L261.9 296c4.4-7.7 1.8-17.4-5.9-21.9z"
+                          fill="#ffa300"
                         />
                       </svg>
                       <span>Hành lý xách tay</span>
@@ -1127,15 +1129,15 @@ export default function BookingDetailsPage() {
                     <div className="flex items-center">
                       <span>1 kiện</span>
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="16"
-                        width="16"
-                        viewBox="0 0 512 512"
                         className="ml-2"
+                        height="16"
+                        viewBox="0 0 512 512"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          fill="#999999"
                           d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                          fill="#999999"
                         />
                       </svg>
                     </div>
@@ -1217,12 +1219,12 @@ export default function BookingDetailsPage() {
                 <div
                   className="absolute -left-9 top-4 size-10 -translate-y-1/2 rounded-full"
                   style={{ backgroundColor: "#f0f0f0" }}
-                ></div>
+                />
                 <div
                   className="absolute -right-9 top-4 size-10 -translate-y-1/2 rounded-full"
                   style={{ backgroundColor: "#f0f0f0" }}
-                ></div>
-                <div className="mx-4 w-full border-t border-dashed border-gray-500"></div>
+                />
+                <div className="mx-4 w-full border-t border-dashed border-gray-500" />
               </div>
               <div
                 className="mt-2 flex items-center justify-between"

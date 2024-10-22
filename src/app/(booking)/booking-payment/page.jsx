@@ -37,6 +37,7 @@ function BookingPaymentComponent() {
 
     if (!stripe || !elements) {
       setErrorMessage("Stripe has not loaded yet.");
+
       return;
     }
 
@@ -91,16 +92,16 @@ function BookingPaymentComponent() {
     <div className="payment-page" style={{ padding: "80px" }}>
       <h1>Pay with Card</h1>
 
-      <form onSubmit={handlePayment} className="payment-form">
+      <form className="payment-form" onSubmit={handlePayment}>
         {/* Email Field */}
         <label>Email</label>
         <input
+          required
+          className="form-input"
+          placeholder="your-email@example.com"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="your-email@example.com"
-          required
-          className="form-input"
         />
 
         {/* CardElement for Card Information */}
@@ -125,21 +126,21 @@ function BookingPaymentComponent() {
         {/* Cardholder Name Field */}
         <label>Cardholder Name</label>
         <input
+          required
+          className="form-input"
+          placeholder="Full name on card"
           type="text"
           value={cardholderName}
           onChange={(e) => setCardholderName(e.target.value)}
-          placeholder="Full name on card"
-          required
-          className="form-input"
         />
 
         {/* Country/Region Field */}
         <label>Country or Region</label>
         <select
+          required
+          className="form-select"
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          className="form-select"
-          required
         >
           <option value="United States">United States</option>
           <option value="Vietnam">Vietnam</option>
@@ -150,12 +151,12 @@ function BookingPaymentComponent() {
         {/* ZIP Code Field */}
         <label>ZIP Code</label>
         <input
+          required
+          className="form-input"
+          placeholder="ZIP"
           type="text"
           value={zip}
           onChange={(e) => setZip(e.target.value)}
-          placeholder="ZIP"
-          required
-          className="form-input"
         />
 
         {/* Error Message */}
@@ -163,9 +164,9 @@ function BookingPaymentComponent() {
 
         {/* Submit Button */}
         <button
-          type="submit"
-          disabled={!stripe || loading}
           className="mt-4 rounded-md bg-blue-500 px-6 py-3 text-white"
+          disabled={!stripe || loading}
+          type="submit"
         >
           {loading ? "Processing..." : "Pay"}
         </button>

@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
+
 import BookingDetails from "../components/BookingDetails";
 import LoadingSpinner from "../../../components/ui/Loading";
 
 const fetchBookingDetails = async (pnrId) => {
   try {
     const response = await axios.post("/api/bookings/search", { pnrId: pnrId });
+
     return response.data; // Trả về dữ liệu từ API
   } catch (err) {
     throw new Error("Có lỗi xảy ra khi tải thông tin đặt chỗ.");
@@ -23,9 +25,11 @@ const BookingSearchResult = () => {
 
   useEffect(() => {
     const pnrId = searchParams.get("pnr_id");
+
     if (!pnrId) {
       setError("PNR ID không hợp lệ");
       setLoading(false);
+
       return;
     }
 
@@ -33,6 +37,7 @@ const BookingSearchResult = () => {
     const getBookingDetails = async () => {
       try {
         const data = await fetchBookingDetails(pnrId); // Gọi hàm tách riêng
+
         setTimeout(() => {
           setBooking(data);
           setLoading(false);
