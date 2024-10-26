@@ -9,10 +9,25 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
-import airportsData from "../../../public/airports.json";
-import { removeVietnameseTones } from "@/utils";
 import { useRouter } from "next/navigation";
+import "../../app/globals.css";
+
+//shadcn
+import { format } from "date-fns";
+
+import airportsData from "../../../public/airports.json";
+
+import { removeVietnameseTones } from "@/utils";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function FlightSearchSection() {
   const [tripOption, setTripOption] = useState("Một chiều"); // Đổi tên biến để tránh xung đột
@@ -46,6 +61,7 @@ export default function FlightSearchSection() {
 
   const handleSwap = () => {
     const temp = from;
+
     setFrom(to);
     setTo(temp);
   };
@@ -141,6 +157,7 @@ export default function FlightSearchSection() {
             setErrorMessage(
               "Số lượng trẻ sơ sinh không được nhiều hơn số lượng người lớn",
             );
+
             return prev;
           }
         } else {
@@ -203,19 +220,19 @@ export default function FlightSearchSection() {
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const handleDepartureDateSelect = (date) => {
+    setDepartureDate(date);
+    setReturnDate(null); // Reset ngày về khi chọn lại ngày đi
+  };
   // Thêm logic tự động đổi sang khứ hồi khi chọn ngày về
-  const handleReturnDateChange = (date) => {
-    setReturnDate(date);
-    if (date && tripOption === "Một chiều") {
-      setTripOption("Khứ hồi");
-    } else if (!date && tripOption === "Khứ hồi") {
-      setTripOption("Một chiều");
-    }
+  const handleReturnDateSelect = (range) => {
+    setReturnDate(range?.to); // Set ngày về
   };
 
   const handleSearch = () => {
@@ -227,9 +244,10 @@ export default function FlightSearchSection() {
 
       // Lưu loại vé vào localStorage để sử dụng trên trang booking details
       localStorage.setItem("flightType", flightType);
-
+      console.log(departureDate);
+      console.log(returnDate);
       router.push(
-        `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split("T")[0]}&return_date=${returnDate ? returnDate.toISOString().split("T")[0] : ""}&currency=VND&hl=vi&gl=vn&api_key=01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae&type=${flightType}`,
+        `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split("T")[0]}&return_date=${returnDate ? returnDate.toISOString().split("T")[0] : ""}&currency=VND&hl=vi&gl=vn&api_key=a0cc736f9f199b8a669e59f245d76f23d3a58dba760c070d6100e8943e6eefdb&type=${flightType}`,
       );
     } else {
       alert("Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.");
@@ -254,6 +272,7 @@ export default function FlightSearchSection() {
   // Hàm xóa chặng
   const removeLeg = (index) => {
     const newLegs = [...multiLegFlights];
+
     newLegs.splice(index, 1);
     setMultiLegFlights(newLegs);
   };
@@ -261,6 +280,7 @@ export default function FlightSearchSection() {
   // Hàm cập nhật thông tin của mỗi chặng
   const updateLeg = (index, field, value) => {
     const newLegs = [...multiLegFlights];
+
     newLegs[index][field] = value;
     setMultiLegFlights(newLegs);
   };
@@ -268,6 +288,7 @@ export default function FlightSearchSection() {
   // Hàm tìm kiếm sân bay, tương tự như hàm "handleAirportSearch" cho mỗi chặng
   const handleMultiLegAirportSearch = (e, index, field) => {
     const value = e.target.value;
+
     updateLeg(index, field, value);
   };
 
@@ -594,20 +615,65 @@ export default function FlightSearchSection() {
 
               {/* Ngày khởi hành và Ngày về */}
               <div className="flex h-[50px] w-[38%] items-center rounded-lg border bg-white p-3">
+                {/* Ngày đi */}
                 <FaCalendarAlt className="mr-2 text-gray-500" />
-                <DatePicker
-                  selected={departureDate}
-                  onChange={(date) => setDepartureDate(date)}
-                  placeholderText="Ngày đi"
-                  className="w-[50%] bg-transparent text-black focus:outline-none"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="departureDate"
+                      variant={"ghost"}
+                      className={cn(
+                        "w-[50%] justify-start bg-transparent text-left text-base font-normal text-black focus:outline-none",
+                        !departureDate && "text-muted-foreground",
+                      )}
+                    >
+                      {departureDate
+                        ? format(departureDate, "dd/MM/yyyy")
+                        : "Chọn ngày đi"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={departureDate}
+                      onSelect={handleDepartureDateSelect}
+                      initialFocus
+                      disabled={(date) => date < new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <span className="mx-4 text-gray-400">|</span>
-                <DatePicker
-                  selected={returnDate}
-                  onChange={(date) => handleReturnDateChange(date)}
-                  placeholderText="Ngày về"
-                  className="w-[50%] bg-transparent text-black focus:outline-none"
-                />
+
+                {/* Ngày về */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="returnDateRange"
+                      variant={"ghost"}
+                      className={cn(
+                        "w-[50%] justify-start bg-transparent text-left text-base font-normal text-black focus:outline-none",
+                        !returnDate && "text-muted-foreground",
+                      )}
+                      disabled={!departureDate}
+                    >
+                      {returnDate
+                        ? format(returnDate, "dd/MM/yyyy")
+                        : "Chọn ngày về"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="left">
+                    <Calendar
+                      mode="range"
+                      defaultMonth={departureDate}
+                      selected={{ from: departureDate, to: returnDate }}
+                      onSelect={(range) => handleReturnDateSelect(range)}
+                      disabled={(date) => date < (departureDate || new Date())}
+                      numberOfMonths={2}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Nút Tìm kiếm */}

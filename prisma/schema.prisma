@@ -12,16 +12,15 @@ datasource db {
 
 // Bảng Customer (Khách hàng)
 model Customer {
-  id               Int      @id @default(autoincrement())
-  firstName        String // Họ
-  middleName       String? // Tên đệm (optional)
-  lastName         String // Tên
-  dateOfBirth      DateTime // Ngày tháng năm sinh
-  gender           String // Giới tính
-  nationality      String // Quốc tịch
-  passportNumber   String   @unique
-  passportExpiry   DateTime // Ngày hết hạn hộ chiếu
-  passportIssuedAt String // Nơi cấp hộ chiếu
+  id          Int      @id @default(autoincrement())
+  bookingId   Int // Liên kết với Booking
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  firstName   String // Họ
+  middleName  String? // Tên đệm (optional)
+  lastName    String // Tên
+  dateOfBirth DateTime // Ngày tháng năm sinh
+  gender      String // Giới tính
+  nationality String // Quốc tịch
 }
 
 // Bảng ContactCustomer (Người liên hệ thanh toán)
@@ -42,16 +41,18 @@ model User {
 
 // Bảng Booking (Đặt vé)
 model Booking {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   userId      Int // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
-  user        User     @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
   isRoundTrip Boolean
   tickets     Ticket[]
+  customers   Customer[]
   payment     Payment?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  pnrId       String   @unique
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  pnrId       String     @unique
   totalAmount Float
+  status      String // Upcoming, Completed, Cancelled
 }
 
 // Bảng Ticket (Vé máy bay)

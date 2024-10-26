@@ -1,0 +1,42 @@
+.react-datepicker__header {
+  background-color: #4caf50; /* Màu xanh lá cây */
+  border-bottom: none;
+}
+
+/* Thay đổi màu của các ngày đã chọn */
+.react-datepicker__day--selected {
+  background-color: #4caf50; /* Màu xanh lá cây */
+  color: white;
+}
+
+/* Thay đổi màu của các ngày được highlight */
+.react-datepicker__day--highlighted {
+  background-color: #ff9800; /* Màu cam */
+  color: white;
+}
+
+/* Tùy chỉnh các nút điều hướng tháng */
+.react-datepicker__navigation--next,
+.react-datepicker__navigation--previous {
+  border-color: #4caf50;
+}
+
+/* Tùy chỉnh ô ngày */
+.react-datepicker__day {
+  border-radius: 50%; /* Làm tròn các ô ngày */
+}
+
+/* Tùy chỉnh font chữ của lịch */
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Tùy chỉnh hộp chứa lịch */
+.react-datepicker {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}

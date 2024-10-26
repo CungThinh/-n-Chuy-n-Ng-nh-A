@@ -1,9 +1,6 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import FlightSearchSection from "@/components/home/FlightSearchSection";
-import AdSection from "@/components/home/AdSection";
-import DiscountSection from "@/components/home/DiscountSection";
 import {
   Modal,
   Button,
@@ -15,6 +12,10 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import FlightSearchSection from "@/components/home/FlightSearchSection";
+import AdSection from "@/components/home/AdSection";
+import DiscountSection from "@/components/home/DiscountSection";
+
 export default function HomePage() {
   const [visible, setVisible] = useState(false);
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function HomePage() {
   // Kiểm tra query parameter no-access
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
+
     if (searchParams.get("no-access") === "true") {
       setVisible(true);
     }
