@@ -15,8 +15,8 @@ import TicketInfo from "./components/TicketInfo";
 import { countries } from "@/lib/countries";
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectContent,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -69,8 +69,15 @@ export default function BookingDetailsPage() {
   };
 
   const handleBookingSubmit = async () => {
-    console.log("Thông tin trước khi submit:", passengerInfo);
+    if (!session) {
+      const currentUrl = window.location.pathname;
 
+      console.log(passengerInfo);
+      localStorage.setItem("passengerInfo", JSON.stringify(passengerInfo));
+      router.push(`/login?callbackUrl=${encodeURIComponent(currentUrl)}`);
+
+      return;
+    }
     if (!validateForm()) {
       setErrorMessage("Vui lòng điền đầy đủ thông tin bắt buộc.");
 
@@ -208,6 +215,7 @@ export default function BookingDetailsPage() {
     const returnFlight = localStorage.getItem("selectedReturnFlight");
     const storedFlightType = localStorage.getItem("flightType");
     const storedTotalPrice = localStorage.getItem("totalPrice");
+    const savedPassengerInfo = localStorage.getItem("passengerInfo");
 
     if (outboundFlight) {
       setFlightDetails({
@@ -218,6 +226,14 @@ export default function BookingDetailsPage() {
 
     if (storedTotalPrice) {
       setTotalPrice(JSON.parse(storedTotalPrice));
+    }
+
+    if (savedPassengerInfo) {
+      const parsedPassengerInfo = JSON.parse(savedPassengerInfo);
+
+      if (parsedPassengerInfo) {
+        setPassengerInfo(parsedPassengerInfo);
+      }
     }
 
     setFlightType(storedFlightType || "1");
@@ -296,6 +312,7 @@ export default function BookingDetailsPage() {
                 </div>
                 <div className="relative">
                   <Select
+                    value={passengerInfo.gender}
                     onValueChange={(value) =>
                       handleInputChange("gender", value)
                     }
@@ -311,6 +328,7 @@ export default function BookingDetailsPage() {
                 </div>
                 <div className="relative">
                   <Select
+                    value={passengerInfo.nationality}
                     onValueChange={(value) =>
                       handleInputChange("nationality", value)
                     }

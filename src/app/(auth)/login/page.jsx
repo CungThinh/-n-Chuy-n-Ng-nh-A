@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash, FaPlane, FaFacebook } from "react-icons/fa";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 const Login = () => {
   const { data: session } = useSession();
@@ -20,12 +21,14 @@ const Login = () => {
     phoneNumber: "",
   });
   const [errors, setErrors] = useState({});
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   useEffect(() => {
     if (session) {
-      router.replace("/");
+      router.replace(callbackUrl);
     }
-  });
+  }, [session, callbackUrl]);
 
   const validateEmail = (email) => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -82,10 +85,10 @@ const Login = () => {
           password: formData.password,
         });
 
+        console.log(result);
+
         if (result?.error) {
           setErrors({ general: "Invalid username or password" });
-        } else {
-          router.push("/");
         }
       } else {
         const result = await axios.post("/api/auth/register", formData);
