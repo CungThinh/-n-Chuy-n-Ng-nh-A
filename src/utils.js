@@ -1,3 +1,4 @@
+import { eachDayOfInterval, format, subDays } from "date-fns";
 export const getUniqueAirlineNames = (data) => {
   const airlineNames = new Set();
 
@@ -97,4 +98,24 @@ export const decryptPNR = (encryptedPNR) => {
   decrypted += decipher.final("utf8");
 
   return decrypted;
+};
+
+export const fillMissingDays = (data) => {
+  const end = new Date();
+  const start = subDays(end, 30);
+
+  const allDays = eachDayOfInterval({ start, end });
+
+  const dataMap = data.reduce((map, item) => {
+    map[item.date] = item.revenue;
+
+    return map;
+  }, {});
+  const filledData = allDays.map((day) => {
+    const formattedDate = format(day, "yyyy-MM-dd");
+
+    return { date: formattedDate, revenue: dataMap[formattedDate] || 0 };
+  });
+
+  return filledData;
 };

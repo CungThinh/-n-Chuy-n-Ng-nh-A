@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash, FaPlane, FaFacebook } from "react-icons/fa";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
+import { useDebounce } from "use-debounce";
 
 const Login = () => {
   const { data: session } = useSession();
@@ -23,6 +24,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const [debouncedEmail] = useDebounce(formData.email, 300);
+  const [debouncedPhoneNumber] = useDebounce(formData.phoneNumber, 300);
 
   useEffect(() => {
     if (session) {
@@ -34,6 +37,7 @@ const Login = () => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     return re.test(String(email).toLowerCase());
+    ``;
   };
 
   const handleInputChange = (e) => {
@@ -42,6 +46,13 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
     validateField(name, value);
   };
+
+  useEffect(() => {
+    // Validate email, password, confirmPassword, và phoneNumber sau khi debounce
+    if (debouncedEmail) validateField("email", debouncedEmail);
+    if (debouncedPhoneNumber)
+      validateField("phoneNumber", debouncedPhoneNumber);
+  }, [debouncedEmail, debouncedPhoneNumber]);
 
   const validateField = (name, value) => {
     let newErrors = { ...errors };
@@ -104,6 +115,11 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    console.log("Callback URL:", callbackUrl); // Kiểm tra giá trị callbackUrl
+    signIn("google", { callbackUrl: callbackUrl });
   };
 
   const toggleAuthMode = () => {
@@ -306,7 +322,7 @@ const Login = () => {
             <div>
               <button
                 className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50 motion-safe:hover:scale-105"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={handleGoogleSignIn}
               >
                 <svg
                   height="20"

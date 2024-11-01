@@ -8,16 +8,17 @@ export default async function handler(req, res) {
     outbound_date,
     return_date,
     currency = "VND",
-    hl = "vi",  // Tham số ngôn ngữ
-    gl = "vn",  // Tham số vùng
+    hl = "vi", // Tham số ngôn ngữ
+    gl = "vn", // Tham số vùng
     api_key,
-    type = "1",  // Mặc định là chuyến bay khứ hồi
-    departure_token, // Sử dụng departure_token nếu có
+    type = "1", // Mặc định là chuyến bay khứ hồi
+    departure_token,
   } = req.query;
 
   if (!engine || !departure_id || !arrival_id || !outbound_date || !api_key) {
     return res.status(400).json({
-      error: "Thiếu tham số yêu cầu: engine, departure_id, arrival_id, outbound_date, api_key.",
+      error:
+        "Thiếu tham số yêu cầu: engine, departure_id, arrival_id, outbound_date, api_key.",
     });
   }
 
@@ -46,6 +47,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(url, { params });
+
     res.status(200).json(response.data);
   } catch (error) {
     console.error("Error fetching flights:", error.message);

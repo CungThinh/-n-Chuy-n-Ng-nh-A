@@ -1,9 +1,9 @@
-const AdminLayout = ({ children }) => {
-  return (
-      <div className="pt-14"> {/* Thêm khoảng trống phía trên */}
-        {children}
-      </div>
-  );
-};
+import PageTransition from "@/lib/PageTransition";
 
-export default AdminLayout;
+export default function AdminLayout({ children }) {
+  return (
+    <div>
+      <PageTransition>{children}</PageTransition>
+    </div>
+  );
+}
