@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaPhoneAlt, FaUserCircle } from "react-icons/fa";
+import { FaPhoneAlt, FaUserCircle, FaSearch } from "react-icons/fa";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -17,18 +17,19 @@ const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname(); // Lấy đường dẫn hiện tại
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false); // Theo dõi khi cuộn xuống
+  const [isNavVisible, setIsNavVisible] = useState(false); // Hiển thị nav khi cuộn xuống
 
   const handleLoginClick = () => {
     router.push("/login");
   };
 
-  const handleLogoClick = () => {
-    router.push("/"); // Điều hướng về trang chủ khi logo được click
+  const handleBookingSearchClick = () => {
+    router.push("/booking-search"); // Điều hướng đến trang tra cứu vé
   };
 
-  const handleBookingSearchClick = () => {
-    router.push("booking-search");
+  const handleLogoClick = () => {
+    router.push("/"); // Điều hướng về trang chủ khi logo được click
   };
 
   const handleLogout = async () => {
@@ -38,39 +39,54 @@ const Navbar = () => {
     });
   };
 
-  // Event listener để thay đổi màu navbar khi scroll
+  // Event listener để thay đổi trạng thái navbar khi cuộn, chỉ áp dụng ở trang index
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      if (pathname === "/") {
+        const currentScrollTop = window.scrollY;
+
+        // Kiểm tra khi cuộn quá 50px để sổ nav ra
+        if (currentScrollTop > 50) {
+          setIsNavVisible(true); // Hiển thị khi cuộn xuống
+          setIsScrolled(true); // Khi cuộn xuống hơn 50px
+        } else {
+          setIsNavVisible(false); // Ẩn khi ở đầu trang
+          setIsScrolled(false); // Khi ở đầu trang
+        }
       }
     };
 
-    // Nếu ở trang index (home), chúng ta mới thêm listener cho việc scroll
+    // Thêm sự kiện cuộn chỉ cho trang chủ
     if (pathname === "/") {
       window.addEventListener("scroll", handleScroll);
     }
 
     return () => {
-      if (pathname === "/") {
-        window.removeEventListener("scroll", handleScroll);
-      }
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [pathname]);
 
   // Xác định trạng thái của navbar
   const isHomePage = pathname === "/";
+
+  // Thiết lập lớp nền của navbar dựa trên trạng thái cuộn, chỉ áp dụng ở trang index
   const navbarBgColor = isHomePage
     ? isScrolled
-      ? "bg-[#00264e]"
-      : "bg-transparent" // Ở trang index, navbar trong suốt khi ở trên đầu, và đổi màu khi scroll
-    : "bg-[#00264e]"; // Ở các trang khác, luôn luôn có màu xanh
+      ? "bg-[#00264e] bg-opacity-90 shadow-lg" // Khi cuộn, có màu xanh và bóng
+      : "bg-transparent" // Ở trên cùng thì trong suốt
+    : "bg-[#00264e]"; // Ở các trang khác thì luôn có màu xanh
+
+  // Hiệu ứng của navbar khi cuộn xuống, chỉ áp dụng ở trang index
+  const navTransitionClasses =
+    isHomePage && isNavVisible
+      ? "translate-y-0 opacity-100" // Hiển thị khi cuộn xuống ở trang index
+      : isHomePage
+        ? "-translate-y-full opacity-0" // Ẩn khi ở đầu trang (chỉ trang index)
+        : "translate-y-0 opacity-100"; // Luôn hiển thị ở các trang khác
 
   return (
     <nav
-      className={`fixed z-50 w-full transition-all duration-500 ${navbarBgColor} px-6 py-4 text-white`}
+      className={`fixed z-50 w-full ${navbarBgColor} ${navTransitionClasses} px-6 py-4 text-white transition-transform duration-500 ease-in-out`}
     >
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
@@ -94,31 +110,29 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-10">
-          {/* <button
+          <button
             className="flex items-center space-x-2"
             onClick={handleBookingSearchClick}
           >
             <FaSearch className="text-xl" />
             <span className="text-sm">Tra cứu vé</span>
-          </button> */}
-
+          </button>
           {session ? (
             <div className="flex items-center space-x-2">
-              <Dropdown css={{ color: "white " }}>
+              <Dropdown>
                 <DropdownTrigger>
-                  <Button variant="light">
+                  <Button
+                    variant="light"
+                    className="flex items-center space-x-2"
+                  >
                     {session.user.image ? (
-                      <>
-                        <img
-                          src={session.user.image}
-                          alt="User Avatar"
-                          className="size-8 rounded-full"
-                        />
-                      </>
+                      <img
+                        src={session.user.image}
+                        alt="User Avatar"
+                        className="size-8 rounded-full"
+                      />
                     ) : (
-                      <>
-                        <FaUserCircle className="text-2xl text-white" />
-                      </>
+                      <FaUserCircle className="text-2xl text-white" />
                     )}
                     <span className="text-sm text-white">
                       {session.user.email}

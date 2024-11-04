@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tooltip } from "@nextui-org/tooltip";
 import { formatDuration } from "date-fns";
 export default function FlightDetails({ flightDetails, flightType }) {
   const [isOutboundDetailVisible, setIsOutboundDetailVisible] = useState(false);
   const [isReturnDetailVisible, setIsReturnDetailVisible] = useState(false);
+
+  // State to store selected seats from localStorage
+  const [outboundSeat, setOutboundSeat] = useState(null);
+  const [returnSeat, setReturnSeat] = useState(null);
+
+  // Effect to load selected seats from localStorage when the component mounts
+  useEffect(() => {
+    const savedOutboundSeat = localStorage.getItem("selectedOutboundSeat");
+    const savedReturnSeat = localStorage.getItem("selectedReturnSeat");
+
+    setOutboundSeat(savedOutboundSeat);
+    setReturnSeat(savedReturnSeat);
+  }, []);
+
+  // Toggle function to show or hide outbound flight details
   const handleToggleOutboundDetail = () => {
     setIsOutboundDetailVisible(!isOutboundDetailVisible);
   };
 
+  // Toggle function to show or hide return flight details
   const handleToggleReturnDetail = () => {
     setIsReturnDetailVisible(!isReturnDetailVisible);
   };
@@ -60,6 +76,13 @@ export default function FlightDetails({ flightDetails, flightType }) {
               ].arrival_airport.name
             }
           </p>
+
+          {/* Display selected outbound seat */}
+          {outboundSeat && (
+            <p className="mb-4 text-sm font-bold text-blue-600">
+              Ghế đã chọn (Chiều đi): {outboundSeat}
+            </p>
+          )}
 
           <div className="flex items-center justify-between space-x-4">
             <div className="flex items-center space-x-2">
@@ -248,6 +271,13 @@ export default function FlightDetails({ flightDetails, flightType }) {
               ].arrival_airport.name
             }
           </p>
+
+          {/* Display selected return seat */}
+          {returnSeat && (
+            <p className="mb-4 text-sm font-bold text-blue-600">
+              Ghế đã chọn (Chiều về): {returnSeat}
+            </p>
+          )}
 
           <div className="flex items-center justify-between space-x-4">
             <div className="flex items-center space-x-2">
