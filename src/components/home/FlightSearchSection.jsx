@@ -9,16 +9,10 @@ import {
   FaCaretDown,
   FaCheck,
   FaCalendarAlt,
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedin,
-  FaChevronDown,
 } from "react-icons/fa";
 import { format } from "date-fns";
 import { startOfDay, addDays } from "date-fns";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 import airportsData from "../../../public/airports.json";
@@ -336,83 +330,6 @@ export default function FlightSearchSection() {
 
   return (
     <>
-      <header className="absolute left-0 top-0 z-50 w-full font-sans">
-        <div className="container mx-auto max-w-7xl px-4">
-          <div className="flex items-center justify-between border-b border-transparent py-2 text-xs">
-            <div className="flex space-x-4 text-sm text-white md:space-x-6">
-              <a href="#" className="text-white hover:text-gray-300">
-                <FaFacebookF className="size-4" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300">
-                <FaTwitter className="size-4" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300">
-                <FaInstagram className="size-4" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300">
-                <FaLinkedin className="size-4" />
-              </a>
-              <span className="hidden text-gray-500 md:inline">|</span>
-              <span className="text-sm text-white md:text-base">
-                0932 126 988
-              </span>
-              <span className="hidden text-gray-500 md:inline">|</span>
-              <span className="text-sm text-white md:text-base">
-                contact@domain.com
-              </span>
-            </div>
-            <div className="flex items-center space-x-4 md:space-x-6">
-              <Link
-                href="/login"
-                className="text-sm text-white hover:text-gray-300 md:text-base"
-              >
-                Login
-              </Link>
-              <span className="hidden text-gray-500 md:inline">|</span>
-              <Link
-                href="/signup"
-                className="text-sm text-white hover:text-gray-300 md:text-base"
-              >
-                Sign up
-              </Link>
-            </div>
-          </div>
-          <hr className="border-t-stone-400" />
-          <div className="max-w-9xl container mx-auto flex items-center justify-between py-4">
-            <Link href="/" className="flex items-center">
-              <img
-                src="/images/logo.png"
-                alt="vemaybay logo"
-                className="sm:h-100 h-10 w-auto"
-              />
-            </Link>
-            <nav className="mx-2 flex-1 md:mx-10">
-              <ul className="flex space-x-6 text-sm text-white sm:space-x-12 md:text-lg">
-                {["Home", "Blog", "About", "Contact"].map((item) => (
-                  <li key={item}>
-                    <Link
-                      href={`/${item.toLowerCase()}`}
-                      className="flex items-center text-white hover:text-gray-300"
-                    >
-                      {item}
-                      <FaChevronDown className="ml-1 text-xs text-gray-300" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <button className="text-white hover:text-gray-300">
-                <FaSearch className="size-5" />
-              </button>
-              <button className="rounded-full bg-[#F97340] bg-opacity-90 px-2 py-1 text-xs font-medium text-white hover:bg-[#F97316] md:px-4 md:py-2 md:text-sm">
-                Book now
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="relative h-screen md:h-[950px]">
         <video
           autoPlay
@@ -422,7 +339,10 @@ export default function FlightSearchSection() {
           src={videoSrc}
           style={{ filter: "grayscale(20%) brightness(60%)" }}
         />
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ paddingBottom: "15%" }}
+        >
           <motion.div
             className="text-center"
             variants={containerVariants}
@@ -434,24 +354,24 @@ export default function FlightSearchSection() {
               variants={itemVariants}
             >
               <motion.span className="font-bold" variants={itemVariants}>
-                EXPLORE THE
+                KHÁM PHÁ
               </motion.span>{" "}
-              <motion.span variants={itemVariants}>DESTINATION</motion.span>
+              <motion.span variants={itemVariants}>ĐIỂM ĐẾN</motion.span>
             </motion.h1>
             <motion.p
               className="text-4xl font-light text-white sm:text-5xl md:text-7xl"
               variants={itemVariants}
             >
-              AROUND THE{" "}
+              VÒNG QUANH{" "}
               <motion.span className="font-bold" variants={itemVariants}>
-                WORLD WITH US
+                THẾ GIỚI CÙNG CHÚNG TÔI
               </motion.span>
             </motion.p>
           </motion.div>
         </div>
 
         <div className="relative z-10 flex h-full items-center justify-center">
-          <div className="absolute bottom-[10%] mx-auto w-full max-w-7xl rounded-lg bg-white bg-opacity-50 p-4 shadow-lg md:bottom-[5%] md:p-6">
+          <div className="absolute bottom-[15%] mx-auto w-full max-w-7xl rounded-2xl bg-white bg-opacity-50 p-4 shadow-lg md:bottom-[30%] md:p-6">
             <div className="mb-4 flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
               <div
                 className="relative flex h-[38px] w-full cursor-pointer items-center rounded-lg bg-white p-3 md:w-auto"
@@ -644,7 +564,7 @@ export default function FlightSearchSection() {
                 <Select value={travelClass} onValueChange={setTravelClass}>
                   <SelectTrigger
                     id="travel-class"
-                    className="h-[38px] w-[180px] border-0 bg-transparent focus:ring-0"
+                    className="h-[38px] w-[170px] border-0 bg-transparent focus:ring-0"
                   >
                     {" "}
                     {/* Đặt chiều cao cho SelectTrigger */}

@@ -1,6 +1,9 @@
 export default function TicketInfo({ flightType, flightDetails, totalPrice }) {
   return (
-    <div className="bg-white p-4 shadow-md" style={{ borderRadius: "20px" }}>
+    <div
+      className="mx-1 bg-white p-4 shadow-md"
+      style={{ borderRadius: "20px" }}
+    >
       <h2 className="mb-4 text-lg font-bold" style={{ color: "#000000" }}>
         Thông tin hành lý
       </h2>

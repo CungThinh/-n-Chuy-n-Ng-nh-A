@@ -36,11 +36,9 @@ export default async function handler(req, res) {
       const token = await getToken({ req });
       const userId = token.id;
 
-      console.log(userId);
-      const { isRoundTrip, tickets, customers, payment, totalAmount } =
+      const { isRoundTrip, tickets, customers, paymentMethod, totalAmount } =
         req.body;
 
-      console.log(req.body);
       const pnrId = generatePNRCode();
       const booking = await prisma.booking.create({
         data: {
@@ -54,10 +52,34 @@ export default async function handler(req, res) {
           customers: {
             create: customers,
           },
-          payment: payment ? { create: payment } : undefined,
           status: "Upcoming",
         },
       });
+
+      // Tạo Payment mới cho Booking dựa vào phương thức thanh toán
+      if (paymentMethod === "momo") {
+        await prisma.payment.create({
+          data: {
+            bookingId: booking.id,
+            amount: totalAmount,
+            paymentMethod: "momo",
+            status: "pending",
+          },
+        });
+
+        // Thực hiện thêm logic để gọi API MoMo nếu cần thiết
+      } else if (paymentMethod === "stripe") {
+        await prisma.payment.create({
+          data: {
+            bookingId: booking.id,
+            amount: totalAmount,
+            paymentMethod: "stripe",
+            status: "pending",
+          },
+        });
+
+        // Thực hiện thêm logic để tạo phiên thanh toán Stripe nếu cần thiết
+      }
 
       return res.status(201).json({
         message: "Booking added successfully",

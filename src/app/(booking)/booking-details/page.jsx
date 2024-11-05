@@ -39,9 +39,14 @@ export default function BookingDetailsPage() {
     dob: null,
     nationality: "Việt Nam",
   });
-
   const [isInvoiceInfoVisible, setIsInvoiceInfoVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [flightDetails, setFlightDetails] = useState({
+    outbound: null,
+    return: null,
+  });
+  const [flightType, setFlightType] = useState("1");
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const handleInputChange = (field, value) => {
     setPassengerInfo({
@@ -55,29 +60,25 @@ export default function BookingDetailsPage() {
   };
 
   const validateForm = () => {
-    if (
-      !passengerInfo.lastName ||
-      !passengerInfo.firstName ||
-      !passengerInfo.gender ||
-      !passengerInfo.dob ||
-      !passengerInfo.nationality
-    ) {
-      return false;
-    }
-
-    return true;
+    return (
+      passengerInfo.lastName &&
+      passengerInfo.firstName &&
+      passengerInfo.gender &&
+      passengerInfo.dob &&
+      passengerInfo.nationality
+    );
   };
 
   const handleBookingSubmit = async () => {
     if (!session) {
       const currentUrl = window.location.pathname;
 
-      console.log(passengerInfo);
       localStorage.setItem("passengerInfo", JSON.stringify(passengerInfo));
       router.push(`/login?callbackUrl=${encodeURIComponent(currentUrl)}`);
 
       return;
     }
+
     if (!validateForm()) {
       setErrorMessage("Vui lòng điền đầy đủ thông tin bắt buộc.");
 
@@ -87,7 +88,6 @@ export default function BookingDetailsPage() {
     try {
       const isRoundTrip = flightType === "1";
 
-      // Thu thập logo của các hãng hàng không
       let airlineLogos = new Set();
       let tickets = flightDetails.outbound.flights.map((flight) => {
         airlineLogos.add(flight.airline_logo);
@@ -151,12 +151,7 @@ export default function BookingDetailsPage() {
         withCredentials: true,
       });
 
-      console.log("Phản hồi từ API bookings:", response.data);
-
-      // Đảm bảo lấy đúng bookingId từ phản hồi
       const bookingId = response.data.booking.id;
-
-      console.log("Lấy được bookingId:", bookingId);
 
       if (!bookingId) {
         setErrorMessage("Không thể lấy ID đặt chỗ.");
@@ -164,7 +159,7 @@ export default function BookingDetailsPage() {
         return;
       }
 
-      // Gửi yêu cầu tạo phiên thanh toán với Stripe
+      // Tạo phiên thanh toán với Stripe
       const paymentResponse = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: {
@@ -174,24 +169,24 @@ export default function BookingDetailsPage() {
           totalPrice,
           flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
           airlineName: flightDetails.outbound.flights[0].airline,
-          airlineLogos, // Mảng logo hãng bay
+          airlineLogos,
           passengerInfo: {
             firstName: passengerInfo.firstName,
             lastName: passengerInfo.lastName,
             email: session?.user?.email || "test@example.com",
-            phone: "+849xxxxxxxx", // Số điện thoại
+            phone: "+849xxxxxxxx",
             gender: passengerInfo.gender,
             dob: passengerInfo.dob,
             nationality: passengerInfo.nationality,
           },
-          bookingId, // Đảm bảo truyền đúng bookingId
+          bookingId,
         }),
       });
 
       const result = await paymentResponse.json();
 
       if (paymentResponse.ok) {
-        window.location.href = result.url; // Chuyển hướng đến trang thanh toán Stripe
+        window.location.href = result.url;
       } else {
         setErrorMessage(
           result.error || "Có lỗi xảy ra trong quá trình xử lý thanh toán",
@@ -203,13 +198,122 @@ export default function BookingDetailsPage() {
     }
   };
 
-  const [flightDetails, setFlightDetails] = useState({
-    outbound: null,
-    return: null,
-  });
-  const [flightType, setFlightType] = useState("1"); // Mặc định là khứ hồi
-  const [totalPrice, setTotalPrice] = useState(0);
+  const handleMomoPayment = async () => {
+    if (!validateForm()) {
+      setErrorMessage("Vui lòng điền đầy đủ thông tin bắt buộc.");
 
+      return;
+    }
+
+    // Kiểm tra nếu số tiền vượt quá giới hạn MoMo cho phép
+    if (totalPrice > 50000000) {
+      setErrorMessage(
+        "MoMo không hỗ trợ thanh toán cho số tiền lớn hơn 50 triệu VND. Vui lòng chọn phương thức thanh toán khác.",
+      );
+
+      return;
+    }
+
+    try {
+      // Tạo Booking và Ticket trước khi thanh toán
+      const isRoundTrip = flightType === "1";
+
+      let airlineLogos = new Set();
+      let tickets = flightDetails.outbound.flights.map((flight) => {
+        airlineLogos.add(flight.airline_logo);
+
+        return {
+          flightNumber: flight.flight_number,
+          airline: flight.airline,
+          departureAirport: flight.departure_airport.id,
+          arrivalAirport: flight.arrival_airport.id,
+          departureTime: new Date(flight.departure_airport.time),
+          arrivalTime: new Date(flight.arrival_airport.time),
+          travelClass: flight.travel_class,
+          total_duration: flight.duration,
+          tripType: "Outbound",
+          seatNumber: "24B",
+        };
+      });
+
+      if (isRoundTrip && flightDetails.return) {
+        const returnTickets = flightDetails.return.flights.map((flight) => {
+          airlineLogos.add(flight.airline_logo);
+
+          return {
+            flightNumber: flight.flight_number,
+            airline: flight.airline,
+            departureAirport: flight.departure_airport.id,
+            arrivalAirport: flight.arrival_airport.id,
+            departureTime: new Date(flight.departure_airport.time),
+            arrivalTime: new Date(flight.arrival_airport.time),
+            travelClass: flight.travel_class,
+            total_duration: flight.duration,
+            tripType: "Return",
+            seatNumber: "24B",
+          };
+        });
+
+        tickets = tickets.concat(returnTickets);
+      }
+
+      airlineLogos = Array.from(airlineLogos);
+
+      const bookingData = {
+        isRoundTrip,
+        totalAmount: totalPrice,
+        tickets,
+        customers: [
+          {
+            firstName: passengerInfo.firstName,
+            lastName: passengerInfo.lastName,
+            dateOfBirth: passengerInfo.dob,
+            nationality: passengerInfo.nationality,
+            gender: passengerInfo.gender,
+          },
+        ],
+      };
+
+      const response = await axios.post("/api/bookings", bookingData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      const bookingId = response.data.booking.id;
+
+      if (!bookingId) {
+        setErrorMessage("Không thể lấy ID đặt chỗ.");
+
+        return;
+      }
+
+      // Sau khi tạo booking thành công, gọi API để tạo thanh toán MoMo
+      const momoResponse = await fetch("/api/createMomoPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          totalAmount: totalPrice,
+          orderInfo: `Đặt vé máy bay cho ${passengerInfo.firstName} ${passengerInfo.lastName}`,
+          bookingId, // truyền bookingId để nhận diện thanh toán
+        }),
+      });
+
+      const data = await momoResponse.json();
+
+      if (momoResponse.ok && data.payUrl) {
+        window.location.href = data.payUrl; // Redirect đến URL thanh toán của MoMo
+      } else {
+        setErrorMessage(data.message || "Không thể tạo thanh toán MoMo");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setErrorMessage("Đã xảy ra lỗi khi tạo thanh toán MoMo");
+    }
+  };
+
+  // Lấy dữ liệu từ localStorage khi trang được tải
   useEffect(() => {
     const outboundFlight = localStorage.getItem("selectedOutboundFlight");
     const returnFlight = localStorage.getItem("selectedReturnFlight");
@@ -231,9 +335,7 @@ export default function BookingDetailsPage() {
     if (savedPassengerInfo) {
       const parsedPassengerInfo = JSON.parse(savedPassengerInfo);
 
-      if (parsedPassengerInfo) {
-        setPassengerInfo(parsedPassengerInfo);
-      }
+      if (parsedPassengerInfo) setPassengerInfo(parsedPassengerInfo);
     }
 
     setFlightType(storedFlightType || "1");
@@ -353,6 +455,14 @@ export default function BookingDetailsPage() {
                   onClick={handleBookingSubmit}
                 >
                   Tiếp tục
+                </button>
+              </div>
+              <div className="mt-8 flex justify-end">
+                <button
+                  className="ml-4 rounded-lg bg-purple-600 px-6 py-3 text-white"
+                  onClick={handleMomoPayment}
+                >
+                  Thanh toán bằng MoMo
                 </button>
               </div>
             </div>
