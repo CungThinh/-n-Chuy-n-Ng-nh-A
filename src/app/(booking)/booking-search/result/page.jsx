@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
-import BookingDetails from "../components/BookingDetails";
+import BookingDetails from "../../my-bookings/components/BookingDetails";
 import LoadingSpinner from "../../../../components/ui/Loading";
 
 const fetchBookingDetails = async (pnrId) => {

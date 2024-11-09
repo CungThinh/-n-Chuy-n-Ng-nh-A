@@ -26,14 +26,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { removeVietnameseTones } from "@/utils";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function FlightSearchSection() {
   const [tripOption, setTripOption] = useState("Một chiều");
@@ -44,7 +36,8 @@ export default function FlightSearchSection() {
   const [passengers, setPassengers] = useState({
     adults: 1,
     children: 0,
-    infants: 0,
+    infants_in_seat: 0, // Số trẻ sơ sinh có ghế ngồi
+    infants_on_lap: 0, // Số trẻ sơ sinh ngồi cùng người lớn
   });
 
   const [dropdownOptionOpen, setDropdownOptionOpen] = useState(false);
@@ -61,9 +54,14 @@ export default function FlightSearchSection() {
   const router = useRouter();
   const [travelClass, setTravelClass] = useState("1"); // State để lưu hạng ghế
 
-  // Tính tổng số hành khách
+  // Tính tổng số hành khách đúng cách (bao gồm người lớn, trẻ em, và các loại trẻ sơ sinh)
   const getTotalPassengers = () => {
-    return passengers.adults + passengers.children + passengers.infants;
+    return (
+      passengers.adults +
+      passengers.children +
+      passengers.infants_in_seat +
+      passengers.infants_on_lap
+    );
   };
 
   const handleSwap = () => {
@@ -149,9 +147,17 @@ export default function FlightSearchSection() {
             newValue += 1;
           } else if (type === "children" && newValue < 8) {
             newValue += 1;
-          } else if (type === "infants" && newValue < passengers.adults) {
+          } else if (type === "infants_in_seat" && newValue < 8) {
             newValue += 1;
-          } else if (type === "infants" && newValue >= passengers.adults) {
+          } else if (
+            type === "infants_on_lap" &&
+            newValue < passengers.adults
+          ) {
+            newValue += 1;
+          } else if (
+            type === "infants_on_lap" &&
+            newValue >= passengers.adults
+          ) {
             setErrorMessage(
               "Số lượng trẻ sơ sinh không được nhiều hơn số lượng người lớn",
             );
@@ -167,7 +173,7 @@ export default function FlightSearchSection() {
 
       if (operation === "decrease") {
         if (type === "adults" && newValue > 1) {
-          if (passengers.infants > newValue - 1) {
+          if (passengers.infants_on_lap > newValue - 1) {
             setErrorMessage(
               "Số lượng trẻ sơ sinh không được ít hơn số lượng người lớn",
             );
@@ -239,8 +245,6 @@ export default function FlightSearchSection() {
   };
 
   const handleSearch = () => {
-    console.log("Selected travel class:", travelClass); // Kiểm tra giá trị travelClass
-
     if (from && to && departureDate) {
       const fromCode = from.split(",")[0].trim();
       const toCode = to.split(",")[0].trim();
@@ -257,12 +261,23 @@ export default function FlightSearchSection() {
           })
         : "";
 
+      // Log thông tin hành khách trước khi gọi API
+      console.log("Thông tin hành khách:");
+      console.log("Người lớn:", passengers.adults);
+      console.log("Trẻ em:", passengers.children);
+      console.log("Trẻ sơ sinh có ghế:", passengers.infants_in_seat);
+      console.log(
+        "Trẻ sơ sinh ngồi cùng người lớn:",
+        passengers.infants_on_lap,
+      );
+
+      // Chuyển hướng với dữ liệu hành khách
       router.push(
         `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(
           fromCode,
         )}&arrival_id=${encodeURIComponent(
           toCode,
-        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=c8ef166d9ea4cd3da69a99def09f1d4b227db65a31902b20f49a3e50d747350e&type=${flightType}&travel_class=${travelClass}`,
+        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=18405be303c00ff7b330775c1b3acc68533552e6a4dafdb804e7f58f50ef40c6&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
       );
     } else {
       alert("Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.");
@@ -480,29 +495,32 @@ export default function FlightSearchSection() {
 
                       <div className="mb-2 flex cursor-default items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-black">Trẻ em</span>
-                          <p className="text-sm text-gray-500">
-                            2-11 tuổi tại thời điểm diễn ra chuyến đi
-                          </p>
+                          <span className="text-black">Trẻ sơ sinh có ghế</span>
                         </div>
                         <div className="flex items-center">
                           <button
                             className="cursor-pointer rounded bg-gray-300 px-4 py-1 text-black"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handlePassengerChange("children", "decrease");
+                              handlePassengerChange(
+                                "infants_in_seat",
+                                "decrease",
+                              );
                             }}
                           >
                             -
                           </button>
                           <span className="mx-4 text-black">
-                            {passengers.children}
+                            {passengers.infants_in_seat}
                           </span>
                           <button
                             className="cursor-pointer rounded bg-orange-500 px-4 py-1 text-white"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handlePassengerChange("children", "increase");
+                              handlePassengerChange(
+                                "infants_in_seat",
+                                "increase",
+                              );
                             }}
                           >
                             +
@@ -514,29 +532,34 @@ export default function FlightSearchSection() {
 
                       <div className="mb-2 flex cursor-default items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-black">Em bé</span>
-                          <p className="text-sm text-gray-500">
-                            Dưới 2 tuổi tại thời điểm đi
-                          </p>
+                          <span className="text-black">
+                            Trẻ sơ sinh ngồi cùng người lớn
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <button
                             className="cursor-pointer rounded bg-gray-300 px-4 py-1 text-black"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handlePassengerChange("infants", "decrease");
+                              handlePassengerChange(
+                                "infants_on_lap",
+                                "decrease",
+                              );
                             }}
                           >
                             -
                           </button>
                           <span className="mx-4 text-black">
-                            {passengers.infants}
+                            {passengers.infants_on_lap}
                           </span>
                           <button
                             className="cursor-pointer rounded bg-orange-500 px-4 py-1 text-white"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handlePassengerChange("infants", "increase");
+                              handlePassengerChange(
+                                "infants_on_lap",
+                                "increase",
+                              );
                             }}
                           >
                             +

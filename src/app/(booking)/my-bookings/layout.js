@@ -3,7 +3,7 @@
 
 const BookingDetailLayout = ({ children }) => {
   return (
-    <div className="h-[800px] pt-16">
+    <div className="h-auto pt-16">
       {" "}
       {/* Thêm khoảng trống phía trên */}
       {children}
