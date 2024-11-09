@@ -11,6 +11,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      scale: {
+        '1025': '1.025',
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

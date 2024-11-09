@@ -9,7 +9,9 @@ import {
   FaCaretDown,
   FaCheck,
   FaCalendarAlt,
+  FaChair,
 } from "react-icons/fa";
+import { MdAirlineSeatReclineExtra } from "react-icons/md";
 import { format } from "date-fns";
 import { startOfDay, addDays } from "date-fns";
 import { useRouter } from "next/navigation";
@@ -49,6 +51,7 @@ export default function FlightSearchSection() {
 
   const [dropdownOptionOpen, setDropdownOptionOpen] = useState(false);
   const [dropdownPassengersOpen, setDropdownPassengersOpen] = useState(false);
+  const [dropdownClassOpen, setDropdownClassOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [airportSuggestions, setAirportSuggestions] = useState([]);
   const [isFromFocused, setIsFromFocused] = useState(false);
@@ -187,6 +190,11 @@ export default function FlightSearchSection() {
   const toggleOptionDropdown = () => {
     setDropdownOptionOpen(!dropdownOptionOpen);
     if (dropdownPassengersOpen) setDropdownPassengersOpen(false);
+  };
+
+  const toggleClassDropdown = () => {
+    setDropdownClassOpen(!dropdownClassOpen);
+    if (dropdownOptionOpen) setDropdownOptionOpen(false); // Đóng "Một chiều/Khứ hồi" khi mở "Hạng ghế"
   };
 
   const togglePassengersDropdown = () => {
@@ -554,31 +562,86 @@ export default function FlightSearchSection() {
                 )}
               </div>
               {/* Các phần khác của giao diện */}
-              <div className="flex h-[38px] items-center gap-3 rounded-lg bg-background p-2 shadow-sm ring-1 ring-muted">
-                <label
-                  htmlFor="travel-class"
-                  className="flex h-full items-center whitespace-nowrap text-sm font-medium text-muted-foreground" // Đặt chiều cao và căn giữa theo chiều dọc
-                >
-                  Hạng ghế:
-                </label>
-                <Select value={travelClass} onValueChange={setTravelClass}>
-                  <SelectTrigger
-                    id="travel-class"
-                    className="h-[38px] w-[170px] border-0 bg-transparent focus:ring-0"
-                  >
-                    {" "}
-                    {/* Đặt chiều cao cho SelectTrigger */}
-                    <SelectValue placeholder="Chọn hạng ghế" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="1">Economy</SelectItem>
-                      <SelectItem value="2">Premium Economy</SelectItem>
-                      <SelectItem value="3">Business</SelectItem>
-                      <SelectItem value="4">First</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+              <div
+                className="relative flex h-[38px] w-[170px] cursor-pointer items-center rounded-lg border bg-white p-2 md:w-auto"
+                onClick={toggleClassDropdown} // Mở/đóng "Hạng ghế"
+              >
+                <MdAirlineSeatReclineExtra className="mr-2 text-[22px] text-gray-500" />
+                <span>
+                  {travelClass === "1"
+                    ? "Economy"
+                    : travelClass === "2"
+                      ? "Premium Economy"
+                      : travelClass === "3"
+                        ? "Business"
+                        : "First"}
+                </span>
+                <FaCaretDown className="ml-2 inline-block text-gray-500" />
+
+                {dropdownClassOpen && ( // Kiểm tra mở/đóng với `dropdownClassOpen`
+                  <div className="absolute left-0 top-9 z-20 mt-1 w-full rounded-lg bg-white shadow-lg md:left-auto md:w-[170px]">
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("1");
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Economy
+                      {travelClass === "1" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("2");
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Premium Economy
+                      {travelClass === "2" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("3");
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Business
+                      {travelClass === "3" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("4");
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      First
+                      {travelClass === "4" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

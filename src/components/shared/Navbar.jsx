@@ -130,20 +130,20 @@ const Navbar = () => {
                     key="profile"
                     onClick={() => router.push("/profile")}
                   >
-                    Profile
+                    Tài khoản
                   </DropdownItem>
                   <DropdownItem
                     key="bookings"
-                    onClick={() => router.push("/bookings")}
+                    onClick={() => router.push("/my-bookings")}
                   >
-                    My Bookings
+                    Lịch sử đặt vé
                   </DropdownItem>
                   <DropdownItem
                     key="logout"
                     color="danger"
                     onClick={handleLogout}
                   >
-                    Log Out
+                    Đăng xuất
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>

@@ -45,6 +45,7 @@ model Booking {
   userId      Int // Liên kết với ContactCustomer (người chịu trách nhiệm thanh toán)
   user        User       @relation(fields: [userId], references: [id])
   isRoundTrip Boolean
+  destination String?
   tickets     Ticket[]
   customers   Customer[]
   payment     Payment?
