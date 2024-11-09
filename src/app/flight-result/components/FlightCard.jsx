@@ -3,12 +3,11 @@ import {
   FaPlane,
   FaChevronDown,
   FaChevronUp,
-  FaClock,
   FaSuitcase,
   FaExchangeAlt,
 } from "react-icons/fa";
 
-import SeatSelection from "./FlightSeatSelection"; // Import SeatSelection component
+import SeatSelection from "./FlightSeatSelection";
 
 import { formatDuration } from "@/utils";
 
@@ -20,10 +19,9 @@ export default function FlightCard({
   onChangeFlight,
 }) {
   const [showMore, setShowMore] = useState(false);
-  const [showSeatSelection, setShowSeatSelection] = useState(false); // State to manage seat selection modal visibility
-  const [selectedSeat, setSelectedSeat] = useState(null); // Store the selected seat
+  const [showSeatSelection, setShowSeatSelection] = useState(false);
+  const [selectedSeat, setSelectedSeat] = useState(null);
 
-  // Lấy thông tin ghế đã chọn từ localStorage (nếu có)
   useEffect(() => {
     const savedSeat =
       leg === "outbound"
@@ -35,219 +33,288 @@ export default function FlightCard({
 
   const toggleShowMore = () => setShowMore(!showMore);
 
-  // Handle seat selection and close the modal
   const handleSelectSeat = (seat) => {
     setSelectedSeat(seat);
     setShowSeatSelection(false);
 
     if (leg === "outbound") {
-      localStorage.setItem("selectedOutboundSeat", seat); // Lưu ghế chiều đi
+      localStorage.setItem("selectedOutboundSeat", seat);
     } else if (leg === "return") {
-      localStorage.setItem("selectedReturnSeat", seat); // Lưu ghế chiều về
+      localStorage.setItem("selectedReturnSeat", seat);
     }
 
-    onSelect(); // Tiếp tục các bước tiếp theo
+    onSelect();
+  };
+
+  const handleFlightSelection = () => {
+    if (!isSelectedFlight) {
+      setShowSeatSelection(true);
+    } else if (onChangeFlight) {
+      onChangeFlight();
+    }
   };
 
   const mainFlight = flight.flights[0];
-
-  // Handle flight selection logic
-  const handleFlightSelection = () => {
-    if (!isSelectedFlight) {
-      setShowSeatSelection(true); // Open seat selection modal only for new flight selection
-    } else {
-      // Call the onChangeFlight function to allow changing the flight
-      if (onChangeFlight) {
-        onChangeFlight(); // Call the provided function to reset flight
-      }
-    }
-  };
+  const lastFlight = flight.flights[flight.flights.length - 1];
 
   return (
-    <div className="mx-auto mb-6 w-full max-w-6xl overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-white shadow-lg">
+    <div className="mx-auto mb-6 w-full max-w-6xl overflow-hidden rounded-lg border border-gray-300 bg-white">
       <div className="p-6">
-        <div className="flex flex-col items-center justify-between space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <div className="flex items-center space-x-4">
-            <div className="flex size-16 items-center justify-center rounded-full bg-white p-2 shadow-md">
-              <img
-                className="size-12 object-contain"
-                src={mainFlight.airline_logo}
-                alt={`${mainFlight.airline} logo`}
-              />
-            </div>
-            <div>
-              <p className="text-xl font-semibold text-gray-800">
-                {mainFlight.airline}
-              </p>
-              <p className="text-sm text-gray-500">
-                {mainFlight.flight_number}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-8">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-gray-800">
-                {mainFlight.departure_airport.time.split(" ")[1]}
-              </p>
-              <p className="text-lg font-medium text-gray-600">
-                {mainFlight.departure_airport.id}
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <p className="mb-2 text-sm text-gray-500">
-                {formatDuration(mainFlight.duration)}
-              </p>
-              <div className="relative mb-2 h-0.5 w-40 bg-gray-300">
-                <FaPlane className="absolute left-1/2 top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 text-blue-700" />
+        <div className="grid grid-cols-12 items-center gap-4">
+          {/* Airline Logo & Info */}
+          <div className="col-span-3">
+            <div className="flex items-center gap-4">
+              <div className="flex size-14 items-center justify-center rounded-full bg-white p-2 shadow-md">
+                <img
+                  className="size-10 object-contain"
+                  src={mainFlight.airline_logo}
+                  alt={`Logo ${mainFlight.airline}`}
+                />
               </div>
-              <p className="text-xs text-gray-500">
-                {flight.layovers ? "Layover" : "Direct"}
-              </p>
-            </div>
-
-            <div className="text-center">
-              <p className="text-2xl font-bold text-gray-800">
-                {mainFlight.arrival_airport.time.split(" ")[1]}
-              </p>
-              <p className="text-lg font-medium text-gray-600">
-                {mainFlight.arrival_airport.id}
-              </p>
+              <div>
+                <p className="font-semibold text-gray-800">
+                  {mainFlight.airline}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {mainFlight.flight_number}
+                </p>
+              </div>
             </div>
           </div>
-          {/* Đường gạch đứt dọc trước phần giá */}
-          <div className="mx-4 hidden h-32 border-r border-dashed border-gray-300 lg:block"></div>
-          <div className="text-center lg:text-right">
-            <p className="text-black-600 text-2xl font-bold">
+
+          {/* Flight Times & Route */}
+          <div className="col-span-6">
+            <div className="flex items-center justify-between px-4">
+              {/* Departure */}
+              <div className="w-24 text-center">
+                <p className="text-xl font-bold text-gray-800">
+                  {mainFlight.departure_airport.time.split(" ")[1]}
+                </p>
+                <p className="text-base font-medium text-gray-600">
+                  {mainFlight.departure_airport.id}
+                </p>
+              </div>
+
+              {/* Duration & Flight Path with Dashed Line */}
+              <div className="flex flex-col items-center px-4">
+                <p className="mb-1 text-sm text-gray-500">
+                  {formatDuration(
+                    flight.flights.reduce((acc, seg) => acc + seg.duration, 0),
+                  )}
+                </p>
+                <div className="relative flex items-center">
+                  {/* Left dashed line */}
+                  <div className="h-px w-14 border-t-2 border-dashed border-gray-300"></div>
+
+                  {/* Plane icon in circle */}
+                  <div className="relative z-10 mx-2 flex size-6 items-center justify-center rounded-full bg-blue-500">
+                    <FaPlane className="size-3 text-white" />
+                  </div>
+
+                  {/* Right dashed line */}
+                  <div className="h-px w-14 border-t-2 border-dashed border-gray-300"></div>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  {flight.flights.length > 1 ? "Quá cảnh" : "Bay thẳng"}
+                </p>
+              </div>
+
+              {/* Arrival */}
+              <div className="w-24 text-center">
+                <p className="text-xl font-bold text-gray-800">
+                  {lastFlight.arrival_airport.time.split(" ")[1]}
+                </p>
+                <p className="text-base font-medium text-gray-600">
+                  {lastFlight.arrival_airport.id}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Price & Action */}
+          <div className="col-span-3 flex flex-col items-end justify-center">
+            <p className="mb-1 text-xl font-bold text-gray-800">
               {flight.price
                 ? flight.price.toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
                   })
-                : "Price unavailable"}
+                : "Không có giá"}
             </p>
             <p className="mb-1 text-sm text-gray-500">
-              {leg === "outbound" ? "Outbound" : "Return"}
+              {leg === "outbound" ? "Chuyến đi" : "Chuyến về"}
             </p>
-            <p className="mb-3 text-sm text-gray-500">
-              Available seats: {flight.availableSeats}
+            <p className="mb-2 text-sm text-gray-500">
+              Số ghế trống: {flight.availableSeats}
             </p>
-
-            {/* Hiển thị ghế đã chọn nếu có và nếu flight đã được chọn */}
-            {isSelectedFlight && selectedSeat && (
-              <p className="mb-3 text-sm text-blue-500">
-                Selected Seat: {selectedSeat}
-              </p>
-            )}
-
-            {/* The "Select Flight" button now triggers seat selection or flight change based on the condition */}
             <button
-              onClick={handleFlightSelection} // Conditional logic for flight selection or change
+              onClick={handleFlightSelection}
               className={`rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300 ${
                 isSelectedFlight
                   ? "border-2 border-blue-600 bg-white text-blue-600 hover:bg-blue-50"
-                  : "bg-yellow-500 text-white hover:bg-black"
+                  : "bg-yellow-500 text-white hover:bg-yellow-600"
               }`}
             >
-              {isSelectedFlight ? "Change Selection" : "Select Flight"}
+              {isSelectedFlight ? "Thay đổi lựa chọn" : "Chọn chuyến bay"}
             </button>
-
-            {/* Add the new "Select Seat Again" button */}
-            {isSelectedFlight && (
-              <button
-                onClick={() => setShowSeatSelection(true)} // Show the seat selection modal
-                className="mt-2 rounded-full bg-blue-500 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                Select Seat Again
-              </button>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Seat Selection Modal */}
+      {/* Modal chọn ghế */}
       {showSeatSelection && (
         <SeatSelection
-          totalSeats={flight.availableSeats} // Pass available seats
-          bookedSeats={flight.bookedSeats || []} // Pass the list of booked seats
-          onClose={() => setShowSeatSelection(false)} // Close seat selection
-          onSelectSeat={handleSelectSeat} // Select a seat and proceed to the next step
-          leg={leg} // Truyền biến leg vào SeatSelection
+          totalSeats={flight.availableSeats}
+          bookedSeats={flight.bookedSeats || []}
+          onClose={() => setShowSeatSelection(false)}
+          onSelectSeat={handleSelectSeat}
+          leg={leg}
         />
       )}
 
+      {/* Phần chi tiết mở rộng */}
       {showMore && (
-        <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="flex items-start space-x-3">
-              <FaClock className="mt-1 size-5 text-blue-500" />
-              <div>
-                <h5 className="mb-2 font-semibold text-gray-700">
-                  Flight Details
-                </h5>
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">
-                    {mainFlight.departure_airport.id}
-                  </span>{" "}
-                  {mainFlight.departure_airport.time} -
-                  <span className="font-medium">
-                    {" "}
-                    {mainFlight.arrival_airport.id}
-                  </span>{" "}
-                  {mainFlight.arrival_airport.time}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {mainFlight.departure_airport.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {mainFlight.aircraft_type}
+        <div className="rounded-lg bg-white p-6">
+          <h3 className="mb-6 text-xl font-semibold text-gray-800">
+            Chi tiết chuyến bay
+          </h3>
+
+          {/* Lịch trình chuyến bay */}
+          <div className="relative">
+            {/* Chuyến bay đầu tiên */}
+            <div className="mb-8 flex items-start">
+              <div className="relative">
+                <div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
+                  <FaPlane className="size-5 text-blue-600" />
+                </div>
+                <div className="absolute bottom-0 left-1/2 top-10 h-24 w-0.5 bg-gray-200" />
+              </div>
+
+              <div className="ml-4 flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      Cảng hàng không quốc tế Tân Sơn Nhất (SGN)
+                    </h4>
+                    <p className="text-sm text-gray-500">2024-11-08 12:25</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-700">
+                      XiamenAir
+                    </p>
+                    <p className="text-sm text-gray-500">MF 894</p>
+                  </div>
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  Thời gian bay: 3g 10p
+                </div>
+              </div>
+            </div>
+
+            {/* Quá cảnh */}
+            <div className="mb-8 ml-5 flex items-start">
+              <div className="z-10 -ml-4 flex size-8 items-center justify-center rounded-full bg-yellow-100">
+                <div className="size-4 rounded-full bg-yellow-400" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-yellow-600">
+                  Quá cảnh tại Sân bay quốc tế Cao Khí Hạ Môn (XMN) • NaNg NaNp
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <FaExchangeAlt className="mt-1 size-5 text-blue-500" />
+            {/* Chuyến bay thứ hai */}
+            <div className="mb-8 flex items-start">
+              <div className="relative">
+                <div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
+                  <FaPlane className="size-5 text-blue-600" />
+                </div>
+                <div className="absolute bottom-0 left-1/2 top-10 h-24 w-0.5 bg-gray-200" />
+              </div>
+
+              <div className="ml-4 flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      Sân bay quốc tế Cao Khí Hạ Môn (XMN)
+                    </h4>
+                    <p className="text-sm text-gray-500">2024-11-09 10:05</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-700">
+                      XiamenAir
+                    </p>
+                    <p className="text-sm text-gray-500">MF 381</p>
+                  </div>
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  Thời gian bay: 1g 25p
+                </div>
+              </div>
+            </div>
+
+            {/* Điểm đến cuối cùng */}
+            <div className="flex items-start">
+              <div className="z-10 flex size-8 items-center justify-center rounded-full bg-green-100">
+                <div className="size-3 rounded-full bg-green-600" />
+              </div>
+
+              <div className="ml-4 flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      Sân bay quốc tế Hồng Kông (HKG)
+                    </h4>
+                    <p className="text-sm text-gray-500">2024-11-09 11:30</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Thông tin chính sách */}
+          <div className="mt-8 grid grid-cols-1 gap-6 border-t border-gray-200 pt-8 md:grid-cols-2">
+            <div className="flex items-start space-x-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                <FaExchangeAlt className="size-5 text-blue-600" />
+              </div>
               <div>
-                <h5 className="mb-2 font-semibold text-gray-700">
-                  Refund Policy
+                <h5 className="mb-2 font-medium text-gray-900">
+                  Chính sách hoàn tiền
                 </h5>
-                <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
-                  <li>Subject to airline policies</li>
-                  <li>Refund = Charge + convenience fee</li>
-                  <li>Date change = Fee + convenience fee</li>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>Tuân theo chính sách của hãng hàng không</li>
+                  <li>Hoàn tiền = Phí + phí tiện ích</li>
+                  <li>Đổi ngày = Phí + phí tiện ích</li>
                 </ul>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <FaSuitcase className="mt-1 size-5 text-blue-500" />
+            <div className="flex items-start space-x-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                <FaSuitcase className="size-5 text-blue-600" />
+              </div>
               <div>
-                <h5 className="mb-2 font-semibold text-gray-700">
-                  Baggage Allowance
+                <h5 className="mb-2 font-medium text-gray-900">
+                  Hành lý cho phép
                 </h5>
-                <p className="text-sm text-gray-600">
-                  {mainFlight.departure_airport.id}-
-                  {mainFlight.arrival_airport.id}: 20KG / person
-                </p>
+                <p className="text-sm text-gray-600">SGN - HKG: 20KG / người</p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="mb-6 flex justify-center bg-gray-100 px-6 py-3">
+      <div className="flex justify-center bg-gray-100 p-4">
         <button
-          className="flex items-center font-medium text-gray-500 transition-colors duration-300 hover:text-blue-800"
+          className="flex items-center font-medium text-gray-500 transition-colors duration-300 hover:text-blue-600"
           onClick={toggleShowMore}
         >
-          {showMore ? "Hide details" : "Show more details"}
+          {showMore ? "Ẩn chi tiết" : "Xem thêm chi tiết"}
           {showMore ? (
-            <FaChevronUp className="ml-2 size-3" />
+            <FaChevronUp className="ml-2" />
           ) : (
-            <FaChevronDown className="ml-2 size-3" />
+            <FaChevronDown className="ml-2" />
           )}
         </button>
       </div>

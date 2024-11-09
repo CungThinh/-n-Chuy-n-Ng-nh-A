@@ -8,13 +8,23 @@ import {
   FaCaretDown,
 } from "react-icons/fa";
 import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
-import airportsData from "@/data/airports.json";
-import { removeVietnameseTones } from "@/utils";
 import { useRouter } from "next/navigation";
 
+import airportsData from "@/data/airports.json";
+import { removeVietnameseTones } from "@/utils";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export default function ChangeSearchBar() {
-  const [tripOption, setTripOption] = useState("One way");
+  const [tripOption, setTripOption] = useState("Một chiều");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
@@ -24,6 +34,7 @@ export default function ChangeSearchBar() {
     children: 0,
     infants: 0,
   });
+  const [travelClass, setTravelClass] = useState("1");
 
   const [dropdownOptionOpen, setDropdownOptionOpen] = useState(false);
   const [dropdownPassengersOpen, setDropdownPassengersOpen] = useState(false);
@@ -43,6 +54,7 @@ export default function ChangeSearchBar() {
   // Hoán đổi "Điểm đi" và "Nơi đến"
   const handleSwap = () => {
     const temp = from;
+
     setFrom(to);
     setTo(temp);
   };
@@ -64,7 +76,6 @@ export default function ChangeSearchBar() {
 
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Lọc dữ liệu sân bay dựa trên từ khóa
     const filteredAirports = airportsData
       .flatMap((region) => region.airports)
       .filter((airport) => {
@@ -90,13 +101,14 @@ export default function ChangeSearchBar() {
     if (filteredAirports.length > 0) {
       setAirportSuggestions(filteredAirports);
     } else {
-      setAirportSuggestions([{ iata: "", name: "No results found" }]);
+      setAirportSuggestions([{ iata: "", name: "Không tìm thấy kết quả" }]);
     }
   };
 
   // Hàm chọn sân bay từ danh sách gợi ý
   const selectAirport = (airport, isFromField) => {
     const selectedAirport = `${airport.iata}, ${airport.city}`;
+
     if (isFromField) {
       if (selectedAirport === to) {
         alert("Điểm đi và điểm đến không thể giống nhau.");
@@ -112,7 +124,7 @@ export default function ChangeSearchBar() {
         setIsToFocused(false);
       }
     }
-    setAirportSuggestions([]); // Ẩn danh sách gợi ý sau khi chọn
+    setAirportSuggestions([]);
   };
 
   // Hàm thay đổi số lượng hành khách
@@ -146,13 +158,12 @@ export default function ChangeSearchBar() {
     if (dropdownOptionOpen) setDropdownOptionOpen(false);
   };
 
-  // Xử lý chọn ngày về
   const handleReturnDateChange = (date) => {
     setReturnDate(date);
-    if (date && tripOption === "One way") {
-      setTripOption("Round trip");
-    } else if (!date && tripOption === "Round trip") {
-      setTripOption("One way");
+    if (date && tripOption === "Một chiều") {
+      setTripOption("Khứ hồi");
+    } else if (!date && tripOption === "Khứ hồi") {
+      setTripOption("Một chiều");
     }
   };
 
@@ -160,26 +171,18 @@ export default function ChangeSearchBar() {
     if (from && to && departureDate) {
       const fromCode = from.split(",")[0].trim();
       const toCode = to.split(",")[0].trim();
-
-      const flightType = returnDate ? "1" : "2"; // 1: Khứ hồi, 2: Một chiều
-
-      // Lưu flightType vào localStorage
-      localStorage.setItem("flightType", flightType);
-
-      console.log("Searching with params:", {
-        engine: "google_flights",
-        departure_id: fromCode,
-        arrival_id: toCode,
-        outbound_date: departureDate.toISOString().split("T")[0],
-        return_date: returnDate ? returnDate.toISOString().split("T")[0] : "",
-        currency: "VND",
-        api_key:
-          "01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae",
-        type: flightType,
-      });
+      const flightType = returnDate ? "1" : "2";
+      const formattedOutboundDate = departureDate.toISOString().split("T")[0];
+      const formattedReturnDate = returnDate
+        ? returnDate.toISOString().split("T")[0]
+        : "";
 
       router.push(
-        `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(fromCode)}&arrival_id=${encodeURIComponent(toCode)}&outbound_date=${departureDate.toISOString().split("T")[0]}&return_date=${returnDate ? returnDate.toISOString().split("T")[0] : ""}&currency=VND&hl=vi&gl=vn&api_key=01c66bdf6c895db5475ec52d592b15c0101d368c0b772891ef6ff8ed20b9beae&type=${flightType}`,
+        `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(
+          fromCode,
+        )}&arrival_id=${encodeURIComponent(
+          toCode,
+        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=c8ef166d9ea4cd3da69a99def09f1d4b227db65a31902b20f49a3e50d747350e&type=${flightType}&travel_class=${travelClass}`,
       );
     } else {
       alert("Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.");
@@ -205,7 +208,7 @@ export default function ChangeSearchBar() {
                 <div
                   key={airport.iata}
                   className="cursor-pointer border-b border-gray-200 p-4 hover:bg-gray-100"
-                  onMouseDown={(e) => e.preventDefault()} // Ngăn ngừa mất focus khi chọn
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => selectAirport(airport, true)}
                 >
                   <div className="flex items-center justify-between">
@@ -233,7 +236,7 @@ export default function ChangeSearchBar() {
           <FaPlane className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
-            placeholder="Nơi đến"
+            placeholder="Điểm đến"
             value={to}
             onChange={(e) => handleAirportSearch(e, false)}
             className="w-full rounded-md border border-gray-300 p-2 pl-10"
@@ -274,7 +277,7 @@ export default function ChangeSearchBar() {
             placeholderText="Ngày đi"
             className="w-[150px] bg-transparent focus:outline-none"
           />
-          {tripOption === "Round trip" && (
+          {tripOption === "Khứ hồi" && (
             <>
               <span className="mx-2 text-gray-500">|</span>
               <DatePicker
@@ -300,19 +303,42 @@ export default function ChangeSearchBar() {
           {dropdownOptionOpen && (
             <div className="absolute z-10 mt-2 rounded-lg bg-white shadow-md">
               <div
-                onClick={() => setTripOption("One way")}
+                onClick={() => setTripOption("Một chiều")}
                 className="cursor-pointer px-4 py-2 hover:bg-gray-200"
               >
-                One way
+                Một chiều
               </div>
               <div
-                onClick={() => setTripOption("Round trip")}
+                onClick={() => setTripOption("Khứ hồi")}
                 className="cursor-pointer px-4 py-2 hover:bg-gray-200"
               >
-                Round trip
+                Khứ hồi
               </div>
             </div>
           )}
+        </div>
+
+        {/* Chọn hạng ghế */}
+        <div className="relative flex items-center gap-3 rounded-lg bg-background p-2 shadow-sm ring-1 ring-muted">
+          <label
+            htmlFor="travel-class"
+            className="flex h-full items-center text-sm font-medium text-muted-foreground"
+          >
+            Hạng ghế:
+          </label>
+          <Select value={travelClass} onValueChange={setTravelClass}>
+            <SelectTrigger id="travel-class" className="h-[38px] w-[150px]">
+              <SelectValue placeholder="Chọn hạng ghế" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">Phổ thông</SelectItem>
+                <SelectItem value="2">Phổ thông cao cấp</SelectItem>
+                <SelectItem value="3">Thương gia</SelectItem>
+                <SelectItem value="4">Hạng nhất</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Hành khách */}
@@ -322,14 +348,14 @@ export default function ChangeSearchBar() {
             className="flex cursor-pointer items-center space-x-2 rounded-md border p-2"
           >
             <FaUser className="text-gray-500" />
-            <span>{getTotalPassengers()} Passenger</span>
+            <span>{getTotalPassengers()} Hành khách</span>
             <FaCaretDown className="text-gray-500" />
           </div>
 
           {dropdownPassengersOpen && (
             <div className="absolute z-10 mt-2 rounded-lg bg-white p-4 shadow-md">
               <div className="flex items-center justify-between">
-                <span>Adults</span>
+                <span>Người lớn</span>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handlePassengerChange("adults", "decrease")}
@@ -346,7 +372,7 @@ export default function ChangeSearchBar() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span>Children</span>
+                <span>Trẻ em</span>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() =>
@@ -367,7 +393,7 @@ export default function ChangeSearchBar() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span>Infants</span>
+                <span>Em bé</span>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handlePassengerChange("infants", "decrease")}
@@ -390,10 +416,9 @@ export default function ChangeSearchBar() {
       {/* Nút Tìm kiếm */}
       <button
         onClick={handleSearch}
-        className="flex items-center space-x-2 rounded-lg bg-blue-500 p-2 text-white"
+        className="flex items-center space-x-2 rounded-full bg-blue-500 p-2 text-white"
       >
         <FaSearch />
-        <span>Change Search</span>
       </button>
     </div>
   );

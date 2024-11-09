@@ -1,32 +1,26 @@
 "use client";
 import React, { useState } from "react";
-import "./styles.css";
 import Slider from "rc-slider";
+
 import "rc-slider/assets/index.css";
 import { getMinMaxPrice, getUniqueAirlineNames } from "../../../utils";
 import sampleApiResponse from "../../../data/sampleApiResponse.json";
 
 const FlightFilter = () => {
   const { minPrice, maxPrice } = getMinMaxPrice(sampleApiResponse);
-  // State cho slider giá tiền
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  // State cho slider thời gian bay
   const [flightDuration, setFlightDuration] = useState([165, 1405]);
-  // Hàm xử lý thay đổi cho slider giá tiền
-  const handlePriceChange = (value) => {
-    setPriceRange(value);
-  };
-
-  // Hàm xử lý thay đổi cho slider thời gian bay
-  const handleFlightDurationChange = (value) => {
-    setFlightDuration(value);
-  };
-
   const uniqueAirlineNames = getUniqueAirlineNames(sampleApiResponse);
-
   const [selectedAirlines, setSelectedAirlines] = useState({});
+  const [stopPoints, setStopPoints] = useState({
+    direct: false,
+    oneStop: false,
+    multipleStops: false,
+  });
 
-  // Hàm xử lý khi người dùng chọn hoặc bỏ chọn checkbox
+  const handlePriceChange = (value) => setPriceRange(value);
+  const handleFlightDurationChange = (value) => setFlightDuration(value);
+
   const handleCheckboxChange = (airline) => {
     setSelectedAirlines({
       ...selectedAirlines,
@@ -35,12 +29,11 @@ const FlightFilter = () => {
   };
 
   return (
-    <div className="hidden shrink-0 basis-[282px] md:block">
-      <form noValidate className="">
+    <div className="sticky top-4 h-screen basis-[282px] overflow-y-auto">
+      <form noValidate>
         <div
           id="filter-flight-ctn"
-          className="filter-flight-ctn flex flex-col space-y-3 pr-3 md:h-[68vh] lg:!max-h-[75vh]"
-          style={{ maxHeight: "649px" }}
+          className="filter-flight-ctn flex flex-col space-y-3 pr-3"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b-2 py-3">
@@ -50,116 +43,64 @@ const FlightFilter = () => {
             </span>
           </div>
 
-          {/* Filter by stop point */}
+          {/* Bộ lọc điểm dừng */}
           <div>
             <div className="py-3">
               <span className="font-semibold">Điểm dừng</span>
             </div>
-
-            <div className="py-2">
-              <div className="relative flex-1 flex-col space-y-2">
-                <div className="flex flex-row items-center space-x-2">
-                  <input
-                    id=":raa:"
-                    className="form-checkbox disabled:text-theme-gray-200 placeholder:text-theme-black/30 cursor-pointer rounded-md text-primary placeholder:font-light placeholder:not-italic focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-gray-100"
-                    type="checkbox"
-                    value="false"
-                    name="stopPoint.0.isSelected"
-                  />
-                  <label
-                    htmlFor=":raa:"
-                    className="!text-neutral-black flex-1 flex-shrink-0 cursor-pointer whitespace-normal text-black"
-                  >
-                    Bay thẳng
-                  </label>
-                </div>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stopPoints.direct}
+                  onChange={() =>
+                    setStopPoints((prev) => ({ ...prev, direct: !prev.direct }))
+                  }
+                />
+                <label>Bay thẳng</label>
               </div>
-            </div>
-
-            <div className="py-2">
-              <div className="relative flex-1 flex-col space-y-2">
-                <div className="flex flex-row items-center space-x-2">
-                  <input
-                    id=":rab:"
-                    className="form-checkbox disabled:text-theme-gray-200 placeholder:text-theme-black/30 cursor-pointer rounded-md text-primary placeholder:font-light placeholder:not-italic focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-gray-100"
-                    type="checkbox"
-                    value="false"
-                    name="stopPoint.1.isSelected"
-                  />
-                  <label
-                    htmlFor=":rab:"
-                    className="!text-neutral-black flex-1 flex-shrink-0 cursor-pointer whitespace-normal text-black"
-                  >
-                    1 điểm dừng
-                  </label>
-                </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stopPoints.oneStop}
+                  onChange={() =>
+                    setStopPoints((prev) => ({
+                      ...prev,
+                      oneStop: !prev.oneStop,
+                    }))
+                  }
+                />
+                <label>1 điểm dừng</label>
               </div>
-            </div>
-
-            <div className="py-2">
-              <div className="relative flex-1 flex-col space-y-2">
-                <div className="flex flex-row items-center space-x-2">
-                  <input
-                    id=":rac:"
-                    className="form-checkbox disabled:text-theme-gray-200 placeholder:text-theme-black/30 cursor-pointer rounded-md text-primary placeholder:font-light placeholder:not-italic focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-gray-100"
-                    type="checkbox"
-                    value="false"
-                    name="stopPoint.2.isSelected"
-                  />
-                  <label
-                    htmlFor=":rac:"
-                    className="!text-neutral-black flex-1 flex-shrink-0 cursor-pointer whitespace-normal text-black"
-                  >
-                    Nhiều điểm dừng
-                  </label>
-                </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stopPoints.multipleStops}
+                  onChange={() =>
+                    setStopPoints((prev) => ({
+                      ...prev,
+                      multipleStops: !prev.multipleStops,
+                    }))
+                  }
+                />
+                <label>Nhiều điểm dừng</label>
               </div>
             </div>
           </div>
 
-          {/* Filter by price */}
+          {/* Bộ lọc giá tiền */}
           <div className="border-t-2">
             <div className="py-3">
               <span className="font-semibold">Giá tiền</span>
             </div>
-            <div className="flex flex-col space-y-2 p-3">
-              <div>
-                <div className="relative flex-1 flex-col space-y-2">
-                  <Slider
-                    range
-                    min={9047520}
-                    max={53595020}
-                    defaultValue={priceRange}
-                    onChange={handlePriceChange}
-                    trackStyle={{
-                      backgroundColor: "rgb(23, 23, 26)",
-                      height: "2px",
-                    }}
-                    handleStyle={[
-                      {
-                        borderColor: "rgb(23, 23, 26)",
-                        height: "20px",
-                        width: "20px",
-                        backgroundColor: "rgb(252, 252, 252)",
-                        opacity: "1",
-                        marginTop: -9,
-                      },
-                      {
-                        borderColor: "rgb(23, 23, 26)",
-                        height: "20px",
-                        width: "20px",
-                        backgroundColor: "rgb(252, 252, 252)",
-                        opacity: "1",
-                        marginTop: -9,
-                      },
-                    ]}
-                    railStyle={{
-                      backgroundColor: "rgb(23, 23, 26)",
-                      height: "2px",
-                    }}
-                  />
-                </div>
-              </div>
+            <div className="p-3">
+              <Slider
+                range
+                min={minPrice}
+                max={maxPrice}
+                defaultValue={priceRange}
+                onChange={handlePriceChange}
+              />
               <div className="text-neutral flex justify-between">
                 <span>{priceRange[0].toLocaleString("vi-VN")} ₫</span>
                 <span>{priceRange[1].toLocaleString("vi-VN")} ₫</span>
@@ -167,49 +108,19 @@ const FlightFilter = () => {
             </div>
           </div>
 
-          {/* Filter by flight duration */}
+          {/* Bộ lọc thời gian bay */}
           <div className="border-t">
             <div className="py-3">
               <span className="font-semibold">Thời gian bay</span>
             </div>
-            <div className="flex flex-col space-y-2 p-3">
-              <div>
-                <div className="relative flex-1 flex-col space-y-2">
-                  <Slider
-                    range
-                    min={165}
-                    max={1405}
-                    defaultValue={flightDuration}
-                    onChange={handleFlightDurationChange}
-                    trackStyle={{
-                      backgroundColor: "rgb(23, 23, 26)",
-                      height: "2px",
-                    }}
-                    handleStyle={[
-                      {
-                        borderColor: "rgb(23, 23, 26)",
-                        height: "20px",
-                        width: "20px",
-                        backgroundColor: "rgb(252, 252, 252)",
-                        opacity: "1",
-                        marginTop: -9,
-                      },
-                      {
-                        borderColor: "rgb(23, 23, 26)",
-                        height: "20px",
-                        width: "20px",
-                        backgroundColor: "rgb(252, 252, 252)",
-                        opacity: "1",
-                        marginTop: -9,
-                      },
-                    ]}
-                    railStyle={{
-                      backgroundColor: "rgb(23, 23, 26)",
-                      height: "2px",
-                    }}
-                  />
-                </div>
-              </div>
+            <div className="p-3">
+              <Slider
+                range
+                min={165}
+                max={1405}
+                defaultValue={flightDuration}
+                onChange={handleFlightDurationChange}
+              />
               <div className="text-neutral flex justify-between">
                 <span>{flightDuration[0]} phút</span>
                 <span>{flightDuration[1]} phút</span>
@@ -217,32 +128,19 @@ const FlightFilter = () => {
             </div>
           </div>
 
-          {/* More filters */}
+          {/* Bộ lọc hãng bay */}
           <div className="border-t">
             <div className="py-3">
               <span className="font-semibold">Hãng bay</span>
             </div>
-
-            {/* List of airlines */}
             {uniqueAirlineNames.map((airline, index) => (
-              <div className="py-2" key={index}>
-                <div className="relative flex-1 flex-col space-y-2">
-                  <div className="flex flex-row items-center space-x-2">
-                    <input
-                      id={`airline-${index}`}
-                      className="form-checkbox disabled:text-theme-gray-200 placeholder:text-theme-black/30 cursor-pointer rounded-md text-primary placeholder:font-light placeholder:not-italic focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-gray-100"
-                      type="checkbox"
-                      checked={selectedAirlines[airline] || false}
-                      onChange={() => handleCheckboxChange(airline)}
-                    />
-                    <label
-                      htmlFor={`airline-${index}`}
-                      className="!text-neutral-black flex-1 flex-shrink-0 cursor-pointer whitespace-normal text-black"
-                    >
-                      {airline}
-                    </label>
-                  </div>
-                </div>
+              <div className="flex items-center space-x-2 py-2" key={index}>
+                <input
+                  type="checkbox"
+                  checked={selectedAirlines[airline] || false}
+                  onChange={() => handleCheckboxChange(airline)}
+                />
+                <label>{airline}</label>
               </div>
             ))}
           </div>

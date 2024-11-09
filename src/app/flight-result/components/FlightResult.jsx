@@ -15,7 +15,7 @@ const FlightList = ({ flights, onSelectFlight, leg, totalFlightsFound }) => {
               {leg === "outbound" ? "Chọn chuyến bay đi" : "Chọn chuyến bay về"}
             </h2>
             <span className="font-medium text-black">
-              Tours Found: {totalFlightsFound}
+              Tổng vé bay: {totalFlightsFound}
             </span>
           </div>
           <div className="infinite-scroll-component relative divide-y md:space-y-1.5 md:divide-y-0">
