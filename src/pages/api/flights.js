@@ -27,6 +27,7 @@ export default async function handler(req, res) {
   console.log("Trẻ em:", children);
   console.log("Trẻ sơ sinh có ghế:", infants_in_seat);
   console.log("Trẻ sơ sinh ngồi cùng người lớn:", infants_on_lap);
+  console.log("Received travel_class from client:", travel_class);
 
   const vietnamTimeZone = "Asia/Ho_Chi_Minh";
   const currentDateTime = new Date(

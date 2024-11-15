@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 export default function Component({
@@ -11,10 +10,7 @@ export default function Component({
 }) {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [bookedSeats, setBookedSeats] = useState([]);
-  const [modalPosition, setModalPosition] = useState({
-    top: "50%",
-    left: "50%",
-  });
+  const [isLoading, setIsLoading] = useState(false); // Thêm state để quản lý trạng thái loading
 
   const seatRows = Array.from({ length: 10 }, (_, i) =>
     ["A", "B", "C", "D", "E", "F"].map((letter) => `${i + 1}${letter}`),
@@ -34,40 +30,33 @@ export default function Component({
     setBookedSeats([...tempBookedSeats]);
   }, [totalSeats, availableSeats]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setModalPosition({ top: `${window.scrollY + 100}px`, left: "50%" });
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const handleSeatClick = (seat) =>
     !bookedSeats.includes(seat) && setSelectedSeat(seat);
 
   const handleAccept = () => {
-    onSelectSeat(selectedSeat);
-    localStorage.setItem(`selected${leg}Seat`, selectedSeat);
-    onClose();
+    setIsLoading(true); // Bắt đầu loading
+    setTimeout(() => {
+      onSelectSeat(selectedSeat);
+      localStorage.setItem(`selected${leg}Seat`, selectedSeat);
+      setIsLoading(false); // Kết thúc loading
+      onClose(); // Đóng modal sau khi loading hoàn tất
+    }, 1000); // Đặt thời gian loading là 1 giây (1000ms)
   };
 
   return (
     <div>
-      {/* Lớp nền mờ bao phủ toàn bộ màn hình để khóa thao tác bên ngoài form */}
+      {/* Overlay background */}
       <div
         className="fixed inset-0 z-40 bg-gray-900/50"
-        onClick={onClose} // Đóng form khi nhấn ra ngoài nếu muốn
+        onClick={onClose} // Đóng form khi nhấn ra ngoài
       ></div>
 
-      {/* Nội dung form chọn ghế */}
+      {/* Modal content centered */}
       <div
-        className="fixed z-50 bg-white"
-        style={{ ...modalPosition, transform: "translate(-50%, 0)" }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ paddingTop: "10vh" }}
       >
-        <div className="w-[600px] rounded-lg bg-white p-2">
+        <div className="w-[500px] rounded-lg bg-white p-6 shadow-lg">
           <div className="mb-2">
             <div className="mx-auto mb-4 flex h-8 w-3/4 items-center justify-center rounded-t-full bg-gray-200 text-gray-600">
               Screen
@@ -103,7 +92,7 @@ export default function Component({
                             : selectedSeat === seat
                               ? "bg-blue-500 text-white"
                               : "bg-blue-500 text-white hover:bg-blue-600"
-                        } `}
+                        }`}
                       >
                         {bookedSeats.includes(seat) ? "X" : seat}
                       </button>
@@ -135,13 +124,41 @@ export default function Component({
             <button
               className="rounded-md bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
               onClick={handleAccept}
-              disabled={!selectedSeat}
+              disabled={!selectedSeat || isLoading} // Vô hiệu hóa khi loading
             >
-              Confirm
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <span className="loader"></span> {/* Thêm spinner */}
+                  Loading...
+                </div>
+              ) : (
+                "Confirm"
+              )}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Spinner Style */}
+      <style jsx>{`
+        .loader {
+          border: 2px solid #f3f3f3;
+          border-top: 2px solid #3498db;
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -87,3 +87,12 @@ model Payment {
 }
 
 // Tạo booking trước, sau đó tạo Ticket
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  bookingId Int
+  rating    Int
+  comment   String
+  email     String
+  createdAt DateTime @default(now())
+}

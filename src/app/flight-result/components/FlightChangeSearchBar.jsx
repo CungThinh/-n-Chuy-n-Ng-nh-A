@@ -182,7 +182,7 @@ export default function ChangeSearchBar() {
           fromCode,
         )}&arrival_id=${encodeURIComponent(
           toCode,
-        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=c8ef166d9ea4cd3da69a99def09f1d4b227db65a31902b20f49a3e50d747350e&type=${flightType}&travel_class=${travelClass}`,
+        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=18405be303c00ff7b330775c1b3acc68533552e6a4dafdb804e7f58f50ef40c6&type=${flightType}&travel_class=${travelClass}`,
       );
     } else {
       alert("Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.");
@@ -190,7 +190,7 @@ export default function ChangeSearchBar() {
   };
 
   return (
-    <div className="max-w-8xl mx-auto flex w-full items-center justify-between rounded-lg bg-white p-4 shadow-md">
+    <div className="mx-auto flex w-full max-w-7xl items-center justify-between rounded-lg bg-white p-4 shadow-md">
       {/* Điểm đi và điểm đến */}
       <div className="flex items-center space-x-2">
         <div className="relative w-[200px]" ref={fromDropdownRef}>

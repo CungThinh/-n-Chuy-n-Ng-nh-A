@@ -181,81 +181,63 @@ export default function FlightCard({
 
           {/* Lịch trình chuyến bay */}
           <div className="relative">
-            {/* Chuyến bay đầu tiên */}
-            <div className="mb-8 flex items-start">
-              <div className="relative">
-                <div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
-                  <FaPlane className="size-5 text-blue-600" />
-                </div>
-                <div className="absolute bottom-0 left-1/2 top-10 h-24 w-0.5 bg-gray-200" />
-              </div>
-
-              <div className="ml-4 flex-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-medium text-gray-900">
-                      Cảng hàng không quốc tế Tân Sơn Nhất (SGN)
-                    </h4>
-                    <p className="text-sm text-gray-500">2024-11-08 12:25</p>
+            {flight.flights.map((segment, index) => (
+              <div key={index}>
+                {/* Chuyến bay từng chặng */}
+                <div className="mb-8 flex items-start">
+                  <div className="relative">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
+                      <FaPlane className="size-5 text-blue-600" />
+                    </div>
+                    <div className="absolute bottom-0 left-1/2 top-10 h-20 w-0.5 bg-gray-200" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-700">
-                      XiamenAir
-                    </p>
-                    <p className="text-sm text-gray-500">MF 894</p>
-                  </div>
-                </div>
-                <div className="mt-2 text-sm text-gray-600">
-                  Thời gian bay: 3g 10p
-                </div>
-              </div>
-            </div>
 
-            {/* Quá cảnh */}
-            <div className="mb-8 ml-5 flex items-start">
-              <div className="z-10 -ml-4 flex size-8 items-center justify-center rounded-full bg-yellow-100">
-                <div className="size-4 rounded-full bg-yellow-400" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-yellow-600">
-                  Quá cảnh tại Sân bay quốc tế Cao Khí Hạ Môn (XMN) • NaNg NaNp
-                </p>
-              </div>
-            </div>
-
-            {/* Chuyến bay thứ hai */}
-            <div className="mb-8 flex items-start">
-              <div className="relative">
-                <div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
-                  <FaPlane className="size-5 text-blue-600" />
-                </div>
-                <div className="absolute bottom-0 left-1/2 top-10 h-24 w-0.5 bg-gray-200" />
-              </div>
-
-              <div className="ml-4 flex-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-medium text-gray-900">
-                      Sân bay quốc tế Cao Khí Hạ Môn (XMN)
-                    </h4>
-                    <p className="text-sm text-gray-500">2024-11-09 10:05</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-700">
-                      XiamenAir
-                    </p>
-                    <p className="text-sm text-gray-500">MF 381</p>
+                  <div className="ml-4 flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {segment.departure_airport.name} (
+                          {segment.departure_airport.id})
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          {segment.departure_time}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-700">
+                          {segment.airline}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {segment.flight_number}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-gray-600">
+                      Thời gian bay: {formatDuration(segment.duration)}
+                    </div>
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-600">
-                  Thời gian bay: 1g 25p
-                </div>
+
+                {/* Hiển thị quá cảnh nếu không phải chuyến bay cuối */}
+                {index < flight.flights.length - 1 && (
+                  <div className="mb-8 ml-5 flex items-start">
+                    <div className="z-10 -ml-4 flex size-8 items-center justify-center rounded-full bg-yellow-100">
+                      <div className="size-4 rounded-full bg-yellow-400" />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm text-yellow-600">
+                        Quá cảnh tại {segment.arrival_airport.name} (
+                        {segment.arrival_airport.id})
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            ))}
 
             {/* Điểm đến cuối cùng */}
             <div className="flex items-start">
-              <div className="z-10 flex size-8 items-center justify-center rounded-full bg-green-100">
+              <div className="z-10 ml-1 flex size-8 items-center justify-center rounded-full bg-green-100">
                 <div className="size-3 rounded-full bg-green-600" />
               </div>
 
@@ -263,9 +245,12 @@ export default function FlightCard({
                 <div className="flex items-start justify-between">
                   <div>
                     <h4 className="font-medium text-gray-900">
-                      Sân bay quốc tế Hồng Kông (HKG)
+                      {lastFlight.arrival_airport.name} (
+                      {lastFlight.arrival_airport.id})
                     </h4>
-                    <p className="text-sm text-gray-500">2024-11-09 11:30</p>
+                    <p className="text-sm text-gray-500">
+                      {lastFlight.arrival_time}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -298,7 +283,10 @@ export default function FlightCard({
                 <h5 className="mb-2 font-medium text-gray-900">
                   Hành lý cho phép
                 </h5>
-                <p className="text-sm text-gray-600">SGN - HKG: 20KG / người</p>
+                <p className="text-sm text-gray-600">
+                  {mainFlight.departure_airport.id} -{" "}
+                  {lastFlight.arrival_airport.id}: 20KG / người
+                </p>
               </div>
             </div>
           </div>

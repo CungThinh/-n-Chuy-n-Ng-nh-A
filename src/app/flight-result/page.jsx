@@ -4,17 +4,15 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 
 import FlightList from "./components/FlightResult";
-import LoadingComponent from "./components/LoadingSpinner";
 import ChangeSearchBar from "./components/FlightChangeSearchBar";
-// Đảm bảo bạn import FlightFilter
-import FlightCard from "./components/FlightCard"; // Thêm dòng này để import FlightCard
+import FlightCard from "./components/FlightCard";
+import ProgressBar from "./components/ProgressBar"; // Import thanh tiến trình mới
 
 const FlightSearchResult = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  const [from, setFrom] = useState("DXB, Dubai - UAE");
-  const [to, setTo] = useState("RUH, Riyadh - Saudi Arab");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [tripOption, setTripOption] = useState("One way");
@@ -30,7 +28,11 @@ const FlightSearchResult = () => {
   const [selectedOutboundFlight, setSelectedOutboundFlight] = useState(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0); // Thêm state cho progress
   const [totalFlightsFound, setTotalFlightsFound] = useState(0);
+
+  // Thêm biến `travelClass` để lưu hạng ghế được chọn từ URL
+  const travelClass = searchParams.get("travel_class") || "1"; // Mặc định là "Economy"
 
   // State cho các điểm dừng
   const [stopPoints, setStopPoints] = useState({
@@ -46,8 +48,11 @@ const FlightSearchResult = () => {
   // Hàm fetch chuyến bay và tạo số ghế ngẫu nhiên (giới hạn số ghế trống từ 1 đến 20)
   const fetchFlights = async (params, isReturn = false) => {
     setLoading(true);
+    setProgress(0); // Đặt lại tiến trình khi bắt đầu tải dữ liệu
     try {
       const response = await axios.get("/api/flights", { params });
+
+      console.log("API Response:", response.data);
       const { other_flights, multi_leg_flights } = response.data;
 
       // Giới hạn số ghế tối đa là 60
@@ -80,6 +85,19 @@ const FlightSearchResult = () => {
       setLoading(false);
     }
   };
+
+  // Hàm cập nhật progress bar trong khi loading
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setProgress((prev) => (prev < 90 ? prev + 10 : prev));
+      }, 300);
+
+      return () => clearInterval(interval);
+    } else {
+      setProgress(100); // Hoàn thành progress khi dừng loading
+    }
+  }, [loading]);
 
   // Hàm lọc chuyến bay
   const filterFlights = (flights, stopPoints) => {
@@ -234,15 +252,19 @@ const FlightSearchResult = () => {
     router.push("/booking-details");
   };
 
-  if (loading) {
-    return <LoadingComponent />;
-  }
+  const handleSortFlights = (sortedFlights) => {
+    if (step === "outbound") {
+      setFilteredOutboundFlights(sortedFlights);
+    } else {
+      setFilteredReturnFlights(sortedFlights);
+    }
+  };
 
+  // JSX cho giao diện hiển thị và thanh progress
   return (
-    <div
-      className="container mx-auto max-w-[1440px] px-4"
-      style={{ paddingTop: "80px" }}
-    >
+    <div className="mx-auto max-w-7xl px-4" style={{ paddingTop: "80px" }}>
+      {loading && <ProgressBar progress={progress} />}{" "}
+      {/* Hiển thị thanh tiến trình */}
       <ChangeSearchBar
         from={from}
         to={to}
@@ -253,24 +275,18 @@ const FlightSearchResult = () => {
         classType="Economy"
         onSearch={() => {}}
       />
-      {/* Chỉ giữ lại một lần gọi FlightFilter */}
-      {/* <FlightFilter onFilterChange={handleFilterChange} /> */}
-      {/* Hiển thị chuyến bay đi đã chọn nếu người dùng đã chọn */}
       {selectedOutboundFlight && step === "return" && (
         <div className="mb-4 rounded-lg border bg-gray-100 p-4">
           <h3 className="mb-2 text-lg font-bold">Chuyến bay bạn đã lựa chọn</h3>
-          {selectedOutboundFlight && ( // Fix here
-            <FlightCard
-              flight={selectedOutboundFlight} // Use selectedOutboundFlight
-              onSelect={() => console.log("Flight selected")}
-              leg="outbound"
-              isSelectedFlight={true}
-              onChangeFlight={handleReSelectOutboundFlight} // Pass the change flight handler
-            />
-          )}
+          <FlightCard
+            flight={selectedOutboundFlight}
+            onSelect={() => {}}
+            leg="outbound"
+            isSelectedFlight={true}
+            onChangeFlight={() => setSelectedOutboundFlight(null)}
+          />
         </div>
       )}
-
       {noResultsMessage && (
         <div className="text-red-500">{noResultsMessage}</div>
       )}
@@ -280,6 +296,7 @@ const FlightSearchResult = () => {
           onSelectFlight={handleSelectOutboundFlight}
           leg="outbound"
           totalFlightsFound={filteredOutboundFlights.length}
+          travelClass={travelClass} // Truyền hạng ghế vào FlightList
         />
       ) : (
         <FlightList
@@ -287,6 +304,7 @@ const FlightSearchResult = () => {
           onSelectFlight={handleSelectReturnFlight}
           leg="return"
           totalFlightsFound={filteredReturnFlights.length}
+          travelClass={travelClass} // Truyền hạng ghế vào FlightList
         />
       )}
     </div>

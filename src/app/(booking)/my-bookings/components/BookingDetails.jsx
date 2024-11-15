@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Star } from "lucide-react";
 import {
   FaAngleDown,
   FaUser,
@@ -15,6 +16,18 @@ import { Button } from "@/components/ui/button";
 
 const BookingDetails = ({ booking, onCancel, onPay }) => {
   const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
+  const [rating, setRating] = useState(0); // Khai báo rating
+  const [comment, setComment] = useState(""); // Khai báo comment
+  const [isSubmitting, setIsSubmitting] = useState(false); // Khai báo isSubmitting
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+  };
+
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
   const handleToggleFlightDetail = () => {
     setIsFlightDetailVisible(!isFlightDetailVisible);
   };
@@ -36,6 +49,21 @@ const BookingDetails = ({ booking, onCancel, onPay }) => {
           ? "Đã hủy"
           : "Đã thanh toán";
   }
+
+  const handleSubmitReview = async () => {
+    try {
+      await axios.post("/api/reviews/createReview", {
+        bookingId: bookingInfo.bookingId,
+        rating,
+        comment,
+        email: bookingInfo.email, // Sử dụng email từ thông tin đặt chỗ
+      });
+      alert("Cảm ơn bạn đã đánh giá!");
+    } catch (error) {
+      console.error("Lỗi khi gửi đánh giá:", error);
+      alert("Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.");
+    }
+  };
 
   return (
     <div className="mx-auto my-4 max-w-4xl rounded-lg bg-gray-50 p-8 shadow-lg">
@@ -250,6 +278,46 @@ const BookingDetails = ({ booking, onCancel, onPay }) => {
               </Button>
             </CardFooter>
           </Card>
+        </div>
+      </div>
+      {/* Phần thêm đánh giá vào cuối */}
+      <div className="mt-10 rounded-lg bg-white p-6 shadow-md">
+        <h2 className="mb-4 text-xl font-bold">Đánh giá dịch vụ</h2>
+        <div className="space-y-4">
+          <div className="flex items-center">
+            <span className="mr-2">Đánh giá:</span>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`size-6 cursor-pointer ${
+                  star <= rating
+                    ? "fill-current text-yellow-400"
+                    : "text-gray-300"
+                }`}
+                onClick={() => handleRatingChange(star)}
+              />
+            ))}
+          </div>
+          <div>
+            <label htmlFor="comment" className="mb-2 block">
+              Nhận xét:
+            </label>
+            <textarea
+              id="comment"
+              className="w-full rounded-md border p-2"
+              rows="4"
+              value={comment}
+              onChange={handleCommentChange}
+              placeholder="Chia sẻ trải nghiệm của bạn..."
+            ></textarea>
+          </div>
+          <button
+            onClick={handleSubmitReview}
+            disabled={isSubmitting}
+            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
+          </button>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ import {
 const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname(); // Lấy đường dẫn hiện tại
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
 
   const handleLoginClick = () => {
@@ -24,7 +24,7 @@ const Navbar = () => {
   };
 
   const handleLogoClick = () => {
-    router.push("/"); // Điều hướng về trang chủ khi logo được click
+    router.push("/");
   };
 
   const handleBookingSearchClick = () => {
@@ -34,11 +34,10 @@ const Navbar = () => {
   const handleLogout = async () => {
     await signOut({
       redirect: true,
-      callbackUrl: "/", // Chuyển hướng đến trang chủ sau khi đăng xuất
+      callbackUrl: "/",
     });
   };
 
-  // Event listener để thay đổi màu navbar khi scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -48,7 +47,6 @@ const Navbar = () => {
       }
     };
 
-    // Nếu ở trang index (home), chúng ta mới thêm listener cho việc scroll
     if (pathname === "/") {
       window.addEventListener("scroll", handleScroll);
     }
@@ -60,25 +58,24 @@ const Navbar = () => {
     };
   }, [pathname]);
 
-  // Xác định trạng thái của navbar
   const isHomePage = pathname === "/";
   const navbarBgColor = isHomePage
     ? isScrolled
       ? "bg-[#00264e]"
-      : "bg-transparent" // Ở trang index, navbar trong suốt khi ở trên đầu, và đổi màu khi scroll
-    : "bg-[#00264e]"; // Ở các trang khác, luôn luôn có màu xanh
+      : "bg-transparent"
+    : "bg-[#00264e]";
 
   return (
     <nav
       className={`fixed z-50 w-full transition-all duration-500 ${navbarBgColor} px-6 py-4 text-white`}
     >
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center">
           <img
             src="/images/Logo.png"
             alt="vemaybay.vn logo"
             className="h-10 w-auto cursor-pointer"
-            onClick={handleLogoClick} // Thêm sự kiện click cho logo
+            onClick={handleLogoClick}
           />
         </div>
 
@@ -94,31 +91,19 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-10">
-          {/* <button
-            className="flex items-center space-x-2"
-            onClick={handleBookingSearchClick}
-          >
-            <FaSearch className="text-xl" />
-            <span className="text-sm">Tra cứu vé</span>
-          </button> */}
-
           {session ? (
             <div className="flex items-center space-x-2">
               <Dropdown css={{ color: "white " }}>
                 <DropdownTrigger>
                   <Button variant="light">
                     {session.user.image ? (
-                      <>
-                        <img
-                          src={session.user.image}
-                          alt="User Avatar"
-                          className="size-8 rounded-full"
-                        />
-                      </>
+                      <img
+                        src={session.user.image}
+                        alt="User Avatar"
+                        className="size-8 rounded-full"
+                      />
                     ) : (
-                      <>
-                        <FaUserCircle className="text-2xl text-white" />
-                      </>
+                      <FaUserCircle className="text-2xl text-white" />
                     )}
                     <span className="text-sm text-white">
                       {session.user.email}

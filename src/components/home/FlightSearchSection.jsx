@@ -9,7 +9,9 @@ import {
   FaCaretDown,
   FaCheck,
   FaCalendarAlt,
+  FaSpinner,
 } from "react-icons/fa";
+import { MdAirlineSeatReclineExtra } from "react-icons/md";
 import { format } from "date-fns";
 import { startOfDay, addDays } from "date-fns";
 import { useRouter } from "next/navigation";
@@ -29,8 +31,9 @@ import { removeVietnameseTones } from "@/utils";
 
 export default function FlightSearchSection() {
   const [tripOption, setTripOption] = useState("Một chiều");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [dropdownClassOpen, setDropdownClassOpen] = useState(false);
+  const [from, setFrom] = useState("SGN, Hồ Chí Minh");
+  const [to, setTo] = useState("HAN, Hà Nội");
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [passengers, setPassengers] = useState({
@@ -39,7 +42,7 @@ export default function FlightSearchSection() {
     infants_in_seat: 0, // Số trẻ sơ sinh có ghế ngồi
     infants_on_lap: 0, // Số trẻ sơ sinh ngồi cùng người lớn
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   const [dropdownOptionOpen, setDropdownOptionOpen] = useState(false);
   const [dropdownPassengersOpen, setDropdownPassengersOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -195,6 +198,11 @@ export default function FlightSearchSection() {
     if (dropdownPassengersOpen) setDropdownPassengersOpen(false);
   };
 
+  const toggleClassDropdown = () => {
+    setDropdownClassOpen(!dropdownClassOpen);
+    if (dropdownOptionOpen) setDropdownOptionOpen(false); // Đóng "Một chiều/Khứ hồi" khi mở "Hạng ghế"
+  };
+
   const togglePassengersDropdown = () => {
     setDropdownPassengersOpen(!dropdownPassengersOpen);
     if (dropdownOptionOpen) setDropdownOptionOpen(false);
@@ -246,6 +254,7 @@ export default function FlightSearchSection() {
 
   const handleSearch = () => {
     if (from && to && departureDate) {
+      setIsLoading(true);
       const fromCode = from.split(",")[0].trim();
       const toCode = to.split(",")[0].trim();
       const flightType = returnDate ? "1" : "2";
@@ -261,17 +270,8 @@ export default function FlightSearchSection() {
           })
         : "";
 
-      // Log thông tin hành khách trước khi gọi API
-      console.log("Thông tin hành khách:");
-      console.log("Người lớn:", passengers.adults);
-      console.log("Trẻ em:", passengers.children);
-      console.log("Trẻ sơ sinh có ghế:", passengers.infants_in_seat);
-      console.log(
-        "Trẻ sơ sinh ngồi cùng người lớn:",
-        passengers.infants_on_lap,
-      );
+      console.log("travel_class:", travelClass); // Kiểm tra trước khi gọi API
 
-      // Chuyển hướng với dữ liệu hành khách
       router.push(
         `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(
           fromCode,
@@ -279,6 +279,8 @@ export default function FlightSearchSection() {
           toCode,
         )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=18405be303c00ff7b330775c1b3acc68533552e6a4dafdb804e7f58f50ef40c6&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
       );
+
+      setTimeout(() => setIsLoading(false), 1000);
     } else {
       alert("Vui lòng điền đầy đủ thông tin điểm đi, điểm đến và ngày đi.");
     }
@@ -577,31 +579,90 @@ export default function FlightSearchSection() {
                 )}
               </div>
               {/* Các phần khác của giao diện */}
-              <div className="flex h-[38px] items-center gap-3 rounded-lg bg-background p-2 shadow-sm ring-1 ring-muted">
-                <label
-                  htmlFor="travel-class"
-                  className="flex h-full items-center whitespace-nowrap text-sm font-medium text-muted-foreground" // Đặt chiều cao và căn giữa theo chiều dọc
-                >
-                  Hạng ghế:
-                </label>
-                <Select value={travelClass} onValueChange={setTravelClass}>
-                  <SelectTrigger
-                    id="travel-class"
-                    className="h-[38px] w-[170px] border-0 bg-transparent focus:ring-0"
-                  >
-                    {" "}
-                    {/* Đặt chiều cao cho SelectTrigger */}
-                    <SelectValue placeholder="Chọn hạng ghế" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="1">Economy</SelectItem>
-                      <SelectItem value="2">Premium Economy</SelectItem>
-                      <SelectItem value="3">Business</SelectItem>
-                      <SelectItem value="4">First</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+              <div
+                className="relative flex h-[38px] w-[170px] cursor-pointer items-center rounded-lg border bg-white p-2 md:w-auto"
+                onClick={toggleClassDropdown} // Mở/đóng "Hạng ghế"
+              >
+                <MdAirlineSeatReclineExtra className="mr-2 text-[22px] text-gray-500" />
+                <span>
+                  {travelClass === "1"
+                    ? "Economy"
+                    : travelClass === "2"
+                      ? "Premium Economy"
+                      : travelClass === "3"
+                        ? "Business"
+                        : "First"}
+                </span>
+                <FaCaretDown className="ml-2 inline-block text-gray-500" />
+
+                {dropdownClassOpen && ( // Kiểm tra mở/đóng với `dropdownClassOpen`
+                  <div className="absolute left-0 top-9 z-20 mt-1 w-full rounded-lg bg-white shadow-lg md:left-auto md:w-[170px]">
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("1");
+                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn Economy
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Economy
+                      {travelClass === "1" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("2");
+                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn Premium Economy
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Premium Economy
+                      {travelClass === "2" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("3");
+                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn Business
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      Business
+                      {travelClass === "3" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setTravelClass("4");
+                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn First
+                        setDropdownClassOpen(false);
+                      }}
+                    >
+                      First
+                      {travelClass === "4" && (
+                        <FaCheck
+                          className="text-orange-500"
+                          style={{ strokeWidth: "1px" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -772,8 +833,14 @@ export default function FlightSearchSection() {
                 <button
                   onClick={handleSearch}
                   className="flex h-[50px] items-center justify-center rounded-lg bg-orange-500 px-6 py-3 text-white"
+                  disabled={isLoading} // Vô hiệu hóa nút trong khi loading
                 >
-                  <FaSearch className="mr-2" /> Tìm kiếm
+                  {isLoading ? (
+                    <FaSpinner className="mr-2 animate-spin" /> // Biểu tượng loading xoay
+                  ) : (
+                    <FaSearch className="mr-2" />
+                  )}
+                  {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}
                 </button>
               </div>
             )}

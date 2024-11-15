@@ -48,7 +48,7 @@ export default function FlightDetails({ flightDetails, flightType }) {
         <div className="relative mb-4 rounded-lg bg-white p-6 shadow-md">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-3 rounded bg-yellow-400 px-3 py-1 font-semibold text-white">
+              <span className="mr-3 rounded bg-blue-600 px-3 py-1 font-semibold text-white">
                 Chiều đi
               </span>
               <h2 className="text-xl font-bold text-gray-800">
@@ -61,7 +61,7 @@ export default function FlightDetails({ flightDetails, flightType }) {
               </h2>
             </div>
             <button
-              className="font-semibold text-orange-500 underline"
+              className="font-semibold text-gray-400 hover:text-gray-500"
               onClick={handleToggleOutboundDetail}
             >
               Chi tiết
@@ -243,7 +243,7 @@ export default function FlightDetails({ flightDetails, flightType }) {
         <div className="relative mb-4 rounded-lg bg-white p-6 shadow-md">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-3 rounded bg-yellow-400 px-3 py-1 font-semibold text-white">
+              <span className="mr-3 rounded bg-blue-600 px-3 py-1 font-semibold text-white">
                 Chiều về
               </span>
               <h2 className="text-xl font-bold text-gray-800">
@@ -256,7 +256,7 @@ export default function FlightDetails({ flightDetails, flightType }) {
               </h2>
             </div>
             <button
-              className="font-semibold text-orange-500 underline"
+              className="font-semibold text-gray-400 hover:text-gray-500"
               onClick={handleToggleReturnDetail}
             >
               Chi tiết

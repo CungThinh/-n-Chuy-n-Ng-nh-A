@@ -39,13 +39,13 @@
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
+    "date-fns": "^3.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-tailwindcss": "^3.17.5",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^11.11.1",
     "lucide-react": "^0.453.0",
-    "next": "^15.0.3",
+    "next": "14.2.12",
     "next-auth": "^4.24.7",
     "ra-core": "^5.3.1",
     "ra-ui-materialui": "^5.2.2",
@@ -61,7 +61,8 @@
     "stripe": "^17.2.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.0.4",
+    "vnpay": "^1.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",
