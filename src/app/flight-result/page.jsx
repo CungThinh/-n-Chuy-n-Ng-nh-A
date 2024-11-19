@@ -24,43 +24,23 @@ const FlightSearchResult = () => {
   const [step, setStep] = useState("outbound");
   const [outboundFlights, setOutboundFlights] = useState([]);
   const [returnFlights, setReturnFlights] = useState([]);
-  const [multiLegFlights, setMultiLegFlights] = useState([]);
   const [selectedOutboundFlight, setSelectedOutboundFlight] = useState(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0); // Thêm state cho progress
-  const [totalFlightsFound, setTotalFlightsFound] = useState(0);
 
-  // Thêm biến `travelClass` để lưu hạng ghế được chọn từ URL
-  const travelClass = searchParams.get("travel_class") || "1"; // Mặc định là "Economy"
+  const travelClass = searchParams.get("travel_class") || "1";
 
-  // State cho các điểm dừng
-  const [stopPoints, setStopPoints] = useState({
-    direct: false,
-    oneStop: false,
-    multipleStops: false,
-  });
-
-  const [filteredOutboundFlights, setFilteredOutboundFlights] = useState([]);
-  const [filteredReturnFlights, setFilteredReturnFlights] = useState([]);
-  const [noResultsMessage, setNoResultsMessage] = useState("");
-
-  // Hàm fetch chuyến bay và tạo số ghế ngẫu nhiên (giới hạn số ghế trống từ 1 đến 20)
   const fetchFlights = async (params, isReturn = false) => {
     setLoading(true);
-    setProgress(0); // Đặt lại tiến trình khi bắt đầu tải dữ liệu
+    setProgress(0);
     try {
       const response = await axios.get("/api/flights", { params });
-
-      console.log("API Response:", response.data);
-      const { other_flights, multi_leg_flights } = response.data;
-
-      // Giới hạn số ghế tối đa là 60
+      const { best_flights = [], other_flights = [] } = response.data;
+      const combinedFlights = [...best_flights, ...other_flights];
       const totalSeats = 60;
-
-      // Tạo số ghế ngẫu nhiên cho mỗi chuyến bay, giới hạn từ 1 đến 20 ghế trống
-      const flightsWithSeats = (other_flights || []).map((flight) => {
-        const availableSeats = Math.floor(Math.random() * 20) + 1; // Random từ 1 đến 20 ghế trống
+      const flightsWithSeats = combinedFlights.map((flight) => {
+        const availableSeats = Math.floor(Math.random() * 20) + 1;
 
         return {
           ...flight,
@@ -68,17 +48,11 @@ const FlightSearchResult = () => {
         };
       });
 
-      const totalFlights = flightsWithSeats.length;
-
-      setTotalFlightsFound(totalFlights);
-
       if (!isReturn) {
         setOutboundFlights(flightsWithSeats); // Dữ liệu chiều đi với số ghế ngẫu nhiên
       } else {
         setReturnFlights(flightsWithSeats); // Dữ liệu chiều về với số ghế ngẫu nhiên
       }
-
-      setMultiLegFlights(multi_leg_flights || []);
     } catch (error) {
       console.error("Error fetching flights:", error);
     } finally {
@@ -98,25 +72,6 @@ const FlightSearchResult = () => {
       setProgress(100); // Hoàn thành progress khi dừng loading
     }
   }, [loading]);
-
-  // Hàm lọc chuyến bay
-  const filterFlights = (flights, stopPoints) => {
-    let filteredFlights = flights;
-
-    if (stopPoints.direct) {
-      filteredFlights = filteredFlights.filter((flight) => !flight.layovers);
-    }
-    if (stopPoints.oneStop) {
-      filteredFlights = filteredFlights.filter(
-        (flight) => flight.layovers === 1,
-      );
-    }
-    if (stopPoints.multipleStops) {
-      filteredFlights = filteredFlights.filter((flight) => flight.layovers > 1);
-    }
-
-    return filteredFlights;
-  };
 
   useEffect(() => {
     const engine = searchParams.get("engine");
@@ -145,43 +100,6 @@ const FlightSearchResult = () => {
       });
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    setFilteredOutboundFlights(filterFlights(outboundFlights, stopPoints));
-    setFilteredReturnFlights(filterFlights(returnFlights, stopPoints));
-
-    // Hiển thị thông báo khi không có chuyến bay
-    if (
-      filteredOutboundFlights.length === 0 &&
-      step === "outbound" &&
-      (stopPoints.direct || stopPoints.oneStop || stopPoints.multipleStops)
-    ) {
-      setNoResultsMessage(
-        "Không có chuyến bay phù hợp với tiêu chí lọc của bạn.",
-      );
-    } else if (
-      filteredReturnFlights.length === 0 &&
-      step === "return" &&
-      (stopPoints.direct || stopPoints.oneStop || stopPoints.multipleStops)
-    ) {
-      setNoResultsMessage(
-        "Không có chuyến bay phù hợp với tiêu chí lọc của bạn.",
-      );
-    } else {
-      setNoResultsMessage("");
-    }
-  }, [outboundFlights, returnFlights, stopPoints, step]);
-
-  // Hàm xử lý thay đổi bộ lọc
-  const handleFilterChange = (filters) => {
-    const { priceRange, flightDuration, selectedAirlines, stopPoints } =
-      filters;
-
-    // Cập nhật state và áp dụng bộ lọc
-    setStopPoints(stopPoints);
-    setFilteredOutboundFlights(filterFlights(outboundFlights, stopPoints));
-    setFilteredReturnFlights(filterFlights(returnFlights, stopPoints));
-  };
 
   const handleSelectOutboundFlight = (flight) => {
     const departureToken = flight.departure_token;
@@ -232,7 +150,6 @@ const FlightSearchResult = () => {
   const handleSelectReturnFlight = (flight) => {
     setSelectedReturnFlight(flight);
 
-    // Lưu thông tin vé chiều đi và chiều về vào localStorage
     localStorage.setItem(
       "selectedOutboundFlight",
       JSON.stringify(selectedOutboundFlight),
@@ -250,14 +167,6 @@ const FlightSearchResult = () => {
 
     // Chuyển hướng đến trang booking details
     router.push("/booking-details");
-  };
-
-  const handleSortFlights = (sortedFlights) => {
-    if (step === "outbound") {
-      setFilteredOutboundFlights(sortedFlights);
-    } else {
-      setFilteredReturnFlights(sortedFlights);
-    }
   };
 
   // JSX cho giao diện hiển thị và thanh progress
@@ -287,23 +196,20 @@ const FlightSearchResult = () => {
           />
         </div>
       )}
-      {noResultsMessage && (
-        <div className="text-red-500">{noResultsMessage}</div>
-      )}
       {step === "outbound" ? (
         <FlightList
-          flights={filteredOutboundFlights}
+          flights={outboundFlights}
           onSelectFlight={handleSelectOutboundFlight}
           leg="outbound"
-          totalFlightsFound={filteredOutboundFlights.length}
+          totalFlightsFound={outboundFlights.length}
           travelClass={travelClass} // Truyền hạng ghế vào FlightList
         />
       ) : (
         <FlightList
-          flights={filteredReturnFlights}
+          flights={returnFlights}
           onSelectFlight={handleSelectReturnFlight}
           leg="return"
-          totalFlightsFound={filteredReturnFlights.length}
+          totalFlightsFound={returnFlights.length}
           travelClass={travelClass} // Truyền hạng ghế vào FlightList
         />
       )}

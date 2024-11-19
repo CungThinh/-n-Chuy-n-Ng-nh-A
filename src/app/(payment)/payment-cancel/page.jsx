@@ -17,7 +17,7 @@ export default function PaymentCancel() {
       // Gọi API để cập nhật trạng thái thanh toán là "Incomplete"
       const cancelPayment = async () => {
         try {
-          const response = await fetch("/api/update-payment-status", {
+          const response = await fetch("/api/payments/update-payment-status", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

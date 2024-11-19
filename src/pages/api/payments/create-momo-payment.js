@@ -40,7 +40,8 @@ export default async function handler(req, res) {
     const accessKey = "F8BBA842ECF85";
     const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
     const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?bookingId=${bookingId}`;
-    const ipnUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/momo-ipn`;
+    const ipnUrl =
+      "https://5b13-171-250-162-228.ngrok-free.app/api/payments/momo-webhook";
     const requestId = partnerCode + new Date().getTime();
     const orderId = `${bookingId}-${Date.now()}`;
     const requestType = "payWithMethod";

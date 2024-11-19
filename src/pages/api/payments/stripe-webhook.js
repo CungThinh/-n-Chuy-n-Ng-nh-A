@@ -16,20 +16,24 @@ export default async function handler(req, res) {
       );
     } catch (err) {
       res.status(400).send(`Webhook Error: ${err.message}`);
+
       return;
     }
 
     switch (event.type) {
       case "checkout.session.completed":
         const session = event.data.object;
+
         // Xử lý khi thanh toán hoàn tất
         break;
       case "checkout.session.expired":
         const expiredSession = event.data.object;
+
         // Xử lý khi phiên thanh toán hết hạn
         break;
       case "payment_intent.payment_failed":
         const paymentIntent = event.data.object;
+
         // Xử lý khi thanh toán thất bại
         break;
       default:

@@ -2,11 +2,10 @@
 
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 
 import { cn } from "@/lib/utils";
 
-export default function Component({ flights, onSort, className }) {
+const FlightSortBar = ({ flights, onSort, className }) => {
   const [selectedSort, setSelectedSort] = useState(null);
   const [cheapestFlight, setCheapestFlight] = useState(null);
   const [fastestFlight, setFastestFlight] = useState(null);
@@ -125,7 +124,7 @@ export default function Component({ flights, onSort, className }) {
           <span className="font-medium">Nhanh nhất</span>
           {fastestFlight && (
             <span className="text-xs">
-              {fastestFlight.price.toLocaleString("vi-VN")}đ •{" "}
+              {fastestFlight.price?.toLocaleString("vi-VN")}đ •{" "}
               {Math.floor(getTotalDuration(fastestFlight) / 60)}h{" "}
               {getTotalDuration(fastestFlight) % 60}m
             </span>
@@ -139,25 +138,6 @@ export default function Component({ flights, onSort, className }) {
       </button>
     </div>
   );
-}
-
-Component.propTypes = {
-  flights: PropTypes.arrayOf(
-    PropTypes.shape({
-      price: PropTypes.number.isRequired,
-      duration: PropTypes.number.isRequired,
-      flights: PropTypes.arrayOf(
-        PropTypes.shape({
-          duration: PropTypes.number.isRequired,
-        }),
-      ).isRequired,
-    }),
-  ).isRequired,
-  onSort: PropTypes.func.isRequired,
-  className: PropTypes.string,
 };
 
-Component.defaultProps = {
-  flights: [],
-  onSort: () => {},
-};
+export default FlightSortBar;

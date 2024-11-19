@@ -55,7 +55,7 @@ export default async function handler(req, res) {
           bookingId,
           amount: totalPrice,
           paymentMethod: "stripe",
-          status: "processing",
+          status: "pending",
         },
       });
 

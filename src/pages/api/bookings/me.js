@@ -20,6 +20,10 @@ export default async function handler(req, res) {
         payment: true,
         customers: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 20,
     });
 
     // Trả về mảng rỗng nếu không có booking nào

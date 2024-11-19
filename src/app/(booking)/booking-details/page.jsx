@@ -4,13 +4,14 @@
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
-import { Calendar as CalendarIcon, Check } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
 import FlightDetails from "./components/FlightDetails";
 import TicketInfo from "./components/TicketInfo";
+import PaymentMethodSelector from "./components/PaymentMethodSelector";
 
 import { countries } from "@/lib/countries";
 import {
@@ -27,75 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const PaymentMethodSelector = ({ selectedMethod, onMethodSelect }) => {
-  const paymentMethods = [
-    {
-      id: "stripe",
-      name: "Stripe",
-      description: "Thanh toán an toàn qua thẻ tín dụng/ghi nợ",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-8"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill="#6772E5"
-            d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.831 3.47 1.426 3.47 2.338 0 .89-.712 1.394-2.044 1.394-1.823 0-4.024-.593-5.935-1.516l-.89 5.494c2.043.95 4.515 1.631 7.589 1.631 2.585 0 4.722-.654 6.236-1.902 1.544-1.275 2.347-3.12 2.347-5.346 0-4.128-2.525-5.85-6.534-7.309z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "momo",
-      name: "MoMo",
-      description: "Thanh toán nhanh chóng qua ví điện tử MoMo",
-      icon: (
-        <svg className="size-8" viewBox="0 0 96 87">
-          <path
-            fill="#A50064"
-            d="M75.478 44.672L60.713 35.74v17.864l14.765-8.932zm-49.248 0l14.766-8.932v17.864L26.23 44.672zM47.83 28.927L33.065 37.86l14.765 8.932 14.766-8.932-14.766-8.933zM47.83 0L0 28.927l47.83 28.927 47.831-28.927L47.83 0z"
-          />
-        </svg>
-      ),
-    },
-  ];
-
-  return (
-    <div className="mt-8 space-y-4">
-      <h3 className="text-lg font-bold">Chọn phương thức thanh toán</h3>
-      <div className="grid gap-4">
-        {paymentMethods.map((method) => (
-          <button
-            key={method.id}
-            onClick={() => onMethodSelect(method.id)}
-            className={`relative flex w-full items-center rounded-lg border-2 p-4 transition-all hover:border-blue-500 ${
-              selectedMethod === method.id
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 bg-white"
-            }`}
-          >
-            <div className="mr-4">{method.icon}</div>
-            <div className="flex-1 text-left">
-              <p className="font-semibold">{method.name}</p>
-              <p className="text-sm text-gray-500">{method.description}</p>
-            </div>
-            <div
-              className={`ml-4 flex size-6 items-center justify-center rounded-full border-2 ${
-                selectedMethod === method.id
-                  ? "border-blue-500 bg-blue-500 text-white"
-                  : "border-gray-300"
-              }`}
-            >
-              {selectedMethod === method.id && <Check className="size-4" />}
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
+import { createStripePayment, createMomoPayment } from "@/services/payments";
 
 export default function BookingDetailsPage() {
   const { data: session } = useSession();
@@ -158,6 +91,7 @@ export default function BookingDetailsPage() {
 
     try {
       const isRoundTrip = flightType === "1";
+      const destination = localStorage.getItem("destination");
 
       const tickets = flightDetails.outbound.flights.map((flight) => ({
         flightNumber: flight.flight_number,
@@ -191,6 +125,7 @@ export default function BookingDetailsPage() {
 
       const bookingData = {
         isRoundTrip,
+        destination,
         totalAmount: totalPrice,
         tickets,
         customers: [
@@ -233,62 +168,32 @@ export default function BookingDetailsPage() {
       );
 
       if (paymentMethod === "stripe") {
-        const stripeResponse = await fetch("/api/create-payment-intent", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            totalPrice,
-            flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
-            airlineName: flightDetails.outbound.flights[0].airline,
-            airlineLogos: flightDetails.outbound.flights.map(
-              (flight) => flight.airline_logo,
-            ),
-            passengerInfo: {
-              ...passengerInfo,
-              email: session?.user?.email || "test@example.com",
-            },
-            bookingId,
-          }),
+        const stripeResult = await createStripePayment({
+          totalPrice,
+          flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
+          airlineName: flightDetails.outbound.flights[0].airline,
+          airlineLogos: flightDetails.outbound.flights.map(
+            (flight) => flight.airline_logo,
+          ),
+          passengerInfo: {
+            ...passengerInfo,
+            email: session?.user?.email || "test@example.com",
+          },
+          bookingId,
         });
 
-        const result = await stripeResponse.json();
-
-        if (stripeResponse.ok) {
-          window.location.href = result.url;
-        } else {
-          setErrorMessage(
-            result.error || "Có lỗi xảy ra trong quá trình xử lý thanh toán",
-          );
-        }
+        window.location.href = stripeResult.url;
       } else if (paymentMethod === "momo") {
-        if (totalPrice > 50000000) {
-          setErrorMessage(
-            "MoMo không hỗ trợ thanh toán cho số tiền lớn hơn 50 triệu VND. Vui lòng chọn phương thức thanh toán khác.",
-          );
-
-          return;
-        }
-
-        const momoResponse = await fetch("/api/createMomoPayment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            totalAmount: totalPrice,
-            orderInfo: `Đặt vé máy bay cho ${passengerInfo.firstName} ${passengerInfo.lastName}`,
-            bookingId,
-          }),
+        const momoResult = await createMomoPayment({
+          totalAmount: totalPrice,
+          orderInfo: `Đặt vé máy bay cho ${passengerInfo.firstName} ${passengerInfo.lastName}`,
+          bookingId,
         });
 
-        const momoData = await momoResponse.json();
-
-        if (momoResponse.ok && momoData.payUrl) {
-          window.location.href = momoData.payUrl;
-        } else {
-          setErrorMessage(momoData.message || "Không thể tạo thanh toán MoMo");
-        }
+        window.location.href = momoResult.payUrl;
       }
     } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi khi tạo booking.");
+      setErrorMessage(error.message || "Đã xảy ra lỗi khi tạo booking.");
       console.error(error);
     }
   };

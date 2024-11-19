@@ -323,12 +323,8 @@ export default function PaymentSuccess() {
                       Giá vé x {adultCount} người lớn:
                     </span>
                     <span className="font-medium">
-                      {bookingInfo.totalPrice} VNĐ
+                      {bookingInfo.totalPrice.toLocaleString("vi-VN")} VNĐ
                     </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Giảm giá:</span>
-                    <span className="text-purple-600">0%</span>
                   </div>
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-gray-600">Thuế</span>
@@ -336,7 +332,9 @@ export default function PaymentSuccess() {
                   </div>
                   <div className="flex items-center justify-between border-t pt-4">
                     <span className="text-gray-600">Tổng cộng:</span>
-                    <span className="font-medium">{totalPrice} VNĐ</span>
+                    <span className="font-medium">
+                      {totalPrice.toLocaleString("vi-VN")} VNĐ
+                    </span>
                   </div>
                 </div>
               </div>

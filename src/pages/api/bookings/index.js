@@ -36,14 +36,22 @@ export default async function handler(req, res) {
       const token = await getToken({ req });
       const userId = token.id;
 
-      const { isRoundTrip, tickets, customers, paymentMethod, totalAmount } =
-        req.body;
+      const {
+        isRoundTrip,
+        tickets,
+        customers,
+        paymentMethod,
+        totalAmount,
+        destination,
+        payment,
+      } = req.body;
 
       const pnrId = generatePNRCode();
       const booking = await prisma.booking.create({
         data: {
           userId,
           isRoundTrip,
+          destination,
           pnrId,
           totalAmount,
           tickets: {
@@ -51,6 +59,9 @@ export default async function handler(req, res) {
           },
           customers: {
             create: customers,
+          },
+          payment: {
+            create: payment,
           },
           status: "Upcoming",
         },

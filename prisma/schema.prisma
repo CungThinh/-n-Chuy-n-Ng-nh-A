@@ -80,7 +80,7 @@ model Payment {
   bookingId     Int      @unique // Liên kết với Booking
   booking       Booking  @relation(fields: [bookingId], references: [id])
   amount        Float // Số tiền thanh toán
-  paymentMethod String // Phương thức thanh toán (thẻ tín dụng, ví điện tử, etc.)
+  paymentMethod String
   status        String // Trạng thái thanh toán (đã thanh toán, chờ xử lý, etc.)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

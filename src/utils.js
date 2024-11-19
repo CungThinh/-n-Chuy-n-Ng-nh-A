@@ -1,38 +1,48 @@
 import { eachDayOfInterval, format, subDays } from "date-fns";
 export const getUniqueAirlineNames = (data) => {
-  const airlineNames = new Set();
+  if (!Array.isArray(data)) {
+    console.error("Invalid data: Expected an array.");
 
-  data.best_flights.forEach((flightGroup) => {
-    flightGroup.flights.forEach((flight) => {
-      airlineNames.add(flight.airline);
-    });
+    return [];
+  }
+
+  const airlineSet = new Set();
+
+  data.forEach((group) => {
+    if (Array.isArray(group.flights) && group.flights.length > 0) {
+      const airline = group.flights[0]?.airline; // Lấy tên hãng hàng không
+
+      if (airline) {
+        airlineSet.add(airline); // Thêm vào Set
+      }
+    }
   });
 
-  // data.other_flights.forEach(flightGroup => {
-  //     flightGroup.flights.forEach(flight => {
-  //       airlineNames.add(flight.airline);
-  //     });
-  // });
+  return Array.from(airlineSet); // Chuyển Set thành mảng
+};
 
-  return Array.from(airlineNames);
+export const getMinMaxDuration = (data) => {
+  if (!data || data.length === 0) {
+    return { minDuration: 0, maxDuration: 0 };
+  }
+
+  const durations = data.map((flight) => flight.total_duration);
+  const minDuration = Math.min(...durations);
+  const maxDuration = Math.max(...durations);
+
+  return { minDuration, maxDuration };
 };
 
 export const getMinMaxPrice = (data) => {
   let minPrice = Infinity;
   let maxPrice = -Infinity;
 
-  data.best_flights.forEach((flightGroup) => {
-    const price = flightGroup.price;
+  data.forEach((flight) => {
+    const price = flight.price;
 
     if (price < minPrice) minPrice = price;
     if (price > maxPrice) maxPrice = price;
   });
-
-  // data.other_flights.forEach(flightGroup => {
-  //     const price = flightGroup.price;
-  //     if (price < minPrice) minPrice = price;
-  //     if (price > maxPrice) maxPrice = price;
-  // });
 
   return { minPrice, maxPrice };
 };
@@ -118,4 +128,20 @@ export const fillMissingDays = (data) => {
   });
 
   return filledData;
+};
+
+export const filterFlights = (flights, stopPoints) => {
+  let filteredFlights = flights;
+
+  if (stopPoints.direct) {
+    filteredFlights = filteredFlights.filter((flight) => !flight.layovers);
+  }
+  if (stopPoints.oneStop) {
+    filteredFlights = filteredFlights.filter((flight) => flight.layovers === 1);
+  }
+  if (stopPoints.multipleStops) {
+    filteredFlights = filteredFlights.filter((flight) => flight.layovers > 1);
+  }
+
+  return filteredFlights;
 };

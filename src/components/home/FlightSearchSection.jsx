@@ -33,7 +33,7 @@ export default function FlightSearchSection() {
   const [tripOption, setTripOption] = useState("Một chiều");
   const [dropdownClassOpen, setDropdownClassOpen] = useState(false);
   const [from, setFrom] = useState("SGN, Hồ Chí Minh");
-  const [to, setTo] = useState("HAN, Hà Nội");
+  const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [passengers, setPassengers] = useState({
@@ -55,7 +55,7 @@ export default function FlightSearchSection() {
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
   const router = useRouter();
-  const [travelClass, setTravelClass] = useState("1"); // State để lưu hạng ghế
+  const [travelClass, setTravelClass] = useState("1");
 
   // Tính tổng số hành khách đúng cách (bao gồm người lớn, trẻ em, và các loại trẻ sơ sinh)
   const getTotalPassengers = () => {
@@ -120,7 +120,7 @@ export default function FlightSearchSection() {
   };
 
   const selectAirport = (airport, isFromField) => {
-    const selectedAirport = `${airport.iata}, ${airport.city}`;
+    const selectedAirport = `${airport.iata}, ${airport.city}, ${airport.country}`;
 
     if (isFromField) {
       if (selectedAirport === to) {
@@ -257,6 +257,8 @@ export default function FlightSearchSection() {
       setIsLoading(true);
       const fromCode = from.split(",")[0].trim();
       const toCode = to.split(",")[0].trim();
+
+      console.log(to);
       const flightType = returnDate ? "1" : "2";
       const vietnamTimeZone = "Asia/Ho_Chi_Minh";
       const formattedOutboundDate = format(
@@ -270,14 +272,14 @@ export default function FlightSearchSection() {
           })
         : "";
 
-      console.log("travel_class:", travelClass); // Kiểm tra trước khi gọi API
+      localStorage.setItem("destination", to.split(", ").slice(1).join(", "));
 
       router.push(
         `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(
           fromCode,
         )}&arrival_id=${encodeURIComponent(
           toCode,
-        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=18405be303c00ff7b330775c1b3acc68533552e6a4dafdb804e7f58f50ef40c6&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
+        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=a0cc736f9f199b8a669e59f245d76f23d3a58dba760c070d6100e8943e6eefdb&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
       );
 
       setTimeout(() => setIsLoading(false), 1000);
@@ -601,7 +603,6 @@ export default function FlightSearchSection() {
                       className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
                       onClick={() => {
                         setTravelClass("1");
-                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn Economy
                         setDropdownClassOpen(false);
                       }}
                     >
@@ -649,7 +650,6 @@ export default function FlightSearchSection() {
                       className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
                       onClick={() => {
                         setTravelClass("4");
-                        console.log("Selected travelClass:", travelClass); // Kiểm tra giá trị sau khi chọn First
                         setDropdownClassOpen(false);
                       }}
                     >
@@ -685,7 +685,7 @@ export default function FlightSearchSection() {
                   <input
                     type="text"
                     placeholder="Khởi hành từ"
-                    value={from}
+                    value={from.split(", ").slice(0, 2).join(", ")}
                     onChange={(e) => handleAirportSearch(e, true)}
                     className="w-full rounded-lg border bg-white p-3 pl-10 text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -734,7 +734,7 @@ export default function FlightSearchSection() {
                   <input
                     type="text"
                     placeholder="Nơi đến"
-                    value={to}
+                    value={to.split(", ").slice(0, 2).join(", ")}
                     onChange={(e) => handleAirportSearch(e, false)}
                     className="w-full rounded-lg border bg-white p-3 pl-10 text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
