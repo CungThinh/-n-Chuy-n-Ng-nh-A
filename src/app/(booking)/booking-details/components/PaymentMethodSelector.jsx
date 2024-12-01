@@ -7,7 +7,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodSelect }) => {
       name: "Stripe",
       description: "Thanh toán an toàn qua thẻ tín dụng/ghi nợ",
       icon: (
-        <img
+        <Image
           src="/icons/stripe.svg" // Đường dẫn đến icon MoMo trong thư mục public
           alt="MoMo Icon"
           width={32}

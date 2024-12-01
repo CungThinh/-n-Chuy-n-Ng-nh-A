@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+import ExportDialog from "../Export/ExportDialog";
+
 import PassengerTable from "./PassengerTable";
 import TotalRevenue from "./TotalRevenue";
 import NbNewBooking from "./NbNewBooking";
@@ -31,6 +33,9 @@ const Dashboard = () => {
 
   return (
     <div>
+      <div className="flex justify-end p-4">
+        <ExportDialog />
+      </div>
       <div className="flex flex-row justify-between gap-12 p-3">
         {/* Thêm MonthlyRevenue trước chart */}
         <TotalRevenue value={data.totalRevenue.toLocaleString("vi-VN")} />
