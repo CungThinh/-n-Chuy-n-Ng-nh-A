@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "format": "prettier --write \"**/*.{js,jsx}\""
   },
   "husky": {
     "hooks": {
@@ -37,8 +38,9 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@react-aria/i18n": "^3.12.3",
+    "@react-email/render": "^1.0.2",
     "@stripe/react-stripe-js": "^2.8.1",
-    "@stripe/stripe-js": "^4.8.0",
+    "@stripe/stripe-js": "^4.10.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
@@ -48,12 +50,17 @@
     "eslint-plugin-tailwindcss": "^3.17.5",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^11.11.1",
+    "fs-extra": "^11.2.0",
+    "handlebars": "^4.7.8",
     "install": "^0.13.0",
     "lucide-react": "^0.453.0",
     "next": "14.2.12",
     "next-auth": "^4.24.7",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.16",
     "npm": "^10.9.0",
+    "pdfkit": "^0.15.1",
+    "qrcode": "^1.5.4",
     "ra-core": "^5.3.1",
     "ra-ui-materialui": "^5.2.2",
     "rc-slider": "^11.1.6",
@@ -83,6 +90,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.10",
     "postcss": "^8",
+    "prettier": "^3.4.1",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "prisma": "^5.20.0",
     "tailwindcss": "^3.4.1"

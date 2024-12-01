@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function AirportInput({ label, value, setValue, icon }) {
   return (
@@ -9,7 +9,7 @@ export default function AirportInput({ label, value, setValue, icon }) {
         placeholder={label}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="pl-10 p-3 w-full rounded-lg bg-[#fff] focus:outline-none focus:ring-2 focus:ring-orange-400 text-black border"
+        className="w-full rounded-lg border bg-white p-3 pl-10 text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
       />
     </div>
   );

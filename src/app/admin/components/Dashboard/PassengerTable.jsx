@@ -1,5 +1,5 @@
 const PassengerTable = ({ passengers }) => (
-  <div className="h-[400px] rounded-lg border border-gray-200 p-3 shadow">
+  <div className="h-[400px] overflow-auto rounded-lg border border-gray-200 p-3 shadow">
     <h3 className="mb-4 text-lg font-semibold">
       Hành khách có chuyến trong bay hôm nay
     </h3>

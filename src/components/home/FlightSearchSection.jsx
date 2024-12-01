@@ -349,7 +349,7 @@ export default function FlightSearchSection() {
 
   return (
     <>
-      <div className="relative h-screen md:h-[950px]">
+      <div className="relative h-screen md:h-[800px]">
         <video
           autoPlay
           loop
@@ -358,39 +358,47 @@ export default function FlightSearchSection() {
           src={videoSrc}
           style={{ filter: "grayscale(20%) brightness(60%)" }}
         />
+
+        {/* Updated text positioning for better mobile visibility */}
         <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ paddingBottom: "15%" }}
+          className="absolute inset-0 flex items-start justify-center pt-16 md:items-center md:pt-0"
+          style={{ paddingBottom: "15%", paddingRight: "15%" }}
         >
           <motion.div
-            className="text-center"
+            className="px-4 text-left"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
             <motion.h1
-              className="mb-4 text-4xl font-light text-white sm:text-5xl md:text-7xl"
+              className="mb-4 text-lg font-light text-white sm:text-2xl md:text-5xl"
               variants={itemVariants}
             >
-              <motion.span className="font-bold" variants={itemVariants}>
+              <motion.span
+                className="mb-2 block font-bold md:mb-0 md:inline"
+                variants={itemVariants}
+              >
                 KHÁM PHÁ
               </motion.span>{" "}
               <motion.span variants={itemVariants}>ĐIỂM ĐẾN</motion.span>
             </motion.h1>
             <motion.p
-              className="text-4xl font-light text-white sm:text-5xl md:text-7xl"
+              className="text-lg font-light text-white sm:text-2xl md:text-5xl"
               variants={itemVariants}
             >
-              VÒNG QUANH{" "}
-              <motion.span className="font-bold" variants={itemVariants}>
+              <span className="mb-2 block md:mb-0 md:inline">VÒNG QUANH</span>{" "}
+              <motion.span
+                className="block font-bold md:inline"
+                variants={itemVariants}
+              >
                 THẾ GIỚI CÙNG CHÚNG TÔI
               </motion.span>
             </motion.p>
           </motion.div>
         </div>
 
-        <div className="relative z-10 flex h-full items-center justify-center">
-          <div className="absolute bottom-[15%] mx-auto w-full max-w-7xl rounded-2xl bg-white bg-opacity-50 p-4 shadow-lg md:bottom-[30%] md:p-6">
+        <div className="relative z-10 flex h-full items-end justify-center pb-4 md:items-center md:pb-0">
+          <div className="mx-auto w-full max-w-7xl rounded-2xl bg-white bg-opacity-50 p-4 shadow-lg md:absolute md:bottom-[30%]">
             <div className="mb-4 flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
               <div
                 className="relative flex h-[38px] w-full cursor-pointer items-center rounded-lg bg-white p-3 md:w-auto"

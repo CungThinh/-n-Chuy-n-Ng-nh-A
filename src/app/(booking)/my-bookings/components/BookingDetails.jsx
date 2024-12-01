@@ -153,8 +153,9 @@ const BookingDetails = ({ booking }) => {
               </span>
               <p className="text-md mt-3">
                 <FaPlaneDeparture className="mr-2 inline" />
-                Sân bay {ticket.departureAirport} -{" "}
-                <FaPlaneArrival className="mr-2 inline" />
+                Sân bay {
+                  ticket.departureAirport
+                } - <FaPlaneArrival className="mr-2 inline" />
                 Sân bay {ticket.arrivalAirport}
               </p>
             </div>

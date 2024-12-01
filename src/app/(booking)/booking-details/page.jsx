@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import { useSession } from "next-auth/react";
 import FlightDetails from "./components/FlightDetails";
 import TicketInfo from "./components/TicketInfo";
 import PaymentMethodSelector from "./components/PaymentMethodSelector";
+import QRCodePayment from "./components/QRCodePayment";
 
 import { countries } from "@/lib/countries";
 import {
@@ -28,7 +28,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { createStripePayment, createMomoPayment } from "@/services/payments";
+import {
+  createStripePayment,
+  createMomoPayment,
+  createStripeQRPayment,
+} from "@/services/payments";
 
 export default function BookingDetailsPage() {
   const { data: session } = useSession();
@@ -49,6 +53,9 @@ export default function BookingDetailsPage() {
   const [flightType, setFlightType] = useState("1");
   const [totalPrice, setTotalPrice] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [showQRPayment, setShowQRPayment] = useState(false);
+  const [qrPaymentData, setQRPaymentData] = useState(null);
+  const [bookingId, setBookingId] = useState(null);
 
   const handleInputChange = (field, value) => {
     setPassengerInfo({
@@ -137,6 +144,9 @@ export default function BookingDetailsPage() {
             gender: passengerInfo.gender,
           },
         ],
+        user: {
+          email: session?.user?.email, // This should be pewpew1232002@gmail.com
+        },
       };
 
       const response = await axios.post("/api/bookings", bookingData, {
@@ -144,14 +154,16 @@ export default function BookingDetailsPage() {
         withCredentials: true,
       });
 
-      const bookingId = response.data.booking.id;
+      const newBookingId = response.data.booking.id;
       const pnrId = response.data.booking.pnrId;
 
-      if (!bookingId || !pnrId) {
+      if (!newBookingId || !pnrId) {
         setErrorMessage("Không thể lấy ID đặt chỗ.");
 
         return;
       }
+
+      setBookingId(newBookingId);
 
       localStorage.setItem(
         "bookingInfo",
@@ -161,13 +173,34 @@ export default function BookingDetailsPage() {
           email: session?.user?.email,
           nationality: passengerInfo.nationality,
           dob: passengerInfo.dob,
-          bookingId,
+          bookingId: newBookingId,
           pnrId,
           totalPrice,
         }),
       );
 
-      if (paymentMethod === "stripe") {
+      if (paymentMethod === "stripe_qr") {
+        console.log("Creating QR payment for booking:", newBookingId); // Debug log
+
+        const qrResult = await createStripeQRPayment({
+          totalPrice,
+          flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
+          airlineName: flightDetails.outbound.flights[0].airline,
+          airlineLogos: flightDetails.outbound.flights.map(
+            (flight) => flight.airline_logo,
+          ),
+          passengerInfo: {
+            ...passengerInfo,
+            email: session?.user?.email || "test@example.com",
+          },
+          bookingId: newBookingId, // Sử dụng newBookingId thay vì bookingId
+        });
+
+        if (qrResult) {
+          setQRPaymentData(qrResult);
+          setShowQRPayment(true);
+        }
+      } else if (paymentMethod === "stripe") {
         const stripeResult = await createStripePayment({
           totalPrice,
           flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
@@ -179,7 +212,7 @@ export default function BookingDetailsPage() {
             ...passengerInfo,
             email: session?.user?.email || "test@example.com",
           },
-          bookingId,
+          bookingId: newBookingId,
         });
 
         window.location.href = stripeResult.url;
@@ -187,10 +220,10 @@ export default function BookingDetailsPage() {
         const momoResult = await createMomoPayment({
           totalAmount: totalPrice,
           orderInfo: `Đặt vé máy bay cho ${passengerInfo.firstName} ${passengerInfo.lastName}`,
-          bookingId,
+          bookingId: newBookingId,
         });
 
-        window.location.href = momoResult.payUrl;
+        window.location.href = momoResult.payUrl; // Redirects to MoMo payment page
       }
     } catch (error) {
       setErrorMessage(error.message || "Đã xảy ra lỗi khi tạo booking.");
@@ -333,7 +366,6 @@ export default function BookingDetailsPage() {
                 </div>
               </div>
 
-              {/* New Payment Method Selector */}
               <PaymentMethodSelector
                 selectedMethod={paymentMethod}
                 onMethodSelect={setPaymentMethod}
@@ -359,6 +391,25 @@ export default function BookingDetailsPage() {
           </div>
         </div>
       </div>
+
+      {showQRPayment && qrPaymentData && (
+        <QRCodePayment
+          qrCodeUrl={qrPaymentData.qrCodeUrl}
+          url={qrPaymentData.url}
+          sessionId={qrPaymentData.sessionId}
+          onPaymentSuccess={() => {
+            router.push(`/payment-success?bookingId=${bookingId}`);
+          }}
+          onPaymentError={(error) => {
+            setErrorMessage(error);
+            setShowQRPayment(false);
+          }}
+          onClose={() => {
+            setShowQRPayment(false);
+            setQRPaymentData(null);
+          }}
+        />
+      )}
     </div>
   );
 }
