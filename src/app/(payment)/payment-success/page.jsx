@@ -11,7 +11,7 @@ export default function PaymentSuccess() {
   const resultCode = searchParams.get("resultCode");
   const sessionId = searchParams.get("session_id");
   const bookingIdParam = searchParams.get("bookingId");
-
+  const bookingId = searchParams.get("bookingId");
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [bookingInfo, setBookingInfo] = useState(null);
@@ -20,7 +20,7 @@ export default function PaymentSuccess() {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false); // Hiển thị modal đánh giá khi người dùng bấm "Quay về trang chủ"
-
+  const [errorMessage, setErrorMessage] = useState("");
   // Component EmojiRating để hiển thị đánh giá bằng emoji
   const EmojiRating = ({ onRatingChange }) => {
     const [isHovering, setIsHovering] = useState(null);
@@ -90,33 +90,68 @@ export default function PaymentSuccess() {
 
     const updatePaymentStatus = async () => {
       try {
-        if (bookingIdParam) {
-          if (resultCode === "0" || sessionId) {
-            await axios.post("/api/payments/update-status", {
-              bookingId: bookingIdParam,
-              status: "thanh cong",
-            });
-            setIsSuccess(true);
-          } else {
-            await axios.post("/api/payments/update-status", {
-              bookingId: bookingIdParam,
-              status: "that bai",
-            });
-            setIsSuccess(false);
-          }
+        if (!bookingIdParam) {
+          console.log("No bookingId found");
+          setIsLoading(false);
+
+          return;
         }
+
+        console.log("Updating payment status for:", {
+          bookingId: bookingIdParam,
+          sessionId,
+          resultCode,
+          url: window.location.href,
+        });
+
+        // Kiểm tra trạng thái thanh toán
+        let paymentSuccess = false;
+
+        // 1. Kiểm tra Stripe QR và Card payment
+        if (sessionId) {
+          // Kiểm tra session Stripe
+          const stripeResponse = await axios.post(
+            "/api/payments/check-payment-status",
+            {
+              sessionId: sessionId,
+            },
+          );
+
+          paymentSuccess = stripeResponse.data.status === "complete";
+          console.log("Stripe payment status:", stripeResponse.data);
+        }
+        // 2. Kiểm tra MoMo payment
+        else if (resultCode === "0") {
+          paymentSuccess = true;
+          console.log("MoMo payment successful");
+        }
+        // 3. Kiểm tra URL success
+        else if (window.location.href.includes("payment-success")) {
+          paymentSuccess = true;
+          console.log("Payment success based on URL");
+        }
+
+        // Cập nhật trạng thái
+        await axios.post("/api/payments/update-status", {
+          bookingId: bookingIdParam,
+          status: paymentSuccess ? "thanh cong" : "that bai",
+        });
+
+        setIsSuccess(paymentSuccess);
         setIsLoading(false);
+
+        console.log(
+          "Payment status updated:",
+          paymentSuccess ? "success" : "failed",
+        );
       } catch (error) {
         console.error("Lỗi cập nhật trạng thái thanh toán:", error);
+        setErrorMessage("Đã xảy ra lỗi khi cập nhật trạng thái thanh toán");
         setIsLoading(false);
       }
     };
 
-    if (bookingIdParam) {
-      updatePaymentStatus();
-    } else {
-      setIsLoading(false);
-    }
+    updatePaymentStatus();
   }, [resultCode, sessionId, bookingIdParam]);
 
   const handleRatingChange = (newRating) => {
