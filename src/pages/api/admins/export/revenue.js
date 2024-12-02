@@ -47,9 +47,7 @@ export default async function handler(req, res) {
       rows.push([
         date.toLocaleDateString("vi-VN"),
         dayStats ? dayStats._count._all.toString() : "0",
-        dayStats
-          ? dayStats._sum.totalAmount.toLocaleString("vi-VN") + " đ"
-          : "0 đ",
+        dayStats ? dayStats._sum.totalAmount.toLocaleString("vi-VN") : "0",
       ]);
     }
 

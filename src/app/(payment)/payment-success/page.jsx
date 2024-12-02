@@ -134,7 +134,7 @@ export default function PaymentSuccess() {
         // Cập nhật trạng thái
         await axios.post("/api/payments/update-status", {
           bookingId: bookingIdParam,
-          status: paymentSuccess ? "thanh cong" : "that bai",
+          status: paymentSuccess ? "successful" : "failed",
         });
 
         setIsSuccess(paymentSuccess);

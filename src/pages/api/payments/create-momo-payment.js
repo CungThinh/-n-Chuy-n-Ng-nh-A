@@ -7,28 +7,23 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { bookingId, totalAmount, orderInfo = "Payment with MoMo" } = req.body;
-
-  // Kiểm tra giới hạn số tiền MoMo
-  if (totalAmount > 50000000) {
-    return res.status(400).json({
-      message:
-        "Số tiền vượt quá giới hạn 50 triệu VND của MoMo. Vui lòng sử dụng phương thức thanh toán khác.",
-    });
-  }
+  const { bookingId } = req.body;
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id: parseInt(bookingId),
+    },
+    include: {
+      user: true,
+      payment: true,
+    },
+  });
 
   try {
-    // Kiểm tra nếu Payment chưa tồn tại cho Booking này
-    const existingPayment = await prisma.payment.findUnique({
-      where: { bookingId },
-    });
-
-    if (!existingPayment) {
-      // Tạo Payment nếu chưa tồn tại
+    if (!booking.payment) {
       await prisma.payment.create({
         data: {
           bookingId,
-          amount: totalAmount,
+          amount: booking.totalAmount,
           paymentMethod: "momo",
           status: "pending",
         },
@@ -45,8 +40,9 @@ export default async function handler(req, res) {
     const requestId = partnerCode + new Date().getTime();
     const orderId = `${bookingId}-${Date.now()}`;
     const requestType = "payWithMethod";
+    const orderInfo = "Đặt vé máy bay";
 
-    const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+    const rawSignature = `accessKey=${accessKey}&amount=${booking.totalAmount}&extraData=&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
     const signature = crypto
       .createHmac("sha256", secretKey)
       .update(rawSignature)
@@ -56,7 +52,7 @@ export default async function handler(req, res) {
       partnerCode,
       accessKey,
       requestId,
-      amount: totalAmount,
+      amount: booking.totalAmount,
       orderId,
       orderInfo,
       redirectUrl,

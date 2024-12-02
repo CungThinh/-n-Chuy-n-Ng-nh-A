@@ -49,10 +49,10 @@ const BookingDetails = ({ booking }) => {
     paymentStatus = "Chưa thanh toán";
   } else {
     paymentStatus =
-      payment.status === "Pending"
+      payment.status === "pending"
         ? "Chưa thanh toán"
-        : payment.status === "Failed"
-          ? "Đã hủy"
+        : payment.status === "failed"
+          ? "Thanh toán thất bại"
           : "Đã thanh toán";
   }
 
@@ -109,8 +109,7 @@ const BookingDetails = ({ booking }) => {
           bookingId: booking.id,
         });
 
-        // Chuyển hướng tới Momo Payment
-        if (response.data.url) {
+        if (response.data) {
           window.location.href = response.data.payUrl;
         }
       } else {
@@ -312,7 +311,7 @@ const BookingDetails = ({ booking }) => {
                 Loại vé: {booking.isRoundTrip ? "Khứ hồi" : "Một chiều"}
               </p>
               <p className="flex items-center text-gray-700">
-                Phương thức thanh toán: Credit Card
+                Phương thức thanh toán: {payment.paymentMethod}
               </p>
               <p className="flex items-center text-gray-700">
                 Tình trạng thanh toán: {paymentStatus}

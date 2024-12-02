@@ -39,8 +39,8 @@ export default function FlightSearchSection() {
   const [passengers, setPassengers] = useState({
     adults: 1,
     children: 0,
-    infants_in_seat: 0, // Số trẻ sơ sinh có ghế ngồi
-    infants_on_lap: 0, // Số trẻ sơ sinh ngồi cùng người lớn
+    infants_in_seat: 0,
+    infants_on_lap: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dropdownOptionOpen, setDropdownOptionOpen] = useState(false);
@@ -288,39 +288,6 @@ export default function FlightSearchSection() {
     }
   };
 
-  const [multiLegFlights, setMultiLegFlights] = useState([
-    { from: "", to: "", departureDate: null },
-  ]);
-
-  const addLeg = () => {
-    if (multiLegFlights.length < 5) {
-      setMultiLegFlights([
-        ...multiLegFlights,
-        { from: "", to: "", departureDate: null },
-      ]);
-    }
-  };
-
-  const removeLeg = (index) => {
-    const newLegs = [...multiLegFlights];
-
-    newLegs.splice(index, 1);
-    setMultiLegFlights(newLegs);
-  };
-
-  const updateLeg = (index, field, value) => {
-    const newLegs = [...multiLegFlights];
-
-    newLegs[index][field] = value;
-    setMultiLegFlights(newLegs);
-  };
-
-  const handleMultiLegAirportSearch = (e, index, field) => {
-    const value = e.target.value;
-
-    updateLeg(index, field, value);
-  };
-
   const videoSrc = "./videos/video-bg.mp4";
 
   const containerVariants = {
@@ -433,19 +400,6 @@ export default function FlightSearchSection() {
                     >
                       Khứ hồi
                       {tripOption === "Khứ hồi" && (
-                        <FaCheck
-                          className="text-orange-500"
-                          style={{ strokeWidth: "1px" }}
-                        />
-                      )}
-                    </div>
-                    <div
-                      className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
-                      style={{ color: "black" }}
-                      onClick={() => setTripOption("Nhiều chặng")}
-                    >
-                      Nhiều chặng
-                      {tripOption === "Nhiều chặng" && (
                         <FaCheck
                           className="text-orange-500"
                           style={{ strokeWidth: "1px" }}

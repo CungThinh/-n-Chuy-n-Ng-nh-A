@@ -202,16 +202,6 @@ export default function BookingDetailsPage() {
         }
       } else if (paymentMethod === "stripe") {
         const stripeResult = await createStripePayment({
-          totalPrice,
-          flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
-          airlineName: flightDetails.outbound.flights[0].airline,
-          airlineLogos: flightDetails.outbound.flights.map(
-            (flight) => flight.airline_logo,
-          ),
-          passengerInfo: {
-            ...passengerInfo,
-            email: session?.user?.email || "test@example.com",
-          },
           bookingId: newBookingId,
         });
 

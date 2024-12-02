@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     });
 
     // If payment is successful, send confirmation email
-    if (status === "thanh cong") {
+    if (status === "successful") {
       try {
         const booking = updatedPayment.booking;
 

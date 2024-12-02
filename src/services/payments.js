@@ -54,21 +54,9 @@ export const checkPaymentStatus = async (sessionId) => {
 };
 
 // Giữ nguyên các hàm khác
-export const createStripePayment = async ({
-  totalPrice,
-  flightType,
-  airlineName,
-  airlineLogos,
-  passengerInfo,
-  bookingId,
-}) => {
+export const createStripePayment = async ({ bookingId }) => {
   try {
     const response = await axios.post("/api/payments/create-stripe-payment", {
-      totalPrice,
-      flightType,
-      airlineName,
-      airlineLogos,
-      passengerInfo,
       bookingId,
     });
 
@@ -81,11 +69,7 @@ export const createStripePayment = async ({
   }
 };
 
-export const createMomoPayment = async ({
-  totalAmount,
-  orderInfo,
-  bookingId,
-}) => {
+export const createMomoPayment = async ({ bookingId }) => {
   if (totalAmount > 50000000) {
     throw new Error(
       "MoMo không hỗ trợ thanh toán cho số tiền lớn hơn 50 triệu VND.",
@@ -94,8 +78,6 @@ export const createMomoPayment = async ({
 
   try {
     const response = await axios.post("/api/payments/create-momo-payment", {
-      totalAmount,
-      orderInfo,
       bookingId,
     });
 
