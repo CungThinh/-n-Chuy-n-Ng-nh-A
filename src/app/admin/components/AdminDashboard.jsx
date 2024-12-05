@@ -7,7 +7,6 @@ import {
   CustomerEdit,
   CustomerList,
 } from "./Resource/CustomerResource";
-import { AdminCreate, AdminEdit, AdminList } from "./Resource/AdminResource";
 import {
   TicketCreate,
   TicketEdit,
@@ -18,11 +17,7 @@ import {
   BookingEdit,
   BookingCreate,
 } from "./Resource/BookingResource";
-import {
-  ContactCustomerCreate,
-  ContactCustomerList,
-  ContactCustomerEdit,
-} from "./Resource/ContactCustomerResource";
+import { UserCreate, UserEdit, UserList } from "./Resource/UserResource";
 import {
   PaymentCreate,
   PaymentEdit,
@@ -41,23 +36,12 @@ const AdminDashboard = () => (
       edit={CustomerEdit}
     />
     <Resource
-      name="admins"
-      list={AdminList}
-      create={AdminCreate}
-      edit={AdminEdit}
-    />
-    <Resource
       name="bookings"
       list={BookingList}
       create={BookingCreate}
       edit={BookingEdit}
     />
-    <Resource
-      name="contact-customer"
-      list={ContactCustomerList}
-      create={ContactCustomerCreate}
-      edit={ContactCustomerEdit}
-    />
+    <Resource name="user" list={UserList} create={UserCreate} edit={UserEdit} />
     <Resource
       name="tickets"
       list={TicketList}

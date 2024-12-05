@@ -19,8 +19,12 @@ export default async function handler(req, res) {
         `customers ${range[0]}-${range[1]}/${total}`,
       );
       res.setHeader("Access-Control-Expose-Headers", "Content-Range");
-      res.status(200).json(customers);
+      res.status(200).json({
+        data: customers,
+        total: total,
+      });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: "Something went wrong" });
     }
   } else if (req.method === "POST") {

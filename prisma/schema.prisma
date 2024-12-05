@@ -16,7 +16,6 @@ model Customer {
   bookingId   Int // Liên kết với Booking
   booking     Booking  @relation(fields: [bookingId], references: [id])
   firstName   String // Họ
-  middleName  String? // Tên đệm (optional)
   lastName    String // Tên
   dateOfBirth DateTime // Ngày tháng năm sinh
   gender      String // Giới tính
@@ -30,6 +29,7 @@ model User {
   name              String?
   phoneNumber       String?
   password          String? // Dùng cho người dùng đăng nhập bằng username/passwordz
+  address           String?
   provider          String? // Lưu tên provider (vd: 'google', 'credentials')
   providerAccountId String? // Lưu ID tài khoản provider (vd: Google ID)
   image             String? // Ảnh profile (chỉ cho người dùng Google hoặc OAuth)

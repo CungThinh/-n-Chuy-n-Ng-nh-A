@@ -21,15 +21,11 @@ import {
 
 // BookingList - Hiển thị danh sách Booking, bao gồm trường Tickets
 export const BookingList = (props) => (
-  <List {...props}>
+  <List {...props} perPage={25}>
     <Datagrid rowClick={false}>
       <TextField source="id" label="Booking ID" />
-      <ReferenceField
-        source="contactCustomerId"
-        reference="contact-customer"
-        label="Contact Customer"
-      >
-        <TextField source="firstName" />
+      <ReferenceField source="userId" reference="user" label="User">
+        <TextField source="name" />
       </ReferenceField>
       <BooleanField source="isRoundTrip" label="Round Trip" />
       <DateField source="createdAt" label="Created At" />

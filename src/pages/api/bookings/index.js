@@ -6,15 +6,36 @@ import { generatePNRCode } from "@/utils";
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
+      if (req.query.ids) {
+        const ids = JSON.parse(req.query.ids);
+        const records = await prisma.booking.findMany({
+          where: {
+            id: {
+              in: ids,
+            },
+          },
+          include: {
+            user: true,
+            tickets: true,
+            payment: true,
+          },
+        });
+
+        return res.status(200).json({
+          data: records,
+        });
+      }
+      // Lấy thông tin phân trang từ query string
       const range = JSON.parse(req.query.range || "[0,9]");
       const skip = range[0];
       const take = range[1] - range[0] + 1;
 
+      // Lọc và lấy danh sách bookings
       const bookings = await prisma.booking.findMany({
         skip,
         take,
         include: {
-          contactCustomer: true,
+          user: true,
           tickets: true,
           payment: true,
         },
@@ -22,13 +43,19 @@ export default async function handler(req, res) {
 
       const total = await prisma.booking.count();
 
+      // Set Header Content-Range để báo phân trang
       res.setHeader(
         "Content-Range",
         `bookings ${range[0]}-${range[1]}/${total}`,
       );
       res.setHeader("Access-Control-Expose-Headers", "Content-Range");
-      res.status(200).json(bookings);
+
+      res.status(200).json({
+        data: bookings,
+        total: total,
+      });
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: "Something went wrong" });
     }
   } else if (req.method === "POST") {

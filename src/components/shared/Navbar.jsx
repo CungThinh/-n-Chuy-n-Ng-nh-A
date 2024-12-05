@@ -15,6 +15,9 @@ import {
 
 const Navbar = () => {
   const { data: session } = useSession();
+
+  console.log(session);
+
   const router = useRouter();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -96,15 +99,7 @@ const Navbar = () => {
               <Dropdown css={{ color: "white " }}>
                 <DropdownTrigger>
                   <Button variant="light">
-                    {session.user.image ? (
-                      <img
-                        src={session.user.image}
-                        alt="User Avatar"
-                        className="size-8 rounded-full"
-                      />
-                    ) : (
-                      <FaUserCircle className="text-2xl text-white" />
-                    )}
+                    <FaUserCircle className="text-2xl text-white" />
                     <span className="text-sm text-white">
                       {session.user.email}
                     </span>

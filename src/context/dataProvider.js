@@ -26,15 +26,24 @@ const httpClient = async (url, options = {}) => {
 const dataProvider = {
   getList: async (resource, params) => {
     const url = `${apiUrl}/${resource}`;
-    const { data } = await httpClient(url);
 
-    if (!Array.isArray(data)) {
-      throw new Error("Expected the response to be an array");
-    }
+    // Điều chỉnh cách tính range
+    const { page, perPage } = params.pagination;
+    const start = (page - 1) * perPage;
+    const end = page * perPage - 1;
+
+    const { data, total } = await httpClient(url, {
+      method: "GET",
+      params: {
+        range: JSON.stringify([start, end]),
+        sort: JSON.stringify(params.sort || ["id", "DESC"]),
+        filter: JSON.stringify(params.filter || {}),
+      },
+    });
 
     return {
-      data: data,
-      total: data.length,
+      data: data.data, // Lấy data từ response mới
+      total: data.total, // Lấy total từ response mới
     };
   },
 
@@ -49,11 +58,19 @@ const dataProvider = {
     const url = `${apiUrl}/${resource}`;
     const { data } = await httpClient(url, {
       method: "GET",
-      data: { ids: params.ids }, // Sending the list of IDs
+      params: {
+        ids: JSON.stringify(params.ids), // Gửi ids dưới dạng query params thay vì body
+      },
     });
 
+    // Đảm bảo data là một mảng
+    const records = Array.isArray(data.data) ? data.data : [data.data];
+
     return {
-      data: data.map((record) => ({ ...record, id: record.id })),
+      data: records.map((record) => ({
+        ...record,
+        id: record.id,
+      })),
     };
   },
 

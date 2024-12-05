@@ -23,6 +23,8 @@ export default NextAuth({
         });
 
         if (user && bcrypt.compareSync(credentials.password, user.password)) {
+          console.log(user);
+
           return {
             id: user.id,
             role: user.role,
@@ -43,32 +45,57 @@ export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, account }) {
-      if (user) {
-        // Logic xử lý user mới đăng nhập
-        if (account?.provider === "google") {
-          // ... your Google login logic
-        } else {
-          token.id = user.id;
-          token.role = user.role;
-        }
+      if (account?.provider === "google") {
+        const dbUser = await prisma.user.upsert({
+          where: { email: user.email }, // Sử dụng user.email thay vì token.email
+          update: {
+            name: user.name,
+            image: user.image,
+          },
+          create: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: "USER",
+            provider: "google",
+            providerAccountId: user.id,
+          },
+        });
+
+        // Thêm thông tin vào token
+        token.id = dbUser.id;
+        token.role = dbUser.role;
+      } else if (user) {
+        // Xử lý đăng nhập credentials
+        token.id = user.id;
+        token.role = user.role;
       }
 
       return token;
     },
 
     async session({ session, token }) {
-      // Đảm bảo session.user tồn tại
       if (!session.user) {
         session.user = {};
       }
+
       session.user = {
         ...session.user,
         id: token.id,
         role: token.role,
       };
+      console.log(session);
 
       return session;
     },
+
+    // Thêm signIn callback để lấy thông tin user Google
+    async signIn({ user, account }) {
+      if (account.provider === "google") {
+        return true;
+      }
+
+      return true;
+    },
   },
-  debug: true,
 });

@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   // Xử lý khi phương thức là GET (Lấy thông tin ContactCustomer theo ID)
   if (req.method === "GET") {
     try {
-      const contactCustomer = await prisma.contactCustomer.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           id: parseInt(id), // Chuyển đổi id thành số nguyên
         },
@@ -15,13 +15,13 @@ export default async function handler(req, res) {
         },
       });
 
-      if (!contactCustomer) {
+      if (!user) {
         return res.status(404).json({
-          message: "ContactCustomer not found",
+          message: "user not found",
         });
       }
 
-      return res.status(200).json(contactCustomer);
+      return res.status(200).json(user);
     } catch (error) {
       console.error("Error fetching contactCustomer:", error);
 
@@ -35,15 +35,15 @@ export default async function handler(req, res) {
   // Xử lý khi phương thức là DELETE (Xóa ContactCustomer theo ID)
   else if (req.method === "DELETE") {
     try {
-      const deletedContactCustomer = await prisma.contactCustomer.delete({
+      const deletedUser = await prisma.user.delete({
         where: {
           id: parseInt(id), // Chuyển đổi id thành số nguyên
         },
       });
 
       return res.status(200).json({
-        message: "ContactCustomer deleted successfully",
-        contactCustomer: deletedContactCustomer,
+        message: "User deleted successfully",
+        user: deletedUser,
       });
     } catch (error) {
       console.error("Error deleting contactCustomer:", error);
@@ -58,10 +58,10 @@ export default async function handler(req, res) {
   // Xử lý khi phương thức là PUT (Cập nhật thông tin ContactCustomer theo ID)
   else if (req.method === "PUT") {
     try {
-      const { firstName, lastName, phone, email } = req.body;
+      const { firstName, lastName, phone, email, address } = req.body;
 
       // Cập nhật ContactCustomer dựa trên ID
-      const updatedContactCustomer = await prisma.contactCustomer.update({
+      const updatedUser = await prisma.user.update({
         where: {
           id: parseInt(id), // Chuyển đổi id thành số nguyên
         },
@@ -70,12 +70,13 @@ export default async function handler(req, res) {
           lastName,
           phone,
           email,
+          address,
         },
       });
 
       return res.status(200).json({
-        message: "ContactCustomer updated successfully",
-        contactCustomer: updatedContactCustomer,
+        message: "User updated successfully",
+        user: updatedUser,
       });
     } catch (error) {
       console.error("Error updating contactCustomer:", error);

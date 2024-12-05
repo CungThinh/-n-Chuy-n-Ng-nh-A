@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
@@ -21,13 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   createStripePayment,
   createMomoPayment,
@@ -297,27 +288,23 @@ export default function BookingDetailsPage() {
                   }
                 />
                 <div className="relative">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="size-full justify-start rounded-lg border border-gray-300 p-4 pl-10 text-left text-base font-normal focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      >
-                        <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                        {passengerInfo.dob
-                          ? format(passengerInfo.dob, "dd/MM/yyyy")
-                          : "Ngày sinh"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        selected={passengerInfo.dob}
-                        onSelect={(date) => handleInputChange("dob", date)}
-                        mode="single"
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <input
+                    type="date"
+                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    value={
+                      passengerInfo.dob
+                        ? new Date(passengerInfo.dob)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    onChange={(e) =>
+                      handleInputChange("dob", new Date(e.target.value))
+                    }
+                    max={new Date().toISOString().split("T")[0]} // Giới hạn không chọn ngày tương lai
+                    placeholder="Ngày sinh *"
+                    style={{ color: "#000000" }}
+                  />
                 </div>
                 <div className="relative">
                   <Select

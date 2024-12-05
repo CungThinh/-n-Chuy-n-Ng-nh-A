@@ -21,7 +21,7 @@ import {
 import { Edit } from "react-admin";
 
 export const PaymentList = (props) => (
-  <List {...props}>
+  <List {...props} perPage={10}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="Payment ID" />
       <ReferenceField

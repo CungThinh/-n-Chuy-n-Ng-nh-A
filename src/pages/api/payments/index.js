@@ -22,7 +22,10 @@ export default async function handler(req, res) {
         `payments ${range[0]}-${range[1]}/${total}`,
       );
       res.setHeader("Access-Control-Expose-Headers", "Content-Range");
-      res.status(200).json(payments);
+      res.status(200).json({
+        data: payments,
+        total: total,
+      });
     } catch (error) {
       res.status(500).json({ error: "Something went wrong" });
     }

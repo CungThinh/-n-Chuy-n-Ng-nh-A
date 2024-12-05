@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       const take = range[1] - range[0] + 1;
 
       // Truy vấn danh sách ContactCustomer với phân trang
-      const contactCustomers = await prisma.contactCustomer.findMany({
+      const user = await prisma.user.findMany({
         skip,
         take,
         include: {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       });
 
       // Đếm tổng số ContactCustomer
-      const total = await prisma.contactCustomer.count();
+      const total = await prisma.user.count();
 
       // Thiết lập header trả về tổng số contactCustomers
       res.setHeader(
@@ -25,8 +25,12 @@ export default async function handler(req, res) {
         `contactCustomers ${range[0]}-${range[1]}/${total}`,
       );
       res.setHeader("Access-Control-Expose-Headers", "Content-Range");
-      res.status(200).json(contactCustomers);
+      res.status(200).json({
+        data: user,
+        total: total,
+      });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: "Something went wrong" });
     }
   } else if (req.method === "POST") {
@@ -34,7 +38,7 @@ export default async function handler(req, res) {
       const { firstName, lastName, phone, email, bookings } = req.body;
 
       // Tạo mới một ContactCustomer
-      const contactCustomer = await prisma.contactCustomer.create({
+      const user = await prisma.contactCustomer.create({
         data: {
           firstName,
           lastName,
@@ -47,10 +51,11 @@ export default async function handler(req, res) {
       });
 
       return res.status(201).json({
-        message: "ContactCustomer added successfully",
-        contactCustomer: contactCustomer,
+        message: "User added successfully",
+        user: user,
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: error.message });
     }
   } else {
