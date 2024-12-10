@@ -13,20 +13,20 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-[#001f3f] to-[#00264e] py-16 text-white">
+    <footer className="bg-gradient-to-b from-[#00264e] to-[#00264e] py-16 text-white">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Company Info */}
           <div className="space-y-4">
             <Image
-              src="/images/Logo.png"
-              alt="vemaybay.vn logo"
+              src="/images/Logo4.png"
+              alt="summertravel.vn logo"
               width={150}
               height={50}
               className="mb-4"
             />
             <p className="text-sm text-gray-300">
-              Công Ty TNHH VEMAYBAY VN - Chuyên cung cấp dịch vụ đặt vé máy bay
+              Công Ty TNHH SummerTravel - Chuyên cung cấp dịch vụ đặt vé máy bay
               trực tuyến hàng đầu Việt Nam.
             </p>
             <div className="flex space-x-4">
@@ -59,14 +59,14 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-4 text-lg font-bold text-orange-400">
+            <h3 className="mb-4 text-lg font-bold text-[#fcb41a]">
               Liên Kết Nhanh
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Vé máy bay đi Đà Nẵng
                 </a>
@@ -74,7 +74,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Vé máy bay đi Hà Nội
                 </a>
@@ -82,7 +82,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Vé máy bay đi TP.HCM
                 </a>
@@ -90,7 +90,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Vé máy bay đi Phú Quốc
                 </a>
@@ -98,7 +98,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Vé máy bay đi Nha Trang
                 </a>
@@ -108,12 +108,12 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h3 className="mb-4 text-lg font-bold text-orange-400">Hỗ Trợ</h3>
+            <h3 className="mb-4 text-lg font-bold text-[#fcb41a]">Hỗ Trợ</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Điều khoản sử dụng
                 </a>
@@ -121,7 +121,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Chính sách bảo mật
                 </a>
@@ -129,7 +129,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Hướng dẫn đặt vé
                 </a>
@@ -137,7 +137,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Câu hỏi thường gặp
                 </a>
@@ -145,7 +145,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="transition-colors duration-300 hover:text-orange-400"
+                  className="transition-colors duration-300 hover:text-[#fcb41a]"
                 >
                   Phản hồi
                 </a>
@@ -155,20 +155,21 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="mb-4 text-lg font-bold text-orange-400">Liên Hệ</h3>
+            <h3 className="mb-4 text-lg font-bold text-[#fcb41a]">Liên Hệ</h3>
             <ul className="space-y-4 text-sm">
               <li className="flex items-center">
-                <FaPhone className="mr-2 text-orange-400" />
+                <FaPhone className="mr-2 text-[#fcb41a]" />
                 <span>Hotline: 0932 126 988</span>
               </li>
               <li className="flex items-center">
-                <FaEnvelope className="mr-2 text-orange-400" />
-                <span>Email: support@vemaybay.vn</span>
+                <FaEnvelope className="mr-2 text-[#fcb41a]" />
+                <span>Email: support@summertravel.vn</span>
               </li>
               <li className="flex items-start">
-                <FaMapMarkerAlt className="mr-2 mt-1 text-orange-400" />
+                <FaMapMarkerAlt className="mr-2 mt-1 text-[#fcb41a]" />
                 <span>
-                  185-187 Lê Thánh Tôn, P. Bến Thành, Quận 1, TP. Hồ Chí Minh
+                  8 Nguyễn Văn Tráng, Phường Bến Thành, Quận 1, Hồ Chí Minh
+                  700000, Việt Nam
                 </span>
               </li>
             </ul>
@@ -178,11 +179,11 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-8 text-center text-sm text-gray-400">
           <p className="mb-4">
-            © 2024 VEMAYBAY VN. Tất cả các quyền được bảo lưu.
+            © 2024 SummerTravel. Tất cả các quyền được bảo lưu.
           </p>
           <p>
-            Vận hành bởi CÔNG TY CỔ PHẦN THƯƠNG MẠI DỊCH VỤ CÔNG NGHỆ BIZITRIP
-            (BiziTrip.vn)
+            Vận hành bởi CÔNG TY CỔ PHẦN THƯƠNG MẠI DỊCH VỤ CÔNG NGHỆ
+            SUMMERTRAVEL (SummerTravel.vn)
           </p>
         </div>
       </div>

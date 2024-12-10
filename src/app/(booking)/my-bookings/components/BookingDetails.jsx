@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, Image as ImageIcon, Smile, X } from "lucide-react";
 import {
   FaAngleDown,
   FaUser,
@@ -19,30 +19,286 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BookingDetails = ({ booking }) => {
-  const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
+// Enhanced Review Section Component
+const EnhancedReviewSection = ({ onSubmit, isSubmitting }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedEmojis, setSelectedEmojis] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  const handleRatingChange = (newRating) => {
-    setRating(newRating);
+  // Available emojis/reactions
+  const availableEmojis = [
+    { icon: "😊", label: "happy" },
+    { icon: "❤️", label: "heart" },
+    { icon: "👍", label: "thumbs-up" },
+    { icon: "🌟", label: "star" },
+    { icon: "🎉", label: "party" },
+    { icon: "🏆", label: "trophy" },
+    { icon: "🇻🇳", label: "vietnam-flag" },
+    { icon: "✈️", label: "airplane" },
+    { icon: "🌴", label: "palm-tree" },
+    { icon: "📸", label: "camera" },
+  ];
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setSelectedImages([...selectedImages, ...newImages]);
   };
 
-  const handleCommentChange = (e) => {
-    setComment(e.target.value);
+  const removeImage = (index) => {
+    const newImages = [...selectedImages];
+
+    URL.revokeObjectURL(newImages[index].preview);
+    newImages.splice(index, 1);
+    setSelectedImages(newImages);
+  };
+
+  const toggleEmoji = (emoji) => {
+    if (selectedEmojis.includes(emoji)) {
+      setSelectedEmojis(selectedEmojis.filter((e) => e !== emoji));
+    } else {
+      setSelectedEmojis([...selectedEmojis, emoji]);
+    }
+  };
+
+  const handleSubmit = () => {
+    const reviewData = {
+      rating,
+      comment,
+      images: selectedImages.map((img) => img.file),
+      emojis: selectedEmojis,
+    };
+
+    onSubmit(reviewData);
+  };
+
+  return (
+    <div className="mt-10 rounded-lg bg-white p-6 shadow-md">
+      <h2 className="mb-4 text-xl font-bold">Đánh giá dịch vụ</h2>
+      <div className="space-y-6">
+        {/* Star Rating */}
+        <div className="flex items-center">
+          <span className="mr-2">Đánh giá:</span>
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`size-6 cursor-pointer ${
+                  star <= rating
+                    ? "fill-current text-yellow-400"
+                    : "text-gray-300"
+                }`}
+                onClick={() => setRating(star)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Emoji Selector */}
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <span className="mr-2">Biểu cảm:</span>
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="flex items-center rounded-md bg-gray-100 px-3 py-1 text-gray-700 hover:bg-gray-200"
+            >
+              <Smile className="mr-1 size-4" />
+              Chọn biểu tượng
+            </button>
+          </div>
+
+          {showEmojiPicker && (
+            <div className="grid grid-cols-5 gap-2 rounded-lg border bg-white p-2 shadow-lg sm:grid-cols-10">
+              {availableEmojis.map((emoji) => (
+                <button
+                  key={emoji.label}
+                  onClick={() => toggleEmoji(emoji)}
+                  className={`rounded p-2 text-xl hover:bg-gray-100 ${
+                    selectedEmojis.includes(emoji) ? "bg-blue-100" : ""
+                  }`}
+                >
+                  {emoji.icon}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {selectedEmojis.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedEmojis.map((emoji, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm"
+                >
+                  {emoji.icon}
+                  <button
+                    onClick={() => toggleEmoji(emoji)}
+                    className="ml-1 text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Comment Section */}
+        <div>
+          <label htmlFor="comment" className="mb-2 block">
+            Nhận xét:
+          </label>
+          <textarea
+            id="comment"
+            className="w-full rounded-md border p-2"
+            rows="4"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Chia sẻ trải nghiệm của bạn..."
+          />
+        </div>
+
+        {/* Image Upload */}
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <label
+              htmlFor="images"
+              className="flex cursor-pointer items-center rounded-md bg-gray-100 px-4 py-2 hover:bg-gray-200"
+            >
+              <ImageIcon className="mr-2 size-5" />
+              Thêm hình ảnh
+            </label>
+            <input
+              type="file"
+              id="images"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </div>
+
+          {selectedImages.length > 0 && (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {selectedImages.map((image, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={image.preview}
+                    alt={`Preview ${index + 1}`}
+                    className="h-24 w-full rounded-lg object-cover"
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Main BookingDetails Component
+const BookingDetails = ({ booking }) => {
+  const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  const handlePaymentMethodSelect = async (method) => {
+    try {
+      if (method === "stripe") {
+        const response = await axios.post(
+          "/api/payments/create-stripe-payment",
+          {
+            bookingId: booking.id,
+          },
+        );
+
+        if (response.data.url) {
+          window.location.href = response.data.url;
+        }
+      } else if (method === "momo") {
+        const response = await axios.post("/api/payments/create-momo-payment", {
+          bookingId: booking.id,
+          totalAmount: booking.totalAmount,
+        });
+
+        if (response.data.payUrl) {
+          window.location.href = response.data.payUrl;
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo thanh toán:", error);
+      alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại sau.");
+    } finally {
+      setShowPaymentModal(false);
+    }
   };
 
   const handleToggleFlightDetail = () => {
     setIsFlightDetailVisible(!isFlightDetailVisible);
   };
 
-  const payment = booking.payment;
+  const PaymentMethodSelector = ({ onMethodSelect, onClose }) => {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="w-96 rounded-lg bg-white p-6 shadow-xl">
+          <h3 className="mb-4 text-xl font-semibold">
+            Chọn phương thức thanh toán
+          </h3>
+          <div className="space-y-4">
+            <button
+              onClick={() => onMethodSelect("stripe")}
+              className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-gray-50"
+            >
+              <span className="font-medium">Thẻ tín dụng</span>
+              <img src="/icons/stripe.svg" alt="Stripe" className="h-8" />
+            </button>
+            <button
+              onClick={() => onMethodSelect("momo")}
+              className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-gray-50"
+            >
+              <span className="font-medium">Ví MoMo</span>
+              <img
+                src="/icons/momo_square_pinkbg.svg"
+                alt="MoMo"
+                className="h-8"
+              />
+            </button>
+          </div>
+          <button
+            onClick={onClose}
+            className="mt-4 w-full rounded-lg bg-gray-200 py-2 font-medium hover:bg-gray-300"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    );
+  };
 
-  console.log(booking);
-  console.log(payment);
-
+  const payment = booking?.payment;
   let paymentStatus;
 
   if (!payment) {
@@ -56,19 +312,50 @@ const BookingDetails = ({ booking }) => {
           : "Đã thanh toán";
   }
 
-  const handleSubmitReview = async () => {
+  const handleSubmitReview = async (reviewData) => {
     setIsSubmitting(true);
     try {
-      await axios.post("/api/reviews/createReview", {
-        bookingId: bookingInfo.bookingId,
-        rating,
-        comment,
-        email: bookingInfo.email, // Sử dụng email từ thông tin đặt chỗ
+      const formData = new FormData();
+
+      // Đảm bảo gửi đúng bookingId từ props
+      formData.append(
+        "bookingId",
+        booking.bookingId?.toString() || booking.id?.toString(),
+      );
+      formData.append("rating", reviewData.rating.toString());
+      formData.append("comment", reviewData.comment || "");
+
+      if (reviewData.emojis && reviewData.emojis.length > 0) {
+        formData.append("emojis", JSON.stringify(reviewData.emojis));
+      }
+
+      // Append images
+      if (reviewData.images && reviewData.images.length > 0) {
+        reviewData.images.forEach((file, index) => {
+          formData.append(`images`, file);
+        });
+      }
+
+      // Log để kiểm tra data trước khi gửi
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ": " + pair[1]);
+      }
+
+      const response = await axios.post("/api/reviews/createReview", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      alert("Cảm ơn bạn đã đánh giá!");
+
+      if (response.data.review) {
+        alert("Cảm ơn bạn đã đánh giá!");
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
       alert("Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -82,42 +369,11 @@ const BookingDetails = ({ booking }) => {
 
   const handleConfirmCancel = async () => {
     try {
-      const response = await axios.post(`/api/bookings/cancel/${booking.id}`);
-
+      await axios.post(`/api/bookings/cancel/${booking.id}`);
       window.location.reload();
     } catch (error) {
       console.error("Lỗi khi hủy vé:", error);
       alert("Có lỗi xảy ra khi hủy vé. Vui lòng thử lại sau.");
-    }
-  };
-
-  const handlePayment = async () => {
-    try {
-      if (payment.paymentMethod === "stripe") {
-        const response = await axios.post(
-          "/api/payments/create-stripe-payment",
-          {
-            bookingId: booking.id,
-          },
-        );
-
-        if (response.data.url) {
-          window.location.href = response.data.url;
-        }
-      } else if (payment.paymentMethod === "momo") {
-        const response = await axios.post("/api/payments/create-momo-payment", {
-          bookingId: booking.id,
-        });
-
-        if (response.data) {
-          window.location.href = response.data.payUrl;
-        }
-      } else {
-        alert("Đã xảy ra lỗi");
-      }
-    } catch (error) {
-      console.error("Lỗi khi tạo thanh toán:", error);
-      alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại sau.");
     }
   };
 
@@ -164,9 +420,7 @@ const BookingDetails = ({ booking }) => {
             >
               Chi tiết{" "}
               <FaAngleDown
-                className={`ml-1 transition-transform ${
-                  isFlightDetailVisible ? "rotate-180" : ""
-                }`}
+                className={`ml-1 transition-transform ${isFlightDetailVisible ? "rotate-180" : ""}`}
               />
             </button>
           </div>
@@ -218,7 +472,10 @@ const BookingDetails = ({ booking }) => {
                     Khởi hành:{" "}
                     {new Date(ticket.departureTime).toLocaleTimeString(
                       "vi-VN",
-                      { hour: "2-digit", minute: "2-digit" },
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      },
                     )}
                   </p>
                   <p className="mt-2">
@@ -311,7 +568,14 @@ const BookingDetails = ({ booking }) => {
                 Loại vé: {booking.isRoundTrip ? "Khứ hồi" : "Một chiều"}
               </p>
               <p className="flex items-center text-gray-700">
-                Phương thức thanh toán: {payment.paymentMethod}
+                Phương thức thanh toán:{" "}
+                {payment
+                  ? payment.paymentMethod === "stripe"
+                    ? "Thẻ tín dụng"
+                    : payment.paymentMethod === "momo"
+                      ? "Ví MoMo"
+                      : payment.paymentMethod
+                  : "Chưa có"}
               </p>
               <p className="flex items-center text-gray-700">
                 Tình trạng thanh toán: {paymentStatus}
@@ -346,7 +610,7 @@ const BookingDetails = ({ booking }) => {
                   <Button
                     variant="solid"
                     className="bg-green-500 p-4 text-white hover:bg-green-600"
-                    onClick={handlePayment}
+                    onClick={() => setShowPaymentModal(true)}
                     size="lg"
                   >
                     Thanh toán
@@ -367,50 +631,27 @@ const BookingDetails = ({ booking }) => {
                 </Badge>
               )}
             </CardFooter>
+            {showPaymentModal && (
+              <PaymentMethodSelector
+                onMethodSelect={handlePaymentMethodSelect}
+                onClose={() => setShowPaymentModal(false)}
+              />
+            )}
           </Card>
         </div>
       </div>
-      {booking.status === "Completed" && (
-        <div className="mt-10 rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-bold">Đánh giá dịch vụ</h2>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <span className="mr-2">Đánh giá:</span>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`size-6 cursor-pointer ${
-                    star <= rating
-                      ? "fill-current text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => handleRatingChange(star)}
-                />
-              ))}
-            </div>
-            <div>
-              <label htmlFor="comment" className="mb-2 block">
-                Nhận xét:
-              </label>
-              <textarea
-                id="comment"
-                className="w-full rounded-md border p-2"
-                rows="4"
-                value={comment}
-                onChange={handleCommentChange}
-                placeholder="Chia sẻ trải nghiệm của bạn..."
-              ></textarea>
-            </div>
-            <button
-              onClick={handleSubmitReview}
-              disabled={isSubmitting}
-              className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:opacity-50"
-            >
-              {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
-            </button>
-          </div>
-        </div>
-      )}
+
+      {/* Enhanced Review Section */}
+      {/* Enhanced Review Section */}
+      {booking.tickets &&
+        booking.tickets.some(
+          (ticket) => new Date(ticket.arrivalTime) < new Date(),
+        ) && (
+          <EnhancedReviewSection
+            onSubmit={handleSubmitReview}
+            isSubmitting={isSubmitting}
+          />
+        )}
 
       <CancelBookingModal
         isVisible={isCancelModalVisible}

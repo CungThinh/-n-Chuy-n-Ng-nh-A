@@ -75,7 +75,7 @@ const Navbar = () => {
       <div className="container mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center">
           <img
-            src="/images/Logo.png"
+            src="/images/Logo4.png"
             alt="vemaybay.vn logo"
             className="h-10 w-auto cursor-pointer"
             onClick={handleLogoClick}
@@ -85,11 +85,11 @@ const Navbar = () => {
         <div className="hidden space-x-6 lg:flex">
           <div className="flex items-center space-x-2">
             <FaPhoneAlt />
-            <span className="text-sm">0932 126 988</span>
+            <span className="text-sm">0912 345 678</span>
           </div>
           <div className="flex items-center space-x-2">
             <FaPhoneAlt />
-            <span className="text-sm">(028) 38 256 256</span>
+            <span className="text-sm">(028) 77 777 777</span>
           </div>
         </div>
 

@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import FlightSearchSection from "@/components/home/FlightSearchSection";
 import AdSection from "@/components/home/AdSection";
 import DiscountSection from "@/components/home/DiscountSection";
+import FlightPageReview from "@/components/home/FlightPageReview";
 
 export default function HomePage() {
   const [visible, setVisible] = useState(false);
@@ -38,6 +39,7 @@ export default function HomePage() {
   return (
     <div className="bg-white">
       <FlightSearchSection />
+      <FlightPageReview />
       <AdSection />
       <DiscountSection />
       <Modal isOpen={visible} onClose={closeModal}>

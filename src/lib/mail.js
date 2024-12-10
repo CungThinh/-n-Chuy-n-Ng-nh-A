@@ -35,7 +35,7 @@ export async function sendMail({
 
     // Prepare email options
     const mailOptions = {
-      from: `"MyTrip Booking" <${SMTP_EMAIL}>`,
+      from: `"SummerTravel " <${SMTP_EMAIL}>`,
       to,
       subject,
       html: body,

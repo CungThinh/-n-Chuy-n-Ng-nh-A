@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-import prisma from "@/lib/prisma"; // Import Prisma client
+import prisma from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -19,7 +19,6 @@ export default async function handler(req, res) {
     });
 
     try {
-      // Tạo phiên Stripe
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
             price_data: {
               currency: "vnd",
               product_data: {
-                name: `Vemaybay.vn - ${booking.isRoundTrip ? "Khứ hồi" : "Một chiều"}`,
+                name: `SummerTravel.vn - ${booking.isRoundTrip ? "Khứ hồi" : "Một chiều"}`,
               },
               unit_amount: Math.round(booking.totalAmount),
             },
@@ -37,7 +36,7 @@ export default async function handler(req, res) {
         customer_email: booking.user.email,
         mode: "payment",
         success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&bookingId=${bookingId}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-fail?session_id={CHECKOUT_SESSION_ID}&bookingId=${bookingId}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-cancel?session_id={CHECKOUT_SESSION_ID}&bookingId=${bookingId}`,
       });
 
       if (!booking.payment) {

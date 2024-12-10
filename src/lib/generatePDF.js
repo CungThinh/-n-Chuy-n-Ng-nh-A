@@ -40,18 +40,18 @@ export async function generateInvoicePDF(bookingData) {
         process.cwd(),
         "public",
         "images",
-        "iconlogo2.png",
+        "Logo4.png",
       );
 
-      doc.image(logoPath, 50, 50, { width: 130 });
+      doc.image(logoPath, 50, 40, { width: 130 });
 
       // Invoice number (top right)
       doc
         .font("NotoSans-Bold")
         .fontSize(14)
-        .text("MÃ HÓA ĐƠN", 400, 70)
+        .text("MÃ HÓA ĐƠN", 450, 50)
         .fontSize(12)
-        .text(`#${bookingData.pnrId}`, 400, 90);
+        .text(`#${bookingData.pnrId}`, 450, 70);
 
       // Customer name and info
       doc.font("NotoSans-Bold").fontSize(24).text("HÓA ĐƠN", 50, 130);
@@ -60,9 +60,7 @@ export async function generateInvoicePDF(bookingData) {
         .font("NotoSans-Bold")
         .fontSize(14)
         .text(
-          bookingData.customers[0].firstName +
-            " " +
-            bookingData.customers[0].lastName,
+          `${bookingData.customers[0].firstName} ${bookingData.customers[0].lastName}`,
           50,
           180,
         );
@@ -72,9 +70,9 @@ export async function generateInvoicePDF(bookingData) {
         .font("NotoSans")
         .fontSize(10)
         .text("Email:", 50, 210)
-        .text(bookingData.user.email, 150, 210)
+        .text(bookingData.user.email, 120, 210)
         .text("Quốc tịch:", 50, 230)
-        .text(bookingData.customers[0].nationality || "Vietnam", 150, 230);
+        .text(bookingData.customers[0].nationality || "Vietnam", 120, 230);
 
       // Table headers
       const startY = 280;
@@ -102,6 +100,8 @@ export async function generateInvoicePDF(bookingData) {
       );
 
       if (outboundFlight) {
+        const outboundPrice = outboundFlight.price || bookingData.totalAmount;
+
         doc
           .font("NotoSans")
           .text(
@@ -110,16 +110,8 @@ export async function generateInvoicePDF(bookingData) {
             currentY,
           )
           .text("1", 320, currentY)
-          .text(
-            Math.round(bookingData.totalAmount / 2).toLocaleString("vi-VN"),
-            400,
-            currentY,
-          )
-          .text(
-            Math.round(bookingData.totalAmount / 2).toLocaleString("vi-VN"),
-            480,
-            currentY,
-          );
+          .text(outboundPrice.toLocaleString("vi-VN"), 400, currentY)
+          .text(outboundPrice.toLocaleString("vi-VN"), 490, currentY);
         currentY += 30;
       }
 
@@ -129,6 +121,8 @@ export async function generateInvoicePDF(bookingData) {
       );
 
       if (returnFlight) {
+        const returnPrice = returnFlight.price || bookingData.totalAmount;
+
         doc
           .font("NotoSans")
           .text(
@@ -137,34 +131,33 @@ export async function generateInvoicePDF(bookingData) {
             currentY,
           )
           .text("1", 320, currentY)
-          .text(
-            Math.round(bookingData.totalAmount / 2).toLocaleString("vi-VN"),
-            400,
-            currentY,
-          )
-          .text(
-            Math.round(bookingData.totalAmount / 2).toLocaleString("vi-VN"),
-            480,
-            currentY,
-          );
+          .text(returnPrice.toLocaleString("vi-VN"), 400, currentY)
+          .text(returnPrice.toLocaleString("vi-VN"), 490, currentY);
         currentY += 30;
       }
+
+      // Calculate totals
+      const subTotal = bookingData.totalAmount;
+      const tax = 0; // hoặc lấy từ bookingData.tax nếu có
+      const finalTotal = subTotal + tax;
 
       // Draw total section
       currentY += 20;
       doc
         .font("NotoSans")
         .text("Tổng cộng", 400, currentY)
-        .text(bookingData.totalAmount.toLocaleString("vi-VN"), 480, currentY);
+        .text(subTotal.toLocaleString("vi-VN"), 490, currentY);
 
       currentY += 20;
-      doc.text("Thuế (0%)", 400, currentY).text("0", 480, currentY);
+      doc
+        .text("Thuế (0%)", 400, currentY)
+        .text(tax.toLocaleString("vi-VN"), 530, currentY);
 
       currentY += 20;
       doc
         .font("NotoSans-Bold")
         .text("TỔNG THANH TOÁN", 350, currentY)
-        .text(bookingData.totalAmount.toLocaleString("vi-VN"), 480, currentY);
+        .text(finalTotal.toLocaleString("vi-VN"), 490, currentY);
 
       // Payment information section
       currentY += 40;
@@ -191,10 +184,14 @@ export async function generateInvoicePDF(bookingData) {
       doc
         .text("Email:", 300, currentY)
         .text(bookingData.user.email, 380, currentY)
-        .text("Điện thoại:", 300, currentY + 20)
-        .text("+84 912 345 678", 380, currentY + 20)
-        .text("Website:", 300, currentY + 40)
-        .text("www.vemaybay.vn", 380, currentY + 40);
+        .text("Điện thoại:", 300, currentY + 40)
+        .text(
+          bookingData.user.phoneNumber || "(028) 77 777 777",
+          380,
+          currentY + 40,
+        )
+        .text("Website:", 300, currentY + 60)
+        .text("www.summertravel.vn", 380, currentY + 60);
 
       doc.end();
     } catch (error) {

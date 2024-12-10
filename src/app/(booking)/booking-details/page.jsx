@@ -29,13 +29,14 @@ export default function BookingDetailsPage() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [passengerInfo, setPassengerInfo] = useState({
-    lastName: "",
-    firstName: "",
-    gender: "",
-    dob: null,
-    nationality: "Việt Nam",
+  const [passengers, setPassengers] = useState({
+    adults: 1,
+    children: 0,
+    infants_in_seat: 0,
+    infants_on_lap: 0,
   });
+
+  const [passengersInfo, setPassengersInfo] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [flightDetails, setFlightDetails] = useState({
     outbound: null,
@@ -56,27 +57,36 @@ export default function BookingDetailsPage() {
   };
 
   const validateForm = () => {
-    return (
-      passengerInfo.lastName &&
-      passengerInfo.firstName &&
-      passengerInfo.gender &&
-      passengerInfo.dob &&
-      passengerInfo.nationality
+    return passengersInfo.every(
+      (passenger) =>
+        passenger.lastName &&
+        passenger.firstName &&
+        passenger.gender &&
+        passenger.dob &&
+        passenger.nationality,
     );
+  };
+
+  const clearFlightData = () => {
+    localStorage.removeItem("selectedOutboundFlight");
+    localStorage.removeItem("selectedReturnFlight");
+    localStorage.removeItem("flightType");
+    localStorage.removeItem("totalPrice");
+    localStorage.removeItem("destination");
+    localStorage.removeItem("passengersInfo");
+  };
+
+  const handlePaymentSuccess = () => {
+    clearFlightData();
+    router.push(`/payment-success?bookingId=${bookingId}`);
   };
 
   const handleBookingSubmit = async () => {
     if (!session) {
       const currentUrl = window.location.pathname;
 
-      localStorage.setItem("passengerInfo", JSON.stringify(passengerInfo));
+      localStorage.setItem("passengersInfo", JSON.stringify(passengersInfo));
       router.push(`/login?callbackUrl=${encodeURIComponent(currentUrl)}`);
-
-      return;
-    }
-
-    if (!validateForm()) {
-      setErrorMessage("Vui lòng điền đầy đủ thông tin bắt buộc.");
 
       return;
     }
@@ -124,31 +134,44 @@ export default function BookingDetailsPage() {
       const bookingData = {
         isRoundTrip,
         destination,
+        passengers: passengersInfo,
         totalAmount: totalPrice,
         tickets,
-        customers: [
-          {
-            firstName: passengerInfo.firstName,
-            lastName: passengerInfo.lastName,
-            dateOfBirth: passengerInfo.dob,
-            nationality: passengerInfo.nationality,
-            gender: passengerInfo.gender,
-          },
-        ],
+        customers: passengersInfo.map((passenger) => ({
+          firstName: passenger.firstName,
+          lastName: passenger.lastName,
+          dateOfBirth: passenger.dob,
+          nationality: passenger.nationality,
+          gender: passenger.gender,
+        })),
         user: {
-          email: session?.user?.email, // This should be pewpew1232002@gmail.com
+          email: session?.user?.email,
         },
       };
 
-      const response = await axios.post("/api/bookings", bookingData, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-
+      const response = await axios.post("/api/bookings", bookingData);
       const newBookingId = response.data.booking.id;
-      const pnrId = response.data.booking.pnrId;
+      const pnr = response.data.booking.pnr;
+      const bookingInfo = {
+        bookingId: newBookingId,
+        pnrId: pnr,
+        firstName: passengersInfo[0].firstName,
+        lastName: passengersInfo[0].lastName,
+        email: session?.user?.email,
+        nationality: passengersInfo[0].nationality,
+        dob: passengersInfo[0].dob,
+        totalPrice: totalPrice,
+        // Thêm số lượng hành khách
+        adultCount: passengersInfo.filter((p) => p.type === "adult").length,
+        childCount: passengersInfo.filter((p) => p.type === "child").length,
+        infantCount: passengersInfo.filter((p) => p.type === "infant").length,
+        // Thêm toàn bộ thông tin hành khách
+        passengers: passengersInfo,
+        allPassengers: passengersInfo.length, // Tổng số hành khách
+      };
 
-      if (!newBookingId || !pnrId) {
+      localStorage.setItem("bookingInfo", JSON.stringify(bookingInfo));
+      if (!newBookingId) {
         setErrorMessage("Không thể lấy ID đặt chỗ.");
 
         return;
@@ -156,23 +179,7 @@ export default function BookingDetailsPage() {
 
       setBookingId(newBookingId);
 
-      localStorage.setItem(
-        "bookingInfo",
-        JSON.stringify({
-          firstName: passengerInfo.firstName,
-          lastName: passengerInfo.lastName,
-          email: session?.user?.email,
-          nationality: passengerInfo.nationality,
-          dob: passengerInfo.dob,
-          bookingId: newBookingId,
-          pnrId,
-          totalPrice,
-        }),
-      );
-
       if (paymentMethod === "stripe_qr") {
-        console.log("Creating QR payment for booking:", newBookingId); // Debug log
-
         const qrResult = await createStripeQRPayment({
           totalPrice,
           flightType: flightType === "1" ? "Khứ hồi" : "Một chiều",
@@ -180,11 +187,8 @@ export default function BookingDetailsPage() {
           airlineLogos: flightDetails.outbound.flights.map(
             (flight) => flight.airline_logo,
           ),
-          passengerInfo: {
-            ...passengerInfo,
-            email: session?.user?.email || "test@example.com",
-          },
-          bookingId: newBookingId, // Sử dụng newBookingId thay vì bookingId
+          user: session.user,
+          bookingId: newBookingId,
         });
 
         if (qrResult) {
@@ -194,17 +198,21 @@ export default function BookingDetailsPage() {
       } else if (paymentMethod === "stripe") {
         const stripeResult = await createStripePayment({
           bookingId: newBookingId,
+          user: session.user,
         });
 
+        clearFlightData();
         window.location.href = stripeResult.url;
       } else if (paymentMethod === "momo") {
         const momoResult = await createMomoPayment({
           totalAmount: totalPrice,
-          orderInfo: `Đặt vé máy bay cho ${passengerInfo.firstName} ${passengerInfo.lastName}`,
+          orderInfo: `Đặt vé máy bay cho ${session.user.name || "Khách hàng"}`,
           bookingId: newBookingId,
+          user: session.user,
         });
 
-        window.location.href = momoResult.payUrl; // Redirects to MoMo payment page
+        clearFlightData();
+        window.location.href = momoResult.payUrl;
       }
     } catch (error) {
       setErrorMessage(error.message || "Đã xảy ra lỗi khi tạo booking.");
@@ -217,7 +225,7 @@ export default function BookingDetailsPage() {
     const returnFlight = localStorage.getItem("selectedReturnFlight");
     const storedFlightType = localStorage.getItem("flightType");
     const storedTotalPrice = localStorage.getItem("totalPrice");
-    const savedPassengerInfo = localStorage.getItem("passengerInfo");
+    const storedPassengers = localStorage.getItem("passengers");
 
     if (outboundFlight) {
       setFlightDetails({
@@ -230,14 +238,72 @@ export default function BookingDetailsPage() {
       setTotalPrice(JSON.parse(storedTotalPrice));
     }
 
-    if (savedPassengerInfo) {
-      const parsedPassengerInfo = JSON.parse(savedPassengerInfo);
-
-      if (parsedPassengerInfo) setPassengerInfo(parsedPassengerInfo);
+    if (storedFlightType) {
+      setFlightType(storedFlightType);
     }
 
-    setFlightType(storedFlightType || "1");
+    if (storedPassengers) {
+      try {
+        const parsedPassengers = JSON.parse(storedPassengers);
+        let newPassengersInfo = [];
+
+        // Add adult passengers
+        for (let i = 0; i < parsedPassengers.adults; i++) {
+          newPassengersInfo.push({
+            type: "adult",
+            lastName: "",
+            firstName: "",
+            gender: "",
+            dob: null,
+            nationality: "Việt Nam",
+          });
+        }
+
+        // Add child passengers
+        for (let i = 0; i < parsedPassengers.children; i++) {
+          newPassengersInfo.push({
+            type: "child",
+            lastName: "",
+            firstName: "",
+            gender: "",
+            dob: null,
+            nationality: "Việt Nam",
+          });
+        }
+
+        // Add infant passengers
+        for (
+          let i = 0;
+          i <
+          parsedPassengers.infants_in_seat + parsedPassengers.infants_on_lap;
+          i++
+        ) {
+          newPassengersInfo.push({
+            type: "infant",
+            lastName: "",
+            firstName: "",
+            gender: "",
+            dob: null,
+            nationality: "Việt Nam",
+          });
+        }
+
+        setPassengersInfo(newPassengersInfo);
+      } catch (error) {
+        console.error("Error parsing passengers:", error);
+      }
+    }
   }, []);
+
+  const handlePassengerInfoChange = (index, field, value) => {
+    const newPassengersInfo = [...passengersInfo];
+
+    newPassengersInfo[index] = {
+      ...newPassengersInfo[index],
+      [field]: value,
+    };
+    setPassengersInfo(newPassengersInfo);
+  };
 
   return (
     <div>
@@ -262,92 +328,124 @@ export default function BookingDetailsPage() {
               </div>
             )}
 
+            {/* Một card chứa tất cả thông tin hành khách */}
             <div className="mb-4 rounded-lg bg-white p-6 shadow-md">
-              <h2 className="mb-6 border-b pb-4 text-xl font-bold text-gray-800">
-                Hành khách 1
+              <h2 className="mb-6 text-xl font-bold text-gray-800">
+                Thông tin hành khách
               </h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <input
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  placeholder="Họ *"
-                  style={{ color: "#000000" }}
-                  type="text"
-                  value={passengerInfo.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
-                />
-                <input
-                  className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  placeholder="Tên đệm và tên *"
-                  style={{ color: "#000000" }}
-                  type="text"
-                  value={passengerInfo.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                />
-                <div className="relative">
-                  <input
-                    type="date"
-                    className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value={
-                      passengerInfo.dob
-                        ? new Date(passengerInfo.dob)
-                            .toISOString()
-                            .split("T")[0]
-                        : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("dob", new Date(e.target.value))
-                    }
-                    max={new Date().toISOString().split("T")[0]} // Giới hạn không chọn ngày tương lai
-                    placeholder="Ngày sinh *"
-                    style={{ color: "#000000" }}
-                  />
-                </div>
-                <div className="relative">
-                  <Select
-                    value={passengerInfo.gender}
-                    onValueChange={(value) =>
-                      handleInputChange("gender", value)
-                    }
-                  >
-                    <SelectTrigger className="size-full rounded-lg border border-gray-300 p-4 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
-                      <SelectValue placeholder="Giới tính" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Nam</SelectItem>
-                      <SelectItem value="female">Nữ</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="relative">
-                  <Select
-                    value={passengerInfo.nationality}
-                    onValueChange={(value) =>
-                      handleInputChange("nationality", value)
-                    }
-                  >
-                    <SelectTrigger className="size-full rounded-lg border border-gray-300 p-4 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
-                      <SelectValue placeholder="Quốc tịch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map((country) => (
-                        <SelectItem value={country} key={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
+              {passengersInfo.map((passenger, index) => (
+                <div key={index} className="mb-8 border-b pb-6 last:border-b-0">
+                  <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                    Hành khách {index + 1}{" "}
+                    {passenger.type === "adult"
+                      ? "(Người lớn)"
+                      : passenger.type === "child"
+                        ? "(Trẻ em)"
+                        : "(Em bé)"}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <input
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Họ *"
+                      type="text"
+                      value={passenger.lastName}
+                      onChange={(e) =>
+                        handlePassengerInfoChange(
+                          index,
+                          "lastName",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <input
+                      className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Tên đệm và tên *"
+                      type="text"
+                      value={passenger.firstName}
+                      onChange={(e) =>
+                        handlePassengerInfoChange(
+                          index,
+                          "firstName",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        className="w-full rounded-lg border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        value={
+                          passenger.dob && !isNaN(new Date(passenger.dob))
+                            ? new Date(passenger.dob)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const dateValue = e.target.value;
+                          const isValidDate = !isNaN(new Date(dateValue));
+
+                          handlePassengerInfoChange(
+                            index,
+                            "dob",
+                            isValidDate ? new Date(dateValue) : null,
+                          );
+                        }}
+                        max={new Date().toISOString().split("T")[0]}
+                        placeholder="Ngày sinh *"
+                        style={{ color: "#000000" }}
+                      />
+                    </div>
+                    <div className="relative">
+                      <Select
+                        value={passenger.gender}
+                        onValueChange={(value) =>
+                          handlePassengerInfoChange(index, "gender", value)
+                        }
+                      >
+                        <SelectTrigger className="size-full rounded-lg border border-gray-300 p-4 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                          <SelectValue placeholder="Giới tính" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="male">Nam</SelectItem>
+                          <SelectItem value="female">Nữ</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="relative">
+                      <Select
+                        value={passenger.nationality}
+                        onValueChange={(value) =>
+                          handlePassengerInfoChange(index, "nationality", value)
+                        }
+                      >
+                        <SelectTrigger className="size-full rounded-lg border border-gray-300 p-4 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                          <SelectValue placeholder="Quốc tịch" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem value={country} key={country}>
+                              {country}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Phần thanh toán chung */}
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-6 text-xl font-bold text-gray-800">
+                Phương thức thanh toán
+              </h2>
               <PaymentMethodSelector
                 selectedMethod={paymentMethod}
                 onMethodSelect={setPaymentMethod}
               />
-
               <div className="mt-8 flex justify-end">
                 <button
                   className="rounded-lg bg-blue-500 px-6 py-3 text-white transition-colors hover:bg-blue-600"
@@ -364,6 +462,7 @@ export default function BookingDetailsPage() {
               flightType={flightType}
               flightDetails={flightDetails}
               totalPrice={totalPrice}
+              passengersInfo={passengersInfo} // Thêm prop này
             />
           </div>
         </div>
@@ -375,6 +474,7 @@ export default function BookingDetailsPage() {
           url={qrPaymentData.url}
           sessionId={qrPaymentData.sessionId}
           onPaymentSuccess={() => {
+            clearFlightData();
             router.push(`/payment-success?bookingId=${bookingId}`);
           }}
           onPaymentError={(error) => {

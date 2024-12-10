@@ -8,12 +8,13 @@ export default async function handler(req, res) {
     try {
       const booking = await prisma.booking.findUnique({
         where: {
-          id: parseInt(id), // Chuyển đổi id thành số nguyên
+          id: parseInt(id),
         },
         include: {
           tickets: true,
           payment: true,
           customers: true,
+          user: true,
         },
       });
 
@@ -23,7 +24,28 @@ export default async function handler(req, res) {
         });
       }
 
-      return res.status(200).json(booking);
+      // Transform data to include user info
+      const bookingInfo = {
+        bookingId: booking.id,
+        pnrId: booking.pnrId,
+        // User info
+        firstName: booking.user.name?.split(" ").slice(-1)[0] || "",
+        lastName: booking.user.name?.split(" ").slice(0, -1).join(" ") || "",
+        email: booking.user.email,
+        phoneNumber: booking.user.phoneNumber,
+        address: booking.user.address,
+        // Booking info
+        totalAmount: booking.totalAmount,
+        status: booking.status, // Thêm trường status của booking
+        paymentStatus: booking.payment?.status || "pending", // Đổi tên để phân biệt
+        tickets: booking.tickets,
+        payment: booking.payment,
+        customers: booking.customers,
+        isRoundTrip: booking.isRoundTrip,
+        createdAt: booking.createdAt,
+      };
+
+      return res.status(200).json(bookingInfo);
     } catch (error) {
       console.error("Error fetching booking:", error);
 

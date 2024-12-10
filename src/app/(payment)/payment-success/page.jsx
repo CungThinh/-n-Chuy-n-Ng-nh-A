@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CheckCircle, Star } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -80,13 +80,51 @@ export default function PaymentSuccess() {
   };
 
   useEffect(() => {
+    // Clear flight-related data when payment success page loads
+    localStorage.removeItem("selectedOutboundFlight");
+    localStorage.removeItem("selectedReturnFlight");
+    localStorage.removeItem("flightType");
+    localStorage.removeItem("totalPrice");
+    localStorage.removeItem("destination");
+    localStorage.removeItem("passengerInfo");
+  }, []);
+
+  useEffect(() => {
     const storedBookingInfo = JSON.parse(localStorage.getItem("bookingInfo"));
 
     setBookingInfo(storedBookingInfo);
 
-    const storedAdultCount = JSON.parse(localStorage.getItem("adultCount"));
+    const fetchBookingDetails = async () => {
+      try {
+        if (!bookingId) return;
 
-    if (storedAdultCount) setAdultCount(storedAdultCount);
+        // Fetch booking details từ API
+        const response = await axios.get(`/api/bookings/${bookingId}`);
+        const latestBookingInfo = response.data;
+
+        // Log để debug
+        console.log("Latest booking info:", latestBookingInfo);
+
+        // Chuyển đổi thành số trước khi set
+        const transformedInfo = {
+          ...latestBookingInfo,
+          totalAmount: Number(latestBookingInfo.totalAmount), // Đảm bảo là số
+          totalPrice: Number(latestBookingInfo.totalAmount), // Thêm totalPrice
+        };
+
+        // Set booking info
+        setBookingInfo(transformedInfo);
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin booking:", error);
+        setErrorMessage("Không thể lấy thông tin đặt chỗ");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (bookingId) {
+      fetchBookingDetails();
+    }
 
     const updatePaymentStatus = async () => {
       try {
@@ -152,7 +190,7 @@ export default function PaymentSuccess() {
     };
 
     updatePaymentStatus();
-  }, [resultCode, sessionId, bookingIdParam]);
+  }, [resultCode, sessionId, bookingIdParam, bookingId]);
 
   const handleRatingChange = (newRating) => {
     setRating(newRating);
@@ -204,8 +242,7 @@ export default function PaymentSuccess() {
       </div>
     );
   }
-
-  const totalPrice = bookingInfo.totalPrice * adultCount;
+  const totalPrice = (bookingInfo?.totalPrice || 0) * (adultCount || 1);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -257,59 +294,17 @@ export default function PaymentSuccess() {
                     </span>
                   </div>
                   <div className="grid grid-cols-3 items-center">
-                    <span className="text-gray-600">Quốc gia:</span>
+                    <span className="text-gray-600">Số điện thoại:</span>
                     <span className="col-span-2 font-medium">
-                      {bookingInfo.nationality}
+                      {bookingInfo.phoneNumber || "Chưa cập nhật"}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 items-center">
-                    <span className="text-gray-600">Ngày sinh:</span>
+                    <span className="text-gray-600">Địa chỉ:</span>
                     <span className="col-span-2 font-medium">
-                      {format(new Date(bookingInfo.dob), "dd/MM/yyyy")}
+                      {bookingInfo.address || "Chưa cập nhật"}
                     </span>
                   </div>
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm">
-                <h2 className="mb-6 border-b pb-2 text-xl font-bold">
-                  Đánh giá dịch vụ
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <span className="mr-2">Đánh giá:</span>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`size-6 cursor-pointer ${
-                          star <= rating
-                            ? "fill-current text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                        onClick={() => handleRatingChange(star)}
-                      />
-                    ))}
-                  </div>
-                  <div>
-                    <label htmlFor="comment" className="mb-2 block">
-                      Nhận xét:
-                    </label>
-                    <textarea
-                      id="comment"
-                      className="w-full rounded-md border p-2"
-                      rows="4"
-                      value={comment}
-                      onChange={handleCommentChange}
-                      placeholder="Chia sẻ trải nghiệm của bạn..."
-                    ></textarea>
-                  </div>
-                  <button
-                    onClick={handleSubmitReview}
-                    disabled={isSubmitting}
-                    className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
-                  </button>
                 </div>
               </div>
             </div>
@@ -323,7 +318,7 @@ export default function PaymentSuccess() {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Mã đặt chỗ:</span>
                     <span className="font-medium">
-                      #{bookingInfo?.pnrId || "Không có mã"}
+                      {bookingInfo?.pnrId || "Không có mã"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -354,15 +349,14 @@ export default function PaymentSuccess() {
                   </div>
                   <div className="mt-4 border-t pt-4"></div>
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-gray-600">
-                      Giá vé x {adultCount} người lớn:
-                    </span>
+                    <span className="text-gray-600">Giá vé :</span>
                     <span className="font-medium">
-                      {bookingInfo.totalPrice.toLocaleString("vi-VN")} VNĐ
+                      {(bookingInfo?.totalPrice || 0).toLocaleString("vi-VN")}{" "}
+                      VNĐ
                     </span>
                   </div>
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-gray-600">Thuế</span>
+                    <span className="text-gray-600">Thuế:</span>
                     <span>Đã bao gồm</span>
                   </div>
                   <div className="flex items-center justify-between border-t pt-4">

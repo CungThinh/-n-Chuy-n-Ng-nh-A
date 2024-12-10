@@ -5,13 +5,10 @@ export const createStripeQRPayment = async ({
   flightType,
   airlineName,
   airlineLogos,
-  passengerInfo,
   bookingId,
+  user,
 }) => {
-  console.log("Creating Stripe QR payment with bookingId:", bookingId); // Debug log
-
   if (!bookingId) {
-    console.error("Missing bookingId in createStripeQRPayment"); // Debug log
     throw new Error("bookingId is required");
   }
 
@@ -23,8 +20,8 @@ export const createStripeQRPayment = async ({
         flightType,
         airlineName,
         airlineLogos,
-        passengerInfo,
         bookingId,
+        user,
       },
     );
 
@@ -40,36 +37,7 @@ export const createStripeQRPayment = async ({
   }
 };
 
-export const checkPaymentStatus = async (sessionId) => {
-  try {
-    const response = await axios.post("/api/payments/check-payment-status", {
-      sessionId,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Error checking payment status:", error);
-    throw new Error("Không thể kiểm tra trạng thái thanh toán");
-  }
-};
-
-// Giữ nguyên các hàm khác
-export const createStripePayment = async ({ bookingId }) => {
-  try {
-    const response = await axios.post("/api/payments/create-stripe-payment", {
-      bookingId,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Error creating Stripe payment:", error);
-    throw new Error(
-      error.response?.data?.error || "Stripe payment creation failed.",
-    );
-  }
-};
-
-export const createMomoPayment = async ({ bookingId }) => {
+export const createMomoPayment = async ({ totalAmount, bookingId, user }) => {
   if (totalAmount > 50000000) {
     throw new Error(
       "MoMo không hỗ trợ thanh toán cho số tiền lớn hơn 50 triệu VND.",
@@ -79,6 +47,8 @@ export const createMomoPayment = async ({ bookingId }) => {
   try {
     const response = await axios.post("/api/payments/create-momo-payment", {
       bookingId,
+      totalAmount,
+      user,
     });
 
     return response.data;
@@ -86,6 +56,22 @@ export const createMomoPayment = async ({ bookingId }) => {
     console.error("Error creating MoMo payment:", error);
     throw new Error(
       error.response?.data?.message || "MoMo payment creation failed.",
+    );
+  }
+};
+
+export const createStripePayment = async ({ bookingId, user }) => {
+  try {
+    const response = await axios.post("/api/payments/create-stripe-payment", {
+      bookingId,
+      user,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating Stripe payment:", error);
+    throw new Error(
+      error.response?.data?.message || "Stripe payment creation failed.",
     );
   }
 };

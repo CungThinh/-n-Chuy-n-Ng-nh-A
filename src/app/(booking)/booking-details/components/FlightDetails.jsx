@@ -38,8 +38,8 @@ export default function FlightDetails({ flightDetails, flightType }) {
           src="./images/icons8-protect-96.png"
         />
         <span className="font-semibold text-orange-700">
-          VEMAYBAY sẽ bảo vệ chuyến đi của bạn và giữ an toàn cho thông tin của
-          bạn
+          SummerTravel sẽ bảo vệ chuyến đi của bạn và giữ an toàn cho thông tin
+          của bạn
         </span>
       </div>
 
@@ -223,9 +223,6 @@ export default function FlightDetails({ flightDetails, flightType }) {
                     </p>
                     <p className="text-sm text-gray-500">
                       Số hiệu: {flight.flight_number}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Thời gian bay: {formatDuration(flight.duration)}
                     </p>
                     <p className="text-sm text-gray-500">
                       Máy bay: {flight.airplane}
@@ -418,9 +415,6 @@ export default function FlightDetails({ flightDetails, flightType }) {
                     </p>
                     <p className="text-sm text-gray-500">
                       Số hiệu: {flight.flight_number}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Thời gian bay: {formatDuration(flight.duration)}
                     </p>
                     <p className="text-sm text-gray-500">
                       Máy bay: {flight.airplane}

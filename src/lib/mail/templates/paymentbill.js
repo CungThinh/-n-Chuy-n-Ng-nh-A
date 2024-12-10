@@ -1,11 +1,10 @@
-// src/lib/mail/templates/paymentbill.js
 import * as handlebars from "handlebars";
 
 const emailTemplate = `
 <!DOCTYPE html>
 <html>
   <head>
-    <title>VEMAYBAY.vn - Xác Nhận Đặt Vé</title>
+    <title>SummerTravel - Xác Nhận Đặt Vé</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
@@ -43,9 +42,9 @@ const emailTemplate = `
         "
       >
         <img
-          src="https://yt3.googleusercontent.com/ytc/AIdro_mtMQ3fzR0apNNc_abPBJUGy5Q4Ky0BkqKJuEg6rQotlQ=s900-c-k-c0x00ffffff-no-rj"
+          src="https://file.hstatic.net/200000942031/file/logo4.png"
           alt="MyTrip Logo"
-          style="width: 150px; display: block; margin: 0 auto;"
+          style="width: 250px; display: block; margin: 0 auto;"
         />
       </div>
 
@@ -60,13 +59,13 @@ const emailTemplate = `
             margin-bottom: 20px;
           "
         >
-          Cảm ơn bạn đã đặt vé tại Vemaybay.vn!
+          Cảm ơn bạn đã đặt vé tại SummerTravel
         </h1>
 
         <p style="margin-bottom: 20px;">Kính gửi {{name}},</p>
 
         <p style="margin-bottom: 20px;">
-          Chúng tôi xin xác nhận đơn đặt vé của bạn đã được thực hiện thành
+          Chúng SummerTravel xin xác nhận đơn đặt vé của bạn đã được thực hiện thành
           công. Dưới đây là chi tiết chuyến bay của bạn:
         </p>
 
@@ -111,7 +110,8 @@ const emailTemplate = `
             </p>
           </div>
 
-          <!-- Chiều về -->
+          <!-- Chiều về - Chỉ hiển thị khi là vé khứ hồi -->
+          {{#if isRoundTrip}}
           <div
             style="
               margin-top: 15px;
@@ -132,6 +132,7 @@ const emailTemplate = `
               {{returnArrivalTime}}
             </p>
           </div>
+          {{/if}}
 
           <p style="margin: 5px 0;">
             <strong>Hạng vé:</strong> {{travelClass}}
@@ -284,7 +285,7 @@ const emailTemplate = `
           </div>
 
           <!-- Contact Section -->
-          <div style="width: 48%; min-width: 200px;">
+          <div style="width: 48%; min-width: 200px; margin-left: 10px">
             <h3
               style="
                 font-family: Montserrat, sans-serif;
@@ -304,9 +305,9 @@ const emailTemplate = `
                 margin: 0;
               "
             >
-              www.company.com<br />
-              Company address here<br />
-              +1 123 123 123<br />
+              www.summertravel.vn<br />
+              8 Nguyễn Văn Tráng, Phường Bến Thành, Quận 1, Hồ Chí Minh 700000, Việt Nam<br />
+              (028) 77 777 777<br />
               <a
                 href="#"
                 target="_blank"

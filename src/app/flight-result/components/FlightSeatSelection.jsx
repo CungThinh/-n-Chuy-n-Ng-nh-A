@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 
 export default function Component({
@@ -10,8 +9,10 @@ export default function Component({
 }) {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [bookedSeats, setBookedSeats] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // Thêm state để quản lý trạng thái loading
+  const [isLoading, setIsLoading] = useState(false);
+  const [hoveredSeat, setHoveredSeat] = useState(null);
 
+  // Tạo mảng ghế với 10 hàng và 6 cột (A-F)
   const seatRows = Array.from({ length: 10 }, (_, i) =>
     ["A", "B", "C", "D", "E", "F"].map((letter) => `${i + 1}${letter}`),
   );
@@ -30,135 +31,157 @@ export default function Component({
     setBookedSeats([...tempBookedSeats]);
   }, [totalSeats, availableSeats]);
 
-  const handleSeatClick = (seat) =>
-    !bookedSeats.includes(seat) && setSelectedSeat(seat);
+  const handleSeatClick = (seat) => {
+    if (!bookedSeats.includes(seat)) {
+      setSelectedSeat(seat === selectedSeat ? null : seat);
+    }
+  };
 
   const handleAccept = () => {
-    setIsLoading(true); // Bắt đầu loading
+    setIsLoading(true);
     setTimeout(() => {
       onSelectSeat(selectedSeat);
       localStorage.setItem(`selected${leg}Seat`, selectedSeat);
-      setIsLoading(false); // Kết thúc loading
-      onClose(); // Đóng modal sau khi loading hoàn tất
-    }, 1000); // Đặt thời gian loading là 1 giây (1000ms)
+      setIsLoading(false);
+      onClose();
+    }, 1000);
+  };
+
+  const getSeatStyle = (seat) => {
+    if (bookedSeats.includes(seat)) {
+      return "bg-gray-300 text-gray-500 cursor-not-allowed";
+    }
+    if (selectedSeat === seat) {
+      return "bg-green-500 text-white ring-2 ring-green-600 ring-offset-2";
+    }
+    if (hoveredSeat === seat) {
+      return "bg-blue-400 text-white";
+    }
+
+    return "bg-blue-500 text-white hover:bg-blue-600";
   };
 
   return (
     <div>
-      {/* Overlay background */}
-      <div
-        className="fixed inset-0 z-40 bg-gray-900/50"
-        onClick={onClose} // Đóng form khi nhấn ra ngoài
-      ></div>
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose}></div>
 
-      {/* Modal content centered */}
       <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         style={{ paddingTop: "10vh" }}
       >
-        <div className="w-[500px] rounded-lg bg-white p-6 shadow-lg">
-          <div className="mb-2">
-            <div className="mx-auto mb-4 flex h-8 w-3/4 items-center justify-center rounded-t-full bg-gray-200 text-gray-600">
-              Screen
+        <div className="w-[500px] rounded-lg bg-white p-8 shadow-lg">
+          {/* Header */}
+          <div className="text-center">
+            <div className="mx-auto mb-6 flex h-10 w-3/4 items-center justify-center rounded-t-2xl bg-gray-200 text-gray-700 shadow-inner">
+              Màn hình
             </div>
-            <h3 className="text-center text-lg font-medium text-gray-700">
-              Please select a seat
-            </h3>
+            <h2 className="mb-6 text-xl font-medium">
+              Vui lòng chọn ghế ngồi !
+            </h2>
           </div>
 
-          <div className="mb-6 flex justify-between">
-            {["EXIT", "EXIT"].map((text, i) => (
-              <span
-                key={i}
-                className="rounded bg-green-500 px-4 py-1 text-white"
-              >
-                {text}
-              </span>
-            ))}
+          {/* Legend */}
+          <div className="mb-4 flex justify-center gap-8">
+            <div className="flex items-center gap-2">
+              <div className="size-5 rounded bg-gray-200"></div>
+              <span className="text-sm">Đã đặt</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="size-5 rounded bg-blue-500"></div>
+              <span className="text-sm">Có sẵn</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="size-6 rounded bg-green-500 ring-2 ring-green-600 ring-offset-2"></div>
+              <span className="text-sm text-gray-600">Đã chọn</span>
+            </div>
           </div>
 
-          <div className="space-y-4">
+          {/* Exit Sign Top */}
+          <div className="mb-4 flex justify-between">
+            <span className="rounded bg-red-500 px-4 py-1 text-sm text-white">
+              EXIT
+            </span>
+            <span className="rounded bg-red-500 px-4 py-1 text-sm text-white">
+              EXIT
+            </span>
+          </div>
+
+          {/* Seat Grid */}
+          <div className="mb-4 ml-5 grid gap-2">
             {seatRows.map((row, i) => (
               <div key={i} className="flex justify-center">
-                <div className="grid w-full grid-cols-6 gap-4 px-8">
+                <div className="grid w-full grid-cols-6 gap-2">
                   {row.map((seat) => (
-                    <div key={seat} className="flex justify-center">
-                      <button
-                        onClick={() => handleSeatClick(seat)}
-                        disabled={bookedSeats.includes(seat)}
-                        className={`flex size-10 items-center justify-center rounded text-sm ${
-                          bookedSeats.includes(seat)
-                            ? "cursor-not-allowed bg-gray-200 text-gray-400"
-                            : selectedSeat === seat
-                              ? "bg-blue-500 text-white"
-                              : "bg-blue-500 text-white hover:bg-blue-600"
-                        }`}
-                      >
-                        {bookedSeats.includes(seat) ? "X" : seat}
-                      </button>
-                    </div>
+                    <button
+                      key={seat}
+                      onClick={() => handleSeatClick(seat)}
+                      onMouseEnter={() =>
+                        !bookedSeats.includes(seat) && setHoveredSeat(seat)
+                      }
+                      onMouseLeave={() => setHoveredSeat(null)}
+                      disabled={bookedSeats.includes(seat)}
+                      className={`flex size-10 items-center justify-center rounded text-sm font-medium ${getSeatStyle(
+                        seat,
+                      )}`}
+                    >
+                      {bookedSeats.includes(seat) ? "×" : seat}
+                    </button>
                   ))}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="my-6 flex justify-between">
-            {["EXIT", "EXIT"].map((text, i) => (
-              <span
-                key={i}
-                className="rounded bg-green-500 px-4 py-1 text-white"
-              >
-                {text}
-              </span>
-            ))}
+          {/* Exit Sign Bottom */}
+          <div className="mb-4 flex justify-between">
+            <span className="rounded bg-red-500 px-4 py-1 text-sm text-white">
+              EXIT
+            </span>
+            <span className="rounded bg-red-500 px-4 py-1 text-sm text-white">
+              EXIT
+            </span>
           </div>
 
-          <div className="flex justify-end gap-3">
+          {/* Buttons */}
+          <div className="flex justify-end gap-2">
             <button
-              className="rounded-md bg-gray-500 px-6 py-2 text-white transition-colors hover:bg-gray-600"
               onClick={onClose}
+              className="rounded bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
             >
-              Cancel
+              Hủy
             </button>
             <button
-              className="rounded-md bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
               onClick={handleAccept}
-              disabled={!selectedSeat || isLoading} // Vô hiệu hóa khi loading
+              disabled={!selectedSeat || isLoading}
+              className="rounded bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
-                  <span className="loader"></span> {/* Thêm spinner */}
-                  Loading...
+                  <svg className="size-4 animate-spin" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Processing...
                 </div>
               ) : (
-                "Confirm"
+                "Xác nhận"
               )}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Spinner Style */}
-      <style jsx>{`
-        .loader {
-          border: 2px solid #f3f3f3;
-          border-top: 2px solid #3498db;
-          border-radius: 50%;
-          width: 16px;
-          height: 16px;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

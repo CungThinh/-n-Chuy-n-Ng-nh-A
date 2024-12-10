@@ -35,10 +35,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // Update payment status
+    // Update payment status using payment's id
     const updatedPayment = await prisma.payment.update({
-      where: { bookingId: bookingIdInt },
-      data: { status },
+      where: { id: existingPayment.id }, // Use payment id instead of bookingId
+      data: {
+        status,
+        paymentMethod: paymentMethod || existingPayment.paymentMethod, // Keep existing method if not provided
+      },
       include: {
         booking: {
           include: {
@@ -54,11 +57,7 @@ export default async function handler(req, res) {
     if (status === "successful") {
       try {
         const booking = updatedPayment.booking;
-
-        console.log("Booking data:", booking);
         const user = booking.user;
-
-        console.log("User data:", user);
 
         // Prepare template data
         const templateData = {
@@ -110,16 +109,14 @@ export default async function handler(req, res) {
 
           travelClass: booking.tickets[0].travelClass,
           paymentMethod:
-            existingPayment.paymentMethod === "momo"
+            updatedPayment.paymentMethod === "momo"
               ? "MoMo"
-              : existingPayment.paymentMethod === "stripe"
+              : updatedPayment.paymentMethod === "stripe"
                 ? "Thẻ tín dụng"
                 : "Quét mã QR",
           totalAmount: booking.totalAmount.toLocaleString("vi-VN"),
           bookingUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/booking/${booking.pnrId}`,
         };
-
-        console.log("Template data:", templateData);
 
         // Compile email template with booking data
         const compiledTemplate = compileBookingTemplate(templateData);
@@ -141,7 +138,6 @@ export default async function handler(req, res) {
 
         console.log("Confirmation email sent successfully to:", user.email);
       } catch (emailError) {
-        // Log email error but don't fail the request
         console.error("Error sending confirmation email:", emailError);
       }
     }
@@ -155,6 +151,7 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       error: "An error occurred while updating payment status.",
+      details: error.message,
     });
   }
 }

@@ -273,7 +273,10 @@ export default function FlightSearchSection() {
         : "";
 
       localStorage.setItem("destination", to.split(", ").slice(1).join(", "));
+      localStorage.setItem("passengers", JSON.stringify(passengers));
 
+      // localStorage.setItem("destination", to.split(", ").slice(1).join(", "));
+      router.push(`/flight-result?...`);
       router.push(
         `/flight-result?engine=google_flights&departure_id=${encodeURIComponent(
           fromCode,

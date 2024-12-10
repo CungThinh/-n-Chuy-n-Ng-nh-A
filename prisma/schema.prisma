@@ -13,13 +13,16 @@ datasource db {
 // Bảng Customer (Khách hàng)
 model Customer {
   id          Int      @id @default(autoincrement())
-  bookingId   Int // Liên kết với Booking
+  bookingId   Int
   booking     Booking  @relation(fields: [bookingId], references: [id])
-  firstName   String // Họ
-  lastName    String // Tên
-  dateOfBirth DateTime // Ngày tháng năm sinh
-  gender      String // Giới tính
-  nationality String // Quốc tịch
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime
+  gender      String
+  nationality String
+  type        String   @default("adult")  // Thêm default value
+
+  @@index([bookingId])
 }
 
 // Bảng ContactCustomer (Người liên hệ thanh toán)
@@ -34,6 +37,7 @@ model User {
   providerAccountId String? // Lưu ID tài khoản provider (vd: Google ID)
   image             String? // Ảnh profile (chỉ cho người dùng Google hoặc OAuth)
   bookings          Booking[] // Một ContactCustomer chỉ có một Booking
+  reviews           Review[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   role              String    @default("USER")
@@ -48,6 +52,7 @@ model Booking {
   destination String?
   tickets     Ticket[]
   customers   Customer[]
+  reviews Review[]
   payment     Payment?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -88,11 +93,33 @@ model Payment {
 
 // Tạo booking trước, sau đó tạo Ticket
 
+
 model Review {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   bookingId Int
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   rating    Int
   comment   String
-  email     String
+  images    ReviewImage[] // Add this line
+  emojis    ReviewEmoji[] // Add this line
+  createdAt DateTime @default(now())
+}
+
+model ReviewImage {
+  id       Int      @id @default(autoincrement())
+  reviewId Int
+  review   Review   @relation(fields: [reviewId], references: [id])
+  url      String
+  createdAt DateTime @default(now())
+}
+
+model ReviewEmoji {
+  id       Int      @id @default(autoincrement())
+  reviewId Int
+  review   Review   @relation(fields: [reviewId], references: [id])
+  emoji    String
+  label    String
   createdAt DateTime @default(now())
 }

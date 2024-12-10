@@ -24,6 +24,7 @@
     ]
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.7.4",
     "@internationalized/date": "^3.5.6",
     "@mui/material": "^5.16.7",
     "@nextui-org/react": "^2.4.8",
@@ -51,6 +52,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-tailwindcss": "^3.17.5",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "formidable": "^3.5.2",
     "framer-motion": "^11.11.1",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
@@ -75,6 +77,7 @@
     "react-spinners": "^0.14.1",
     "recharts": "^2.13.1",
     "stripe": "^17.2.1",
+    "swiper": "^11.1.15",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
