@@ -25,27 +25,27 @@ export default async function handler(req, res) {
       }
 
       // Transform data to include user info
-      const bookingInfo = {
-        bookingId: booking.id,
-        pnrId: booking.pnrId,
-        // User info
-        firstName: booking.user.name?.split(" ").slice(-1)[0] || "",
-        lastName: booking.user.name?.split(" ").slice(0, -1).join(" ") || "",
-        email: booking.user.email,
-        phoneNumber: booking.user.phoneNumber,
-        address: booking.user.address,
-        // Booking info
-        totalAmount: booking.totalAmount,
-        status: booking.status, // Thêm trường status của booking
-        paymentStatus: booking.payment?.status || "pending", // Đổi tên để phân biệt
-        tickets: booking.tickets,
-        payment: booking.payment,
-        customers: booking.customers,
-        isRoundTrip: booking.isRoundTrip,
-        createdAt: booking.createdAt,
-      };
+      // const bookingInfo = {
+      //   bookingId: booking.id,
+      //   pnrId: booking.pnrId,
+      //   // User info
+      //   firstName: booking.user.name?.split(" ").slice(-1)[0] || "",
+      //   lastName: booking.user.name?.split(" ").slice(0, -1).join(" ") || "",
+      //   email: booking.user.email,
+      //   phoneNumber: booking.user.phoneNumber,
+      //   address: booking.user.address,
+      //   // Booking info
+      //   totalAmount: booking.totalAmount,
+      //   status: booking.status, // Thêm trường status của booking
+      //   paymentStatus: booking.payment?.status || "pending", // Đổi tên để phân biệt
+      //   tickets: booking.tickets,
+      //   payment: booking.payment,
+      //   customers: booking.customers,
+      //   isRoundTrip: booking.isRoundTrip,
+      //   createdAt: booking.createdAt,
+      // };
 
-      return res.status(200).json(bookingInfo);
+      return res.status(200).json(booking);
     } catch (error) {
       console.error("Error fetching booking:", error);
 

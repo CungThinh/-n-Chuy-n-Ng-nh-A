@@ -19,6 +19,7 @@ export default async function handler(req, res) {
         tickets: true,
         payment: true,
         customers: true,
+        user: true,
       },
       orderBy: {
         createdAt: "desc",

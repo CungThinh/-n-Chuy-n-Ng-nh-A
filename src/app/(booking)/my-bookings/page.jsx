@@ -30,6 +30,7 @@ export default function MyBookings() {
   const [pressedCards, setPressedCards] = useState({}); // Trạng thái nhấn riêng cho từng card
   const router = useRouter();
 
+  console.log(bookings);
   useEffect(() => {
     if (!session) {
       router.push(`/login?callbackUrl=/my-bookings`);

@@ -14,6 +14,7 @@ import axios from "axios";
 
 import CancelBookingModal from "./CancelBookingModal";
 
+import { availableEmojis } from "@/const";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,20 +27,6 @@ const EnhancedReviewSection = ({ onSubmit, isSubmitting }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
-  // Available emojis/reactions
-  const availableEmojis = [
-    { icon: "😊", label: "happy" },
-    { icon: "❤️", label: "heart" },
-    { icon: "👍", label: "thumbs-up" },
-    { icon: "🌟", label: "star" },
-    { icon: "🎉", label: "party" },
-    { icon: "🏆", label: "trophy" },
-    { icon: "🇻🇳", label: "vietnam-flag" },
-    { icon: "✈️", label: "airplane" },
-    { icon: "🌴", label: "palm-tree" },
-    { icon: "📸", label: "camera" },
-  ];
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -220,6 +207,7 @@ const EnhancedReviewSection = ({ onSubmit, isSubmitting }) => {
 
 // Main BookingDetails Component
 const BookingDetails = ({ booking }) => {
+  console.log(booking);
   const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
@@ -503,26 +491,20 @@ const BookingDetails = ({ booking }) => {
             </CardTitle>
             <CardContent className="space-y-2">
               <p className="flex items-center text-gray-700">
-                Tên người liên hệ: Mạc Cung Thịnh
+                Tên người liên hệ: {booking.user.name}
               </p>
-              <p className="flex items-center text-gray-700">Email: Hello</p>
               <p className="flex items-center text-gray-700">
-                Số hành khách: {booking.customers.length + 1}{" "}
+                Email: {booking.user.email}
+              </p>
+              <p className="flex items-center text-gray-700">
+                Số hành khách: {booking.customers.length}{" "}
                 <Tooltip
                   content={
                     <div className="p-4">
                       <h4 className="mb-4 text-lg font-semibold text-blue-500">
                         Thông tin hành khách
                       </h4>
-                      {[
-                        ...booking.customers,
-                        {
-                          firstName: "Phạm Văn",
-                          lastName: "Dũng",
-                          dateOfBirth: "10-10-1980",
-                          gender: "Nam",
-                        },
-                      ].map((customer, i) => (
+                      {booking.customers.map((customer, i) => (
                         <div
                           key={i}
                           className="mb-4 border-b border-gray-200 pb-2 last:border-none"
@@ -536,13 +518,15 @@ const BookingDetails = ({ booking }) => {
                           <p className="ml-6 text-sm text-gray-700">
                             Họ và tên:{" "}
                             <span className="font-semibold">
-                              {customer.firstName}
+                              {customer.firstName} {customer.lastName}
                             </span>
                           </p>
                           <p className="ml-6 text-sm text-gray-700">
                             Ngày sinh:{" "}
                             <span className="font-semibold">
-                              {customer.dateOfBirth}
+                              {new Date(
+                                customer.dateOfBirth,
+                              ).toLocaleDateString("vi-VN")}
                             </span>
                           </p>
                           <p className="ml-6 text-sm text-gray-700">
@@ -601,7 +585,7 @@ const BookingDetails = ({ booking }) => {
                 )}
               </p>
               <p className="flex items-center font-semibold text-rose-700">
-                Tổng tiền: 3,779,000 VND
+                Tổng tiền: {booking.totalAmount.toLocaleString("vi-VN")} vnđ
               </p>
             </CardContent>
             <CardFooter className="flex justify-end space-x-2">
@@ -616,7 +600,12 @@ const BookingDetails = ({ booking }) => {
                     Thanh toán
                   </Button>
                 )}
-              {booking.status !== "Cancelled" ? (
+
+              {booking.status === "Cancelled" ? (
+                <Badge variant="destructive" className="py-1">
+                  Đã hủy
+                </Badge>
+              ) : booking.status !== "Completed" ? (
                 <Button
                   variant="outline"
                   className="bg-red-500 p-4 text-white hover:bg-red-600"
@@ -625,11 +614,7 @@ const BookingDetails = ({ booking }) => {
                 >
                   Hủy vé
                 </Button>
-              ) : (
-                <Badge className="py-1" variant="destructive">
-                  Đã hủy
-                </Badge>
-              )}
+              ) : null}
             </CardFooter>
             {showPaymentModal && (
               <PaymentMethodSelector
@@ -641,8 +626,6 @@ const BookingDetails = ({ booking }) => {
         </div>
       </div>
 
-      {/* Enhanced Review Section */}
-      {/* Enhanced Review Section */}
       {booking.tickets &&
         booking.tickets.some(
           (ticket) => new Date(ticket.arrivalTime) < new Date(),
