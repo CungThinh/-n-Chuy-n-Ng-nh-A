@@ -7,6 +7,7 @@ import Footer from "@/components/shared/Footer";
 import SessionProviderWrapper from "@/context/SessionProviderWrapper";
 import PageTransition from "@/lib/PageTransition";
 import { NextUI } from "@/context/NextUIProvider";
+import ReactQueryProvider from "@/context/ReactQueryProvider";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -19,10 +20,12 @@ export default function RootLayout({ children }) {
       <body>
         <NextUI>
           <SessionProviderWrapper>
-            {/* Chỉ hiển thị Navbar và Footer nếu không phải là trang admin */}
-            {!isAdmin && <Navbar />}
-            <PageTransition>{children}</PageTransition>
-            {!isAdmin && <Footer />}
+            <ReactQueryProvider>
+              {/* Chỉ hiển thị Navbar và Footer nếu không phải là trang admin */}
+              {!isAdmin && <Navbar />}
+              <PageTransition>{children}</PageTransition>
+              {!isAdmin && <Footer />}
+            </ReactQueryProvider>
           </SessionProviderWrapper>
         </NextUI>
       </body>

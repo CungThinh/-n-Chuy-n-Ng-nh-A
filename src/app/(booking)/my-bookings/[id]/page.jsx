@@ -1,46 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 import BookingDetails from "../components/BookingDetails";
 
+async function fetchBooking(id) {
+  const response = await axios.get(`/api/bookings/${id}`);
+
+  return response.data;
+}
+
 export default function BookingDetail() {
   const router = useRouter();
-  const { id } = useParams(); // Lấy id từ URL
-  const [booking, setBooking] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
-  useEffect(() => {
-    if (!id) return;
+  const {
+    data: booking,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["booking", id],
+    queryFn: () => fetchBooking(id),
+    enabled: !!id,
+    retry: 2,
+    onError: () => {
+      console.error("Error fetching booking.");
+      router.push("/my-bookings");
+    },
+  });
 
-    async function fetchBooking() {
-      try {
-        const res = await axios.get(`/api/bookings/${id}`);
-
-        setBooking(res.data);
-      } catch (error) {
-        console.error("Error fetching booking:", error);
-        router.push("/my-bookings"); // Điều hướng nếu lỗi xảy ra
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBooking();
-  }, [id, router]);
-
-  if (loading) return <p>Loading booking details...</p>;
+  if (isLoading) return <p>Loading booking details...</p>;
+  if (error)
+    return <p>Error loading booking details. Please try again later.</p>;
   if (!booking) return <p>Booking not found</p>;
 
   return (
     <div>
-      {booking ? (
-        <BookingDetails booking={booking} />
-      ) : (
-        <p>Không tìm thấy thông tin đặt chỗ.</p>
-      )}
+      <BookingDetails booking={booking} />
     </div>
   );
 }

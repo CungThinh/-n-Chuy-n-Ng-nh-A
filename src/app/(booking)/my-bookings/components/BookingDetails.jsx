@@ -207,7 +207,6 @@ const EnhancedReviewSection = ({ onSubmit, isSubmitting }) => {
 
 // Main BookingDetails Component
 const BookingDetails = ({ booking }) => {
-  console.log(booking);
   const [isFlightDetailVisible, setIsFlightDetailVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);

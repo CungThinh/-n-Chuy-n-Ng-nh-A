@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { CalendarDays, Plane, ArrowLeftRight } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -22,38 +23,35 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
+async function fetchBookings() {
+  const res = await axios.get("/api/bookings/me");
+
+  return res.data;
+}
+
 export default function MyBookings() {
   const { data: session } = useSession();
-  const [bookings, setBookings] = useState([]);
-  const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
-  const [pressedCards, setPressedCards] = useState({}); // Trạng thái nhấn riêng cho từng card
   const router = useRouter();
+  const [filter, setFilter] = useState("all");
+  const [pressedCards, setPressedCards] = useState({}); // Trạng thái nhấn riêng cho từng card
 
-  console.log(bookings);
-  useEffect(() => {
-    if (!session) {
-      router.push(`/login?callbackUrl=/my-bookings`);
+  // React Query hook for fetching bookings
+  const {
+    data: bookings = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["myBookings"],
+    queryFn: fetchBookings,
+    retry: 1,
+  });
 
-      return;
-    }
-  }, [session, router]);
+  // Redirect to login if not authenticated
+  if (!session) {
+    router.push(`/login?callbackUrl=/my-bookings`);
 
-  useEffect(() => {
-    async function fetchBookings() {
-      try {
-        const res = await axios.get("/api/bookings/me");
-
-        setBookings(res.data);
-      } catch (error) {
-        console.error("Lỗi khi tải lịch sử đặt vé:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBookings();
-  }, []);
+    return null;
+  }
 
   const filteredBookings = bookings.filter((booking) => {
     if (filter === "all") return true;
@@ -69,7 +67,8 @@ export default function MyBookings() {
     setPressedCards((prev) => ({ ...prev, [id]: false }));
   };
 
-  if (loading) return <p>Đang tải lịch sử đặt vé...</p>;
+  if (isLoading) return <p>Đang tải lịch sử đặt vé...</p>;
+  if (isError) return <p>Đã xảy ra lỗi khi tải lịch sử đặt vé.</p>;
 
   return (
     <div className="max-w container mx-auto h-[800px] overflow-auto p-4">
