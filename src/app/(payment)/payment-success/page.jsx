@@ -15,7 +15,6 @@ export default function PaymentSuccess() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [bookingInfo, setBookingInfo] = useState(null);
-  const [adultCount, setAdultCount] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,30 +89,14 @@ export default function PaymentSuccess() {
   }, []);
 
   useEffect(() => {
-    const storedBookingInfo = JSON.parse(localStorage.getItem("bookingInfo"));
-
-    setBookingInfo(storedBookingInfo);
-
     const fetchBookingDetails = async () => {
       try {
         if (!bookingId) return;
 
-        // Fetch booking details từ API
         const response = await axios.get(`/api/bookings/${bookingId}`);
-        const latestBookingInfo = response.data;
+        const bookingData = response.data;
 
-        // Log để debug
-        console.log("Latest booking info:", latestBookingInfo);
-
-        // Chuyển đổi thành số trước khi set
-        const transformedInfo = {
-          ...latestBookingInfo,
-          totalAmount: Number(latestBookingInfo.totalAmount), // Đảm bảo là số
-          totalPrice: Number(latestBookingInfo.totalAmount), // Thêm totalPrice
-        };
-
-        // Set booking info
-        setBookingInfo(transformedInfo);
+        setBookingInfo(bookingData);
       } catch (error) {
         console.error("Lỗi khi lấy thông tin booking:", error);
         setErrorMessage("Không thể lấy thông tin đặt chỗ");
@@ -235,14 +218,13 @@ export default function PaymentSuccess() {
     );
   }
 
-  if (!bookingInfo || !bookingInfo.firstName) {
+  if (!bookingInfo) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         Không tìm thấy thông tin đặt chỗ.
       </div>
     );
   }
-  const totalPrice = (bookingInfo?.totalPrice || 0) * (adultCount || 1);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -259,12 +241,12 @@ export default function PaymentSuccess() {
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                      {bookingInfo.firstName} {bookingInfo.lastName}, đặt vé của
-                      bạn đã được gửi thành công!
+                      {bookingInfo.user.name}, đặt vé của bạn đã được gửi thành
+                      công!
                     </h1>
                     <p className="mt-1 text-gray-600">
                       Chi tiết đặt vé đã được gửi đến email của bạn:{" "}
-                      {bookingInfo.email}
+                      {bookingInfo.user.email}
                     </p>
                   </div>
                 </div>
@@ -276,33 +258,27 @@ export default function PaymentSuccess() {
                 </h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 items-center">
-                    <span className="text-gray-600">Họ:</span>
+                    <span className="text-gray-600">Họ và tên: </span>
                     <span className="col-span-2 font-medium">
-                      {bookingInfo.lastName}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center">
-                    <span className="text-gray-600">Tên:</span>
-                    <span className="col-span-2 font-medium">
-                      {bookingInfo.firstName}
+                      {bookingInfo.user.name}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 items-center">
                     <span className="text-gray-600">Địa chỉ email:</span>
                     <span className="col-span-2 font-medium">
-                      {bookingInfo.email}
+                      {bookingInfo.user.email}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 items-center">
                     <span className="text-gray-600">Số điện thoại:</span>
                     <span className="col-span-2 font-medium">
-                      {bookingInfo.phoneNumber || "Chưa cập nhật"}
+                      {bookingInfo.user.phoneNumber || "Chưa cập nhật"}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 items-center">
                     <span className="text-gray-600">Địa chỉ:</span>
                     <span className="col-span-2 font-medium">
-                      {bookingInfo.address || "Chưa cập nhật"}
+                      {bookingInfo.user.address || "Chưa cập nhật"}
                     </span>
                   </div>
                 </div>
@@ -324,7 +300,7 @@ export default function PaymentSuccess() {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">ID Booking:</span>
                     <span className="font-medium">
-                      {bookingInfo?.bookingId || "Không có ID"}
+                      {bookingInfo.id || "Không có ID"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -351,7 +327,7 @@ export default function PaymentSuccess() {
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-gray-600">Giá vé :</span>
                     <span className="font-medium">
-                      {(bookingInfo?.totalPrice || 0).toLocaleString("vi-VN")}{" "}
+                      {(bookingInfo.totalAmount || 0).toLocaleString("vi-VN")}{" "}
                       VNĐ
                     </span>
                   </div>
@@ -362,7 +338,7 @@ export default function PaymentSuccess() {
                   <div className="flex items-center justify-between border-t pt-4">
                     <span className="text-gray-600">Tổng cộng:</span>
                     <span className="font-medium">
-                      {totalPrice.toLocaleString("vi-VN")} VNĐ
+                      {bookingInfo.totalAmount.toLocaleString("vi-VN")} VNĐ
                     </span>
                   </div>
                 </div>
