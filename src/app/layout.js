@@ -10,6 +10,7 @@ import { NextUI } from "@/context/NextUIProvider";
 import ReactQueryProvider from "@/context/ReactQueryProvider";
 
 export default function RootLayout({ children }) {
+  // hello
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
 
