@@ -11,8 +11,6 @@ import ReactQueryProvider from "@/context/ReactQueryProvider";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-
-  // Kiểm tra nếu trang hiện tại là admin thì không hiển thị Navbar và Footer
   const isAdmin = pathname.startsWith("/admin");
 
   return (
