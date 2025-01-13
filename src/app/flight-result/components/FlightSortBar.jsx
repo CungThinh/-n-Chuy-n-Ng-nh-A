@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
@@ -132,10 +131,10 @@ const FlightSortBar = ({ flights, onSort, className }) => {
         </div>
       </button>
 
-      <button className="rounded-md p-2 hover:bg-muted">
+      {/* <button className="rounded-md p-2 hover:bg-muted">
         <ChevronDown className="size-4" />
         <span className="sr-only">More sorting options</span>
-      </button>
+      </button> */}
     </div>
   );
 };

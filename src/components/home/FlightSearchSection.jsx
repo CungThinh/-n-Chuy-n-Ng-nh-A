@@ -282,7 +282,7 @@ export default function FlightSearchSection() {
           fromCode,
         )}&arrival_id=${encodeURIComponent(
           toCode,
-        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=a0cc736f9f199b8a669e59f245d76f23d3a58dba760c070d6100e8943e6eefdb&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
+        )}&outbound_date=${formattedOutboundDate}&return_date=${formattedReturnDate}&currency=VND&hl=vi&gl=vn&api_key=e03abb5be37ed80732bccb9539d1c81afff47ad32c3e1f2c94c06deab673afab&type=${flightType}&travel_class=${travelClass}&adults=${passengers.adults}&children=${passengers.children}&infants_in_seat=${passengers.infants_in_seat}&infants_on_lap=${passengers.infants_on_lap}`,
       );
 
       setTimeout(() => setIsLoading(false), 1000);

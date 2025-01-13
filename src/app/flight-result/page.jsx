@@ -60,6 +60,13 @@ const FlightSearchResult = () => {
     }
   };
 
+  useEffect(() => {
+    if (step === "outbound") {
+      setSelectedReturnFlight(null);
+      setReturnFlights([]);
+    }
+  }, [step]);
+
   // Hàm cập nhật progress bar trong khi loading
   useEffect(() => {
     if (loading) {
@@ -192,7 +199,7 @@ const FlightSearchResult = () => {
             onSelect={() => {}}
             leg="outbound"
             isSelectedFlight={true}
-            onChangeFlight={() => setSelectedOutboundFlight(null)}
+            onChangeFlight={handleReSelectOutboundFlight} // Thay đổi ở đây
           />
         </div>
       )}

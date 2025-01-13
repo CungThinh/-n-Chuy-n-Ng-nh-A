@@ -23,7 +23,7 @@ export async function generateInvoicePDF(bookingData) {
         resolve(pdfData);
       });
 
-      // Register fonts with proper encoding
+      // Font configuration
       const fontPath = path.join(process.cwd(), "public", "fonts");
 
       doc.registerFont("NotoSans", path.join(fontPath, "NotoSans-Regular.ttf"));
@@ -31,8 +31,6 @@ export async function generateInvoicePDF(bookingData) {
         "NotoSans-Bold",
         path.join(fontPath, "NotoSans-Bold.ttf"),
       );
-
-      // Set default font
       doc.font("NotoSans");
 
       // Logo
@@ -45,7 +43,7 @@ export async function generateInvoicePDF(bookingData) {
 
       doc.image(logoPath, 50, 40, { width: 130 });
 
-      // Invoice number (top right)
+      // Header
       doc
         .font("NotoSans-Bold")
         .fontSize(14)
@@ -53,11 +51,9 @@ export async function generateInvoicePDF(bookingData) {
         .fontSize(12)
         .text(`#${bookingData.pnrId}`, 450, 70);
 
-      // Customer name and info
+      // Title and customer info
       doc.font("NotoSans-Bold").fontSize(24).text("HÓA ĐƠN", 50, 130);
-
       doc
-        .font("NotoSans-Bold")
         .fontSize(14)
         .text(
           `${bookingData.customers[0].firstName} ${bookingData.customers[0].lastName}`,
@@ -85,7 +81,7 @@ export async function generateInvoicePDF(bookingData) {
         .text("ĐƠN GIÁ", 400, startY)
         .text("THÀNH TIỀN", 480, startY);
 
-      // Draw header line
+      // Header line
       doc
         .moveTo(50, startY + 20)
         .lineTo(550, startY + 20)
@@ -93,55 +89,66 @@ export async function generateInvoicePDF(bookingData) {
 
       // Table content
       let currentY = startY + 40;
+      let subTotal = 0;
 
-      // Add outbound flight
-      const outboundFlight = bookingData.tickets.find(
+      // Lọc và nhóm vé theo chiều bay
+      const outboundFlights = bookingData.tickets.filter(
         (t) => t.tripType === "Outbound",
       );
+      const returnFlights = bookingData.tickets.filter(
+        (t) => t.tripType === "Return",
+      );
 
-      if (outboundFlight) {
-        const outboundPrice = outboundFlight.price || bookingData.totalAmount;
+      // Thêm thông tin chuyến đi
+      if (outboundFlights.length > 0) {
+        const outboundPrice =
+          bookingData.outboundAmount ||
+          bookingData.outbound?.price ||
+          bookingData.totalAmount / 2 ||
+          0;
 
         doc
           .font("NotoSans")
           .text(
-            `Vé máy bay ${outboundFlight.departureAirport} - ${outboundFlight.arrivalAirport}`,
+            `Vé máy bay ${outboundFlights[0].departureAirport} - ${outboundFlights[0].arrivalAirport}`,
             50,
             currentY,
           )
           .text("1", 320, currentY)
           .text(outboundPrice.toLocaleString("vi-VN"), 400, currentY)
           .text(outboundPrice.toLocaleString("vi-VN"), 490, currentY);
+
+        subTotal += outboundPrice;
         currentY += 30;
       }
 
-      // Add return flight if exists
-      const returnFlight = bookingData.tickets.find(
-        (t) => t.tripType === "Return",
-      );
-
-      if (returnFlight) {
-        const returnPrice = returnFlight.price || bookingData.totalAmount;
+      // Thêm thông tin chuyến về nếu có
+      if (returnFlights.length > 0) {
+        const returnPrice =
+          bookingData.returnAmount ||
+          bookingData.return?.price ||
+          bookingData.totalAmount / 2 ||
+          0;
 
         doc
           .font("NotoSans")
           .text(
-            `Vé máy bay ${returnFlight.departureAirport} - ${returnFlight.arrivalAirport}`,
+            `Vé máy bay ${returnFlights[0].departureAirport} - ${returnFlights[0].arrivalAirport}`,
             50,
             currentY,
           )
           .text("1", 320, currentY)
           .text(returnPrice.toLocaleString("vi-VN"), 400, currentY)
           .text(returnPrice.toLocaleString("vi-VN"), 490, currentY);
+
+        subTotal += returnPrice;
         currentY += 30;
       }
 
-      // Calculate totals
-      const subTotal = bookingData.totalAmount;
-      const tax = 0; // hoặc lấy từ bookingData.tax nếu có
-      const finalTotal = subTotal + tax;
+      // Tổng cộng và thuế
+      const tax = 0;
+      const finalTotal = subTotal;
 
-      // Draw total section
       currentY += 20;
       doc
         .font("NotoSans")
@@ -159,7 +166,7 @@ export async function generateInvoicePDF(bookingData) {
         .text("TỔNG THANH TOÁN", 350, currentY)
         .text(finalTotal.toLocaleString("vi-VN"), 490, currentY);
 
-      // Payment information section
+      // Payment information
       currentY += 40;
       doc
         .font("NotoSans-Bold")
@@ -167,10 +174,9 @@ export async function generateInvoicePDF(bookingData) {
         .text("THÔNG TIN THANH TOÁN", 50, currentY);
 
       currentY += 25;
-      doc.font("NotoSans").fontSize(10);
-
-      // Left column
       doc
+        .font("NotoSans")
+        .fontSize(10)
         .text("Ngân hàng:", 50, currentY)
         .text(bookingData.payment.paymentMethod.toUpperCase(), 150, currentY)
         .text("Phí dịch vụ:", 50, currentY + 20)
@@ -180,7 +186,6 @@ export async function generateInvoicePDF(bookingData) {
         .text("Ngày thanh toán:", 50, currentY + 60)
         .text(new Date().toLocaleDateString("vi-VN"), 150, currentY + 60);
 
-      // Right column
       doc
         .text("Email:", 300, currentY)
         .text(bookingData.user.email, 380, currentY)

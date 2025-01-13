@@ -1,94 +1,185 @@
-import Link from "next/link";
 import { useState } from "react";
-import { FaPlane, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export default function AdSection() {
-  const [selectedCity, setSelectedCity] = useState("Hồ Chí Minh"); // Tên biến mới cho lựa chọn thành phố
+  const router = useRouter();
+  const [selectedCity, setSelectedCity] = useState("Hồ Chí Minh");
   const [currentPage, setCurrentPage] = useState(0);
-  const citiesPerPage = 4;
-  const allCities = [
-    "Bangkok",
-    "Singapore",
-    "Tokyo",
-    "Seoul",
-    "Zurich",
-    "Los Angeles",
-    "Frankfurt",
-  ];
 
-  const handleNextPage = () => {
-    if ((currentPage + 1) * citiesPerPage < allCities.length) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
+  const handleQuickSearch = (destination) => {
+    // Get today's date
+    const today = new Date();
+    const vietnamTimeZone = "Asia/Ho_Chi_Minh";
+    const formattedDate = format(today.setHours(0, 0, 0, 0), "yyyy-MM-dd", {
+      timeZone: vietnamTimeZone,
+    });
 
-  const handlePreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
-  const displayedCities = allCities.slice(
-    currentPage * citiesPerPage,
-    (currentPage + 1) * citiesPerPage,
-  );
-
-  // Function to map city names to their corresponding image file names
-  const getCityImage = (city) => {
-    const cityImageMap = {
-      Bangkok: "BKK-1.jpg",
-      Singapore: "SIN-1.jpg",
-      Tokyo: "NRT-1.jpg",
-      Seoul: "ICN-1.jpg",
-      Zurich: "ZRH-1.jpg",
-      "Los Angeles": "LAX-1.jpg",
-      Frankfurt: "FRA-1.jpg",
+    // Default search parameters
+    const defaultParams = {
+      engine: "google_flights",
+      departure_id: "SGN", // Default from Ho Chi Minh City
+      currency: "VND",
+      hl: "vi",
+      gl: "vn",
+      type: "2", // One-way
+      travel_class: "1", // Economy
+      adults: "1",
+      children: "0",
+      infants_in_seat: "0",
+      infants_on_lap: "0",
+      api_key:
+        "e03abb5be37ed80732bccb9539d1c81afff47ad32c3e1f2c94c06deab673afab",
     };
 
-    return cityImageMap[city] || "default.jpg";
+    // Map destinations to airport codes
+    const destinationMap = {
+      "Quần Đảo Discovery": { code: "DAR", city: "Dar es Salaam" },
+      "Java Bali": { code: "DPS", city: "Bali" },
+      Caribbean: { code: "CUN", city: "Cancun" },
+    };
+
+    const destinationInfo = destinationMap[destination];
+
+    if (!destinationInfo) return;
+
+    // Save destination info to localStorage
+    localStorage.setItem("destination", destinationInfo.city);
+    localStorage.setItem(
+      "passengers",
+      JSON.stringify({
+        adults: 1,
+        children: 0,
+        infants_in_seat: 0,
+        infants_on_lap: 0,
+      }),
+    );
+
+    // Create search URL
+    const searchUrl = `/flight-result?engine=${defaultParams.engine}&departure_id=${encodeURIComponent(
+      defaultParams.departure_id,
+    )}&arrival_id=${encodeURIComponent(
+      destinationInfo.code,
+    )}&outbound_date=${formattedDate}&currency=${defaultParams.currency}&hl=${
+      defaultParams.hl
+    }&gl=${defaultParams.gl}&api_key=${
+      defaultParams.api_key
+    }&type=${defaultParams.type}&travel_class=${
+      defaultParams.travel_class
+    }&adults=${defaultParams.adults}&children=${
+      defaultParams.children
+    }&infants_in_seat=${defaultParams.infants_in_seat}&infants_on_lap=${
+      defaultParams.infants_on_lap
+    }`;
+
+    router.push(searchUrl);
   };
+
+  const travelPackages = [
+    {
+      id: 1,
+      title: "Khám Phá Quần Đảo Discovery",
+      location: "Dar es Salaam, thành phố lớn nổi tiếng ở Tanzania",
+      price: 150,
+      duration: "3 Ngày/6 Đêm",
+      rating: 5,
+      reviews: "5k+",
+      image:
+        "https://i.pinimg.com/736x/e1/26/1f/e1261fea721fab311160d4635df4a9eb.jpg",
+      discount: "-10% Hôm Nay",
+      description: "Hành trình phiêu lưu đầy thú vị",
+      searchKey: "Quần Đảo Discovery",
+    },
+    {
+      id: 2,
+      title: "Cuộc Phiêu Lưu Một Lần Trong Đời Tại Java Bali",
+      location: "Dodoma, thủ đô chính thức của Tanzania",
+      price: 452,
+      duration: "3 Ngày/6 Đêm",
+      rating: 5,
+      reviews: "1k+",
+      image:
+        "https://i.pinimg.com/736x/80/3d/f7/803df70c9b809be3841409fc0d01fd5c.jpg",
+      description: "Thiên đường nhiệt đới đầy màu sắc",
+      searchKey: "Java Bali",
+    },
+    {
+      id: 3,
+      title: "Khám Phá Vùng Caribbean Yucatan Peninsula",
+      location: "Mwanza, thành phố cảng tuyệt đẹp của Tanzania",
+      price: 380,
+      duration: "2 Ngày/5 Đêm",
+      rating: 5,
+      reviews: "2k+",
+      image:
+        "https://i.pinimg.com/736x/c7/6c/96/c76c96685ef2db92cfc0f4ffb80d05b1.jpg",
+      discount: "-10% Hôm Nay",
+      description: "Khám phá những bí ẩn của vùng Caribbean",
+      searchKey: "Caribbean",
+    },
+  ];
 
   return (
     <>
-      <div className="mx-auto mt-8 grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-3">
-        <Link href="/ad1" legacyBehavior>
-          <a target="_blank">
-            <div className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-lg">
-              <img
-                src="/images/qc1.jpg"
-                alt="Ad 1"
-                className="w-394 object-cover"
-              />
-            </div>
-          </a>
-        </Link>
+      <div
+        className="mx-auto w-full max-w-7xl text-center"
+        style={{ marginTop: "50px" }}
+      >
+        <h2 className="mb-8 text-3xl font-bold text-[#0a52a3]">
+          Các địa điểm nổi tiếng
+        </h2>
+        <div className="mx-auto mt-8 grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-3">
+          {travelPackages.map((pkg) => (
+            <div
+              key={pkg.id}
+              className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl"
+              onClick={() => handleQuickSearch(pkg.searchKey)}
+            >
+              <div className="relative">
+                <img
+                  src={pkg.image}
+                  alt={pkg.title}
+                  className="h-80 w-full object-cover"
+                />
+                <button
+                  className="absolute right-4 top-4 rounded-full bg-white p-2 shadow-md"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the parent's onClick
+                    // Add favorite functionality here
+                  }}
+                >
+                  <Heart className="size-5 text-gray-600" />
+                </button>
+                {pkg.discount && (
+                  <div className="absolute left-4 top-4 rounded-md bg-red-600 px-2 py-1 text-sm text-white">
+                    {pkg.discount}
+                  </div>
+                )}
+              </div>
 
-        <Link href="/ad2" legacyBehavior>
-          <a target="_blank">
-            <div className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-lg">
-              <img
-                src="/images/qc2.jpg"
-                alt="Ad 2"
-                className="w-394 object-cover"
-              />
+              <div className="flex items-center justify-between p-4">
+                <div className="text-left">
+                  <h3 className="mb-2 text-xl font-semibold">{pkg.title}</h3>
+                  <p className="text-sm text-gray-600">{pkg.description}</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg text-yellow-400">
+                    {[...Array(pkg.rating)].map((_, i) => (
+                      <span key={i}>⭐</span>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-sm text-gray-600">
+                    {pkg.reviews} visits
+                  </p>
+                </div>
+              </div>
             </div>
-          </a>
-        </Link>
-
-        <Link href="/ad3" legacyBehavior>
-          <a target="_blank">
-            <div className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-lg">
-              <img
-                src="/images/qc3.jpg"
-                alt="Ad 3"
-                className="w-394 object-cover"
-              />
-            </div>
-          </a>
-        </Link>
+          ))}
+        </div>
       </div>
 
-      <div
+      {/* <div
         className="mx-auto mt-14 w-full max-w-7xl rounded-lg p-6"
         style={{ background: "linear-gradient(to right, #FFEDD5, #DBEAFE)" }}
       >
@@ -167,9 +258,15 @@ export default function AdSection() {
             <FaArrowRight />
           </button>
         </div>
-      </div>
+      </div> */}
       {/* Partners Section */}
-      <div className="mx-auto mt-14 w-full max-w-7xl rounded-lg p-6">
+      <div
+        className="mx-auto w-full max-w-7xl rounded-lg p-6"
+        style={{
+          marginTop: "100px",
+          background: "linear-gradient(to right, #FFEDD5, #DBEAFE)",
+        }}
+      >
         <h2
           className="mb-4 text-2xl font-bold"
           style={{
@@ -350,7 +447,7 @@ export default function AdSection() {
           {/* Add more hotel partners as needed */}
         </div>
       </div>
-      <div
+      {/* <div
         className="mt-14 w-full rounded-lg p-10"
         style={{ backgroundColor: "#e7eef6" }}
       >
@@ -434,7 +531,7 @@ export default function AdSection() {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

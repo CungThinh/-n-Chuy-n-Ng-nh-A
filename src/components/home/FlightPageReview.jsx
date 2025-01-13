@@ -133,7 +133,10 @@ export default function FlightPageReview() {
   }
 
   return (
-    <section className="w-full bg-white px-4 py-12">
+    <section
+      className="w-full bg-white px-4 py-12"
+      style={{ marginTop: "50px" }}
+    >
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-gray-900">

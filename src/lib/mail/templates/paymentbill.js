@@ -70,74 +70,53 @@ const emailTemplate = `
         </p>
 
         <!-- Flight Details Box -->
-        <div
-          style="
-            background-color: #ebedff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-          "
-        >
-          <h2 style="color: #00264e; font-size: 20px; margin-bottom: 15px;">
-            Chi Tiết Chuyến Bay
-          </h2>
-          <p style="margin: 5px 0;">
-            <strong>Mã đặt chỗ (PNR):</strong> {{pnrId}}
-          </p>
-          <p style="margin: 5px 0;">
-            <strong>Hành khách:</strong> {{passengerName}}
-          </p>
+<div style="background-color: #ebedff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+  <h2 style="color: #00264e; font-size: 20px; margin-bottom: 15px;">
+    Chi Tiết Chuyến Bay
+  </h2>
+  <p style="margin: 5px 0;">
+    <strong>Mã đặt chỗ (PNR):</strong> {{pnrId}}
+  </p>
+  <p style="margin: 5px 0;">
+    <strong>Hành khách:</strong> {{passengerName}}
+  </p>
 
-          <!-- Chiều đi -->
-          <div
-            style="
-              margin-top: 15px;
-              padding-top: 15px;
-              border-top: 1px solid #ccc;
-            "
-          >
-            <h3 style="color: #00264e; font-size: 16px;">Chuyến đi:</h3>
-            <p style="margin: 5px 0;">
-              <strong>Chuyến bay:</strong> {{outboundFlightNumber}}
-            </p>
-            <p style="margin: 5px 0;">
-              <strong>Điểm khởi hành:</strong> {{outboundDepartureAirport}} -
-              {{outboundDepartureTime}}
-            </p>
-            <p style="margin: 5px 0;">
-              <strong>Điểm đến:</strong> {{outboundArrivalAirport}} -
-              {{outboundArrivalTime}}
-            </p>
-          </div>
+  <!-- Chiều đi -->
+  <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ccc;">
+    <h3 style="color: #00264e; font-size: 16px;">
+      {{#if isRoundTrip}}Chuyến đi:{{else}}Chuyến bay:{{/if}}
+    </h3>
+    <p style="margin: 5px 0;">
+      <strong>Chuyến bay:</strong> {{outboundFlightNumber}}
+    </p>
+    <p style="margin: 5px 0;">
+      <strong>Điểm khởi hành:</strong> {{outboundDepartureAirport}} - {{outboundDepartureTime}}
+    </p>
+    <p style="margin: 5px 0;">
+      <strong>Điểm đến:</strong> {{outboundArrivalAirport}} - {{outboundArrivalTime}}
+    </p>
+  </div>
 
-          <!-- Chiều về - Chỉ hiển thị khi là vé khứ hồi -->
-          {{#if isRoundTrip}}
-          <div
-            style="
-              margin-top: 15px;
-              padding-top: 15px;
-              border-top: 1px solid #ccc;
-            "
-          >
-            <h3 style="color: #00264e; font-size: 16px;">Chuyến về:</h3>
-            <p style="margin: 5px 0;">
-              <strong>Chuyến bay:</strong> {{returnFlightNumber}}
-            </p>
-            <p style="margin: 5px 0;">
-              <strong>Điểm khởi hành:</strong> {{returnDepartureAirport}} -
-              {{returnDepartureTime}}
-            </p>
-            <p style="margin: 5px 0;">
-              <strong>Điểm đến:</strong> {{returnArrivalAirport}} -
-              {{returnArrivalTime}}
-            </p>
-          </div>
-          {{/if}}
+  <!-- Chiều về - Chỉ hiển thị khi là vé khứ hồi -->
+  {{#if isRoundTrip}}
+  <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ccc;">
+    <h3 style="color: #00264e; font-size: 16px;">Chuyến về:</h3>
+    <p style="margin: 5px 0;">
+      <strong>Chuyến bay:</strong> {{returnFlightNumber}}
+    </p>
+    <p style="margin: 5px 0;">
+      <strong>Điểm khởi hành:</strong> {{returnDepartureAirport}} - {{returnDepartureTime}}
+    </p>
+    <p style="margin: 5px 0;">
+      <strong>Điểm đến:</strong> {{returnArrivalAirport}} - {{returnArrivalTime}}
+    </p>
+  </div>
+  {{/if}}
 
-          <p style="margin: 5px 0;">
-            <strong>Hạng vé:</strong> {{travelClass}}
-          </p>
-        </div>
+  <p style="margin: 5px 0;">
+    <strong>Hạng vé:</strong> {{travelClass}}
+  </p>
+</div>
 
         <!-- Payment Information -->
         <div
