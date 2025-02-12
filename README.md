@@ -17,6 +17,9 @@ Full feature online flight booking app
 - Generate reports and statistics in `.csv` format.
 - View revenue charts for the past 30 days.
 
+### **Background task**
+- Cronjob: Update completed flight
+
 ## Technologies Used
 - **Frontend:** Next.js, TailwindCSS, NextUI, Framer Motion, ShadcnUI.
 - **Backend:** Next.js Pages Router, Prisma ORM.
@@ -24,7 +27,7 @@ Full feature online flight booking app
 - **Payments:** Stripe, Momo.
 - **Database:** SQLite (development), PostgreSQL (production).
 - **Cloud Services:** Google Cloud, SERP API.
-- **IDE:** VS Code.
+- **Admin:** React-admin, Recharts.
 
 ## Installation & Running the Project
 ### 1. Clone the repository
@@ -34,7 +37,7 @@ cd summertravel
 ```
 ### 2. Install dependencies
 ```bash
-yarn install  # or npm install
+npm install
 ```
 ### 3. Set up environment variables `.env`
 Create a `.env.local` file and fill in the following details:
@@ -58,3 +61,15 @@ npx prisma generate
 yarn dev  # or npm run dev
 ```
 Access the app at `http://localhost:3000`.
+
+
+## Overview
+**Home page**
+![image](https://github.com/user-attachments/assets/fef8ab25-5e56-409c-8fe4-73957dba6fb8)
+**Admin page**
+![image](https://github.com/user-attachments/assets/c79cb61d-4494-46fa-8978-b0b174077a41)
+**Flight search**
+![image](https://github.com/user-attachments/assets/ffd43d64-1a94-4e75-a705-c5478efa0f36)
+...and more
+
+
