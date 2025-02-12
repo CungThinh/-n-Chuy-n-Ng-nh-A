@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SummerTravel - Online Flight Ticket Booking Website
 
-## Getting Started
+## Introduction
+Full feature online flight booking app
 
-First, run the development server:
+## Key Features
+### **For Customers**
+- Register and log in using email or Google account.
+- Search for flights by departure/arrival locations and travel dates.
+- Filter tickets by stops, price, flight duration, and airlines.
+- Select seats and complete payments via Momo, Stripe (credit, QR).
+- View booking history, cancel tickets, or retry payments.
+- Rate flights with comments, images, and emojis.
 
+### **For Admins**
+- Manage bookings, payments, users, and customers.
+- Generate reports and statistics in `.csv` format.
+- View revenue charts for the past 30 days.
+
+## Technologies Used
+- **Frontend:** Next.js, TailwindCSS, NextUI, Framer Motion, ShadcnUI.
+- **Backend:** Next.js Pages Router, Prisma ORM.
+- **Authentication:** NextAuth (Google, Credentials).
+- **Payments:** Stripe, Momo.
+- **Database:** SQLite (development), PostgreSQL (production).
+- **Cloud Services:** Google Cloud, SERP API.
+- **IDE:** VS Code.
+
+## Installation & Running the Project
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-repo/summertravel.git
+cd summertravel
+```
+### 2. Install dependencies
+```bash
+yarn install  # or npm install
+```
+### 3. Set up environment variables `.env`
+Create a `.env.local` file and fill in the following details:
+```env
+DATABASE_URL=your_database_url
+NEXTAUTH_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+STRIPE_SECRET_KEY=your_stripe_key
+MOMO_SECRET_KEY=your_momo_key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Run the database and Prisma
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 5. Start the project
+```bash
+yarn dev  # or npm run dev
+```
+Access the app at `http://localhost:3000`.
